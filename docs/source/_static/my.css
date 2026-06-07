@@ -1,0 +1,251 @@
+/* Widen the center content column */
+.bd-article-container {
+  max-width: 90rem;  /* default is ~60rem */
+}
+
+/* Base font size */
+html {
+  font-size: 16px;
+}
+
+/* Hide figure numbering (sphinx_proof forces numfig=True) */
+figcaption .caption-number {
+  display: none;
+}
+
+/* ------------------------------------------------------------
+ * Compact Table Variant
+ * Usage: .. list-table::
+ *           :class: compact-table
+ * ------------------------------------------------------------ */
+table.compact-table {
+  font-size: 0.85em;
+}
+
+table.compact-table th,
+table.compact-table td {
+  padding: 0.15rem 0.4rem !important;
+  line-height: 1.25;
+}
+
+table.compact-table td p,
+table.compact-table th p {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: 1.25;
+}
+
+/* ============================================================
+ * Custom Color: Dark Orange
+ * Usage: :class: sd-bg-dark-orange
+ *        :class: sd-bg-dark-orange sd-text-white
+ *        :class: sd-border-dark-orange
+ * ============================================================ */
+
+/* Color variables */
+:root,
+[data-theme="light"] {
+  --sd-color-dark-orange: #8b1a1a;
+}
+
+[data-theme="auto"] {
+  --sd-color-dark-orange: #8b1a1a;
+}
+
+[data-theme="dark"] {
+  --sd-color-dark-orange: #ff8a50;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --sd-color-dark-orange: #ff8a50;
+  }
+}
+
+/* Background */
+.sd-bg-dark-orange {
+  background-color: var(--sd-color-dark-orange) !important;
+}
+
+/* Border */
+.sd-border-dark-orange {
+  border-color: var(--sd-color-dark-orange) !important;
+}
+
+/* Dropdown left-border */
+.sd-summary-title.sd-border-dark-orange,
+details.sd-dropdown.sd-border-dark-orange,
+details.sd-dropdown.sd-border-dark-orange > summary {
+  border-left: 3px solid var(--sd-color-dark-orange) !important;
+}
+
+/* ------------------------------------------------------------
+ * Admonition: Learning Objectives
+ * Usage: .. admonition:: Learning Objectives
+ *           :class: learning-objectives
+ * ------------------------------------------------------------ */
+.admonition.learning-objectives {
+  background-color: #fffbea;
+  border: 2px solid #e6b800;
+  border-radius: 0.35rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.admonition.learning-objectives > .admonition-title {
+  background-color: #fff3c4;
+  font-weight: 600;
+  font-size: 1.05em;
+  border-bottom: 1px solid #e6b800;
+}
+
+.admonition.learning-objectives {
+  --pst-icon-admonition-default: "\f19d";
+}
+
+.admonition.learning-objectives > .admonition-title::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #c49a00;
+}
+
+html[data-theme="dark"] .admonition.learning-objectives {
+  background-color: #3a3200;
+  border-color: #ffdf70;
+}
+
+html[data-theme="dark"] .admonition.learning-objectives > .admonition-title {
+  background-color: #4d4200;
+  border-bottom-color: #ffdf70;
+}
+
+html[data-theme="dark"] .admonition.learning-objectives > .admonition-title::before {
+  color: #ffe48f;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] .admonition.learning-objectives {
+    background-color: #3a3200;
+    border-color: #ffdf70;
+  }
+  html[data-theme="auto"] .admonition.learning-objectives > .admonition-title {
+    background-color: #4d4200;
+    border-bottom-color: #ffdf70;
+  }
+  html[data-theme="auto"] .admonition.learning-objectives > .admonition-title::before {
+    color: #ffe48f;
+  }
+}
+
+/* ------------------------------------------------------------
+ * Admonition: Example
+ * Usage: .. admonition:: Example Title
+ *           :class: example
+ * ------------------------------------------------------------ */
+.admonition.example {
+  background-color: #f8f9fa;
+  border: 2px solid #adb5bd;
+  border-radius: 0.35rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.admonition.example > .admonition-title {
+  background-color: #e9ecef;
+  font-weight: 600;
+  font-size: 1.05em;
+  border-bottom: 1px solid #adb5bd;
+}
+
+.admonition.example {
+  --pst-icon-admonition-default: "\f0eb";
+}
+
+.admonition.example > .admonition-title::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #6c757d;
+}
+
+html[data-theme="dark"] .admonition.example {
+  background-color: #2b2d30;
+  border-color: #6c757d;
+}
+
+html[data-theme="dark"] .admonition.example > .admonition-title {
+  background-color: #383a3e;
+  border-bottom-color: #6c757d;
+}
+
+html[data-theme="dark"] .admonition.example > .admonition-title::before {
+  color: #adb5bd;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] .admonition.example {
+    background-color: #2b2d30;
+    border-color: #6c757d;
+  }
+  html[data-theme="auto"] .admonition.example > .admonition-title {
+    background-color: #383a3e;
+    border-bottom-color: #6c757d;
+  }
+  html[data-theme="auto"] .admonition.example > .admonition-title::before {
+    color: #adb5bd;
+  }
+}
+
+/* ------------------------------------------------------------
+ * Admonition: Demonstration
+ * Usage: .. admonition:: Demonstration
+ *           :class: demonstration
+ * ------------------------------------------------------------ */
+.admonition.demonstration {
+  background-color: #f0f4ff;
+  border: 2px solid #5b7bb5;
+  border-radius: 0.35rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.admonition.demonstration > .admonition-title {
+  background-color: #dce4f5;
+  font-weight: 600;
+  font-size: 1.05em;
+  border-bottom: 1px solid #5b7bb5;
+}
+
+.admonition.demonstration {
+  --pst-icon-admonition-default: "\f144";
+}
+
+.admonition.demonstration > .admonition-title::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  color: #3a5a8c;
+}
+
+html[data-theme="dark"] .admonition.demonstration {
+  background-color: #1e2433;
+  border-color: #7b9fd4;
+}
+
+html[data-theme="dark"] .admonition.demonstration > .admonition-title {
+  background-color: #2a3448;
+  border-bottom-color: #7b9fd4;
+}
+
+html[data-theme="dark"] .admonition.demonstration > .admonition-title::before {
+  color: #a0c0ef;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] .admonition.demonstration {
+    background-color: #1e2433;
+    border-color: #7b9fd4;
+  }
+  html[data-theme="auto"] .admonition.demonstration > .admonition-title {
+    background-color: #2a3448;
+    border-bottom-color: #7b9fd4;
+  }
+  html[data-theme="auto"] .admonition.demonstration > .admonition-title::before {
+    color: #a0c0ef;
+  }
+}
