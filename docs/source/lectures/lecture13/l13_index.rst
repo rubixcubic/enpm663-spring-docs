@@ -1,54 +1,76 @@
 ====================================================
-L13: ROS 2 -- Advanced Topics
+Week 13: Evaluation and Measurement Science for AI-Augmented Systems
 ====================================================
 
 Overview
 --------
 
-This is the final ROS 2 lecture in the course. It covers two essential
-capabilities for building robust robotic systems: **coordinate frame
-management with TF2** and **managed lifecycle nodes**. TF2 provides the
-framework for tracking and transforming between coordinate frames --
-critical when your robot has multiple sensors, links, and reference
-frames. Lifecycle nodes give you deterministic control over node
-startup, shutdown, and error recovery, enabling coordinated system
-bringup. Both topics are essential for **GP3**.
+This lecture covers how to evaluate AI-augmented robotic systems
+quantitatively. AI components introduce new failure modes that traditional
+metrics (cycle time, success rate) only partially capture: plans can be
+valid but wrong; perception can be confident but mistaken. We borrow from
+NIST measurement science to define metrics that capture plan validity,
+grounding accuracy, execution success, and end-to-end task performance, and
+discuss the experimental design needed to compare systems fairly. PT4 is
+due today.
+
 
 .. admonition:: Learning Objectives
    :class: learning-objectives
 
    By the end of this lecture, you will be able to:
 
-   - Understand what coordinate frames are and why they are essential in robotics.
-   - Use TF2 to broadcast and listen for transforms between coordinate frames.
-   - Distinguish between static and dynamic transforms and know when to use each.
-   - Understand the lifecycle node state machine and its states (Unconfigured, Inactive, Active, Finalized).
-   - Implement a lifecycle node by inheriting from ``rclcpp_lifecycle::LifecycleNode``.
-   - Use lifecycle transition callbacks (``on_configure``, ``on_activate``, ``on_deactivate``, ``on_cleanup``, ``on_shutdown``).
-   - Manage lifecycle nodes using ``ros2 lifecycle`` CLI commands and programmatic transitions.
+   - Define plan-level metrics: plan validity, plan length, plan cost.
+   - Define perception-level metrics: precision/recall on part detection,
+     pose error distribution.
+   - Define execution-level metrics: action success rate, recovery rate,
+     end-to-end task completion.
+   - Design controlled experiments: hold one variable constant, vary
+     another, repeat for statistical power.
+   - Reason about what PT5's grading rubric likely measures (forward-looking).
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :titlesonly:
 
-   l13_lecture
-   l13_exercises
-   l13_quiz
-   l13_references
+Topics
+------
+
+- Measurement science: what does "good" mean for an AI-augmented system?
+- Plan validity vs. plan optimality: a valid plan may not be the best.
+- Grounding accuracy: VLM precision/recall on part identity; pose error
+  decomposition (position vs. orientation).
+- End-to-end task metrics: completion rate, time to completion, recovery
+  count, fault-handling correctness.
+- Statistical methods: sample sizes, significance, confidence intervals.
+- ARIAC scoring criteria as a worked example (forward-looking to PT5).
+
+
+Hands-On Exercise
+-----------------
+
+In teams, design an evaluation protocol for PT4 (your LLM + VLM planner):
+which metrics, how many runs, what counts as a fair comparison to a PDDL
+baseline. Share protocols; instructor critiques.
+
+
+ARIAC Tie-in
+------------
+
+ARIAC has its own scoring criteria for the competition; PT5 will be graded
+on a similar protocol (live demo on an unseen scenario). Today's lecture is
+how you measure your own system before that day.
+
+
+References
+----------
+
+- NIST measurement science publications: TODO links.
+- ARIAC scoring documentation: TODO link.
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+
 
 Next Steps
 ----------
 
-- This is the **final lecture** in the course. You now have all the tools
-  and knowledge needed for the remaining assignments.
-
-- **GP3** uses the concepts from this lecture extensively:
-
-  - TF2 for managing coordinate frames between the robot, its sensors,
-    and the world.
-  - Lifecycle nodes for coordinated startup and shutdown of system
-    components.
-
-- Complete the C++ exercises on TF2 and lifecycle nodes, and take the
-  quiz to solidify your understanding before starting GP3.
+- PT4 due today; PT5 hand-out was last week (Week 12); PT5 due Week 15.
+- Week 14 is a PT5 lab session.
+- Week 15 is the PT5 live demo.

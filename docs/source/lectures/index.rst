@@ -5,12 +5,10 @@ Lectures
 Overview
 --------
 
-The lectures in ENPM702 follow a progressive structure, starting with
-development environment setup and C++ fundamentals, then building toward
-object-oriented programming, smart pointers, and ROS 2 robotics
-development. Each lecture introduces new concepts through explanation,
-live demonstrations, and hands-on exercises. Lecture materials are
-available on Canvas.
+ENPM663 is a 15-week hands-on course on AI-augmented robotic systems built on
+ROS 2 Jazzy and demonstrated through the ARIAC 2026 testbed. Each weekly
+lecture combines exposition with in-class hands-on exercises and ties content
+back to ARIAC where possible.
 
 
 Lecture Organization
@@ -21,76 +19,86 @@ Each lecture page contains the following sections:
 .. grid:: 1 2 2 3
     :gutter: 3
 
-    .. grid-item-card:: Lecture
+    .. grid-item-card:: Overview and Objectives
         :class-card: sd-border-info
 
-        The main lecture content, adapted from the in-class slides.
-        Covers definitions, explanations, code examples, and
-        demonstrations for the topic.
+        Topic summary and learning objectives for the week.
 
-    .. grid-item-card:: Shell Exercises
+    .. grid-item-card:: Topics
         :class-card: sd-border-info
 
-        Hands-on Linux shell (Bash) exercises that build progressively
-        across lectures. These prepare students for the terminal-based
-        workflows required in ROS 2 development.
+        Core concepts covered in lecture.
 
-    .. grid-item-card:: C++ Exercises
+    .. grid-item-card:: Hands-On Exercise
         :class-card: sd-border-info
 
-        C++ programming exercises for the lecture topic. Students
-        practice the concepts covered in the lecture by writing and
-        running code. Solutions can be submitted on Canvas for
-        participation credit.
+        In-class exercise students run at their laptops. Small, tractable
+        artifacts (a single BT node, a short PDDL domain, a one-shot LLM
+        prompt), not the full ARIAC stack.
 
-    .. grid-item-card:: Quiz
+    .. grid-item-card:: ARIAC Tie-in
         :class-card: sd-border-info
 
-        Multiple choice, true/false, and short-answer questions that
-        test understanding of the lecture material. Answers are
-        hidden behind dropdowns for self-assessment.
+        How the week's concepts surface in ARIAC: which component, which
+        scenario type, which docs page.
 
     .. grid-item-card:: References
         :class-card: sd-border-info
 
-        Links to official documentation, tutorials, and recommended
-        reading related to the lecture topic.
+        Links to ARIAC, ROS 2, library documentation, and recommended reading.
+
+    .. grid-item-card:: Next Steps
+        :class-card: sd-border-info
+
+        Preparation for the following week and PT-related notes.
+
 
 .. note::
 
-   Lecture 1 does not include C++ exercises. Shell exercises begin in
-   Lecture 1 and increase in complexity with each subsequent lecture.
-
-.. tip::
-
-   Review the exercises after each lecture and practice on your own
-   machine. Experimenting with code is the fastest way to internalize
-   the concepts.
+   Week 8 is Spring Break (no class meeting). Weeks 14 and 15 are dedicated
+   to PT5 (the capstone team project): Week 14 is an in-class lab and
+   Week 15 is the live demo and presentation.
 
 
 .. toctree::
    :hidden:
-   :maxdepth: 3
+   :maxdepth: 2
    :titlesonly:
-   :caption: C++ (Weeks 1-9)
+   :caption: Foundations (Weeks 1 to 4)
 
    lecture1/l1_index
    lecture2/l2_index
    lecture3/l3_index
    lecture4/l4_index
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
+   :caption: Classical-to-AI Planning (Weeks 5 to 7, 9, 10)
+
    lecture5/l5_index
    lecture6/l6_index
    lecture7/l7_index
    lecture8/l8_index
    lecture9/l9_index
+   lecture10/l10_index
 
 .. toctree::
    :hidden:
-   :maxdepth: 3
+   :maxdepth: 2
    :titlesonly:
-   :caption: ROS 2 (Weeks 10-14)
+   :caption: Motion, Recovery, and Evaluation (Weeks 11 to 13)
 
-   lecture10/l10_index
    lecture11/l11_index
    lecture12/l12_index
    lecture13/l13_index
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
+   :caption: PT5 Capstone (Weeks 14 to 15)
+
+   lecture14/l14_index
+   lecture15/l15_index

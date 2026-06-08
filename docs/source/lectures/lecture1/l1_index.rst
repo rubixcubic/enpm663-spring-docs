@@ -1,16 +1,16 @@
 ====================================================
-L1: Course Introduction
+Week 1: Course Overview and ROS 2 Refresher
 ====================================================
 
 Overview
 --------
 
-This lecture introduces the ENPM702 course, covering its structure,
-grading policies, and assignment progression. You will set up your
-development environment — Ubuntu, Visual Studio Code, CMake, and Git —
-and learn to customize the Linux shell with aliases and functions. The
-session ends with a hands-on walkthrough of building and running your
-first C++ program using CMake in VSCode.
+This lecture introduces ENPM663 and refreshes the ROS 2 topics most directly
+used throughout the course. We begin with a quick walkthrough of the syllabus,
+team structure, and the ARIAC 2026 testbed, then move into a calibration
+refresher on lifecycle nodes, TF2, QoS profiles, and ROS 2 executors. The
+ungraded diagnostic quiz at the start of class helps both the cohort and the
+instructor see where ROS 2 fluency stands.
 
 
 .. admonition:: Learning Objectives
@@ -18,35 +18,50 @@ first C++ program using CMake in VSCode.
 
    By the end of this lecture, you will be able to:
 
-   - Understand the course structure, objectives, and grading policies.
-   - Identify the software tools used in this course (Ubuntu, VSCode, ROS 2, Git, Valgrind, Doxygen).
-   - Explain what a Linux shell is and name common shell types.
-   - Customize your shell environment using configuration files, aliases, and functions.
-   - Install and configure Visual Studio Code for C++ development.
-   - Set up a workspace with the correct folder structure.
-   - Use the VSCode command palette and essential keyboard shortcuts.
-   - Create a ``CMakeLists.txt`` file and build a C++ project using CMake.
+   - Describe the structure, expectations, and grading of ENPM663.
+   - Explain what ARIAC is and why it serves as the course testbed.
+   - Recall ROS 2 publishers/subscribers, services, and actions APIs.
+   - Use lifecycle nodes, TF2, QoS profiles, and ROS 2 executors in Python.
+   - Identify gaps in your own ROS 2 background using the diagnostic quiz.
 
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :titlesonly:
+Topics
+------
 
-   l1_lecture
-   l1_shell
-   l1_quiz
-   l1_references
+- Course logistics: syllabus walkthrough, team-formation timeline, PT1 hand-out.
+- ARIAC 2026 overview: kitting and assembly stations, robots, sensors, orders.
+- ROS 2 refresher: lifecycle nodes, TF2 transforms, QoS profiles, executors.
+- Diagnostic quiz (ungraded): ROS 2 basics from the prerequisite list.
+
+
+Hands-On Exercise
+-----------------
+
+Build and run a minimal ROS 2 Python node that publishes a TF transform and
+subscribes to its own publication with a different QoS profile. Verify the
+behavior in ``ros2 topic echo``. (TODO: provide starter package.)
+
+
+ARIAC Tie-in
+------------
+
+Open the ARIAC documentation in class and trace one example through the ARIAC
+node graph (orders, sensors, robot controllers). The exercise shows how a
+small ROS 2 system maps to ARIAC's much larger one.
+
+
+References
+----------
+
+- ROS 2 Jazzy documentation: https://docs.ros.org/en/jazzy/
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+- TODO: prerequisite ROS 2 reading list.
+
 
 Next Steps
 ----------
 
-- In the next lecture, we will cover **Introduction to C++**:
-
-  - Variables, types, and constants.
-  - Namespaces and scopes.
-  - Type conversions and deduction.
-
-- Complete your environment setup if not finished in class.
-- Watch the **Version Control** pre-recorded video on Canvas.
-- Watch the **Flow Control and Operations** pre-recorded video on Canvas.
+- PT1 (Behavior Tree for a Simple Kitting Workflow) is handed out today; due Week 5.
+- Form your team of 3 before Week 3 (teams are formed in W3 KR lecture).
+- Read the assigned ARIAC architecture overview before Week 2.

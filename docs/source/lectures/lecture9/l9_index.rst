@@ -1,56 +1,75 @@
 ====================================================
-L9: OOP Advanced
+Week 9: LLM-Based Task Planning I (Prompting, Structured Output, Tool Use)
 ====================================================
 
 Overview
 --------
 
-This lecture covers advanced object-oriented programming concepts in C++.
-Building on the OOP fundamentals from L8, we explore how classes relate to
-each other through association, aggregation, composition, and inheritance.
-The lecture then introduces polymorphism -- both compile-time and runtime --
-showing how ``virtual`` methods, ``override``, and ``= default`` enable
-flexible, extensible designs. We examine why virtual destructors are
-essential for polymorphic hierarchies, how to define abstract classes with
-pure virtual methods, and how concrete classes fulfill those contracts.
-The lecture concludes with the ``final`` keyword for locking class
-hierarchies and method implementations.
+This is the first lecture on the AI-augmented planning thread. We treat the
+LLM as a swappable replacement for the PDDL planner: given a scene
+description and a goal, the LLM produces a structured plan that PT3's BT
+executor runs unchanged. The mechanics that make this reliable are
+prompting (system messages, few-shot examples), structured output (JSON
+schemas, validation, retry), and tool/function calling.
+
 
 .. admonition:: Learning Objectives
    :class: learning-objectives
 
    By the end of this lecture, you will be able to:
 
-   - Understand class relationships: association, aggregation, composition, and inheritance.
-   - Distinguish compile-time vs. runtime polymorphism and use ``virtual`` methods.
-   - Apply ``override``, ``= default``, and ``final`` keywords correctly.
-   - Choose between ``auto`` and explicit base types for polymorphic objects.
-   - Implement ``virtual`` destructors to prevent resource leaks.
-   - Create abstract classes with pure ``virtual`` methods and concrete implementations.
+   - Design a system prompt for an LLM-as-planner with a clear role, a goal
+     format, and a structured output format.
+   - Specify a JSON schema for plans and validate LLM output against it.
+   - Implement a retry loop that re-prompts the LLM on malformed output.
+   - Use tool/function calling to let the LLM invoke explicit "actions"
+     (defined in JSON Schema) instead of free-text plan steps.
+   - Reason about token budgets, cost, and latency in a planning loop.
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :titlesonly:
 
-   l9_lecture
-   l9_shell
-   l9_exercises
-   l9_quiz
-   l9_references
+Topics
+------
+
+- LLM mental model: stateless function from prompt to text, with structured
+  output extensions.
+- Prompt structure: system + user; few-shot examples; output format
+  constraints.
+- JSON schemas as plan KR: typed actions, required fields, enums for action
+  names.
+- Validation and retry: catch malformed output, re-prompt with the error,
+  cap retries.
+- Tool/function calling: the modern alternative to free-text plans; how
+  schemas become callable tools.
+
+
+Hands-On Exercise
+-----------------
+
+Write a one-shot LLM call (Claude, GPT, or local Llama/Qwen) that takes a
+scene description (3 colored parts, 2 kit slots) and a goal (kit each slot
+with a specific part) and returns a JSON plan. Validate against a provided
+JSON schema. (TODO: starter prompt + schema file.)
+
+
+ARIAC Tie-in
+------------
+
+Forward-looking: PT4 (handed out next week) uses this exact mechanism on
+ARIAC scenarios. Today's exercise is a toy version of the PT4 planner.
+
+
+References
+----------
+
+- Anthropic API tool use: https://docs.anthropic.com/en/docs/build-with-claude/tool-use
+- OpenAI structured outputs: https://platform.openai.com/docs/guides/structured-outputs
+- JSON Schema specification: https://json-schema.org/
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+
 
 Next Steps
 ----------
 
-- In the next lecture (**L10: ROS 2 Foundations**), we will cover:
-
-  - Introduction to ROS 2 and its architecture.
-  - Publisher/Subscriber communication pattern.
-  - Custom interfaces (messages and services).
-  - Creating ROS 2 packages and nodes that inherit from ``rclcpp::Node``.
-
-- Before next class: complete the shell exercises (this is the final set
-  before we transition to ROS 2), the C++ exercises on inheritance and
-  polymorphism, and the quiz.
-- Make sure your ROS 2 installation is complete and working (see the
-  ROS setup guide).
+- Week 10 covers VLM grounding and closed-loop replanning, completing the
+  PT4 toolkit.
+- Continue PT3 work; due Week 10.

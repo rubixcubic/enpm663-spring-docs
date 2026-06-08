@@ -1,37 +1,74 @@
-.. _l5_index:
-
-==========================
-L5: Functions -- Basics
-==========================
+====================================================
+Week 5: Sensing and Perception for Robotic Systems
+====================================================
 
 Overview
 --------
 
-This lecture introduces the fundamental building blocks of modular C++ programming: functions. Students will learn how to declare, define, and call functions, how data flows into and out of functions through various parameter-passing mechanisms, and how to organize code using header files. The lecture also covers function overloading, default parameters, static variables, the call stack, recursion, and documentation with Doxygen.
+This lecture covers classical perception for robotic systems: extracting
+structured information (part identities and 3D poses) from camera images.
+We use OpenCV for color segmentation, contour detection, and bounding-box
+extraction, then convert pixel coordinates to robot-frame 3D poses via
+camera intrinsics, extrinsics, and TF2. Quiz #2 (covering Week 4 BTs) is
+administered at the start of class. PT1 is due today; PT2 is handed out.
+
 
 .. admonition:: Learning Objectives
    :class: learning-objectives
 
    By the end of this lecture, you will be able to:
 
-   1. **Explain** function fundamentals, including declarations, definitions, calls, and the benefits of modularity.
-   2. **Select** appropriate methods for passing data to functions (by-value, by-reference, by-pointer) and returning data from them.
-   3. **Implement** enhanced features like function overloading, default parameters, and static variables.
-   4. **Describe** the program's execution model, including the call stack, stack frames, and recursion.
-   5. **Apply** best practices for function documentation with Doxygen and handle command-line arguments in ``main()``.
+   - Use OpenCV to segment colored objects and extract bounding boxes and
+     centroids.
+   - Convert pixel coordinates to camera-frame 3D coordinates using camera
+     intrinsics and depth.
+   - Transform camera-frame poses to a world frame using TF2.
+   - Wrap a perception pipeline as a ROS 2 node with publish/subscribe.
+   - Evaluate perception output against ground-truth poses.
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :caption: Lecture 5 Contents
 
-   l5_lecture
-   l5_shell
-   l5_exercises
-   l5_quiz
-   l5_references
+Topics
+------
+
+- Image preprocessing: color spaces (BGR, HSV), thresholding, morphological
+  operations.
+- Contour detection and bounding-box extraction; centroid estimation.
+- Camera model: intrinsics, extrinsics, depth, pixel-to-3D conversion.
+- TF2 in perception pipelines: camera frame to world frame.
+- ROS 2 perception node patterns: image subscriber, pose publisher, latency.
+
+
+Hands-On Exercise
+-----------------
+
+Given a static ARIAC scene image (TODO: provide), detect parts by color and
+output their image-frame centroids. Then add TF2 to convert one detection
+into a world-frame pose using a published camera transform. (TODO: starter
+package.)
+
+
+ARIAC Tie-in
+------------
+
+ARIAC's overhead RGB-D cameras above the supply bins are the input to PT2's
+perception pipeline. The four part colors (red, green, blue, purple) and
+four part types (battery, sensor, regulator, pump) define the detection
+classes.
+
+
+References
+----------
+
+- OpenCV documentation: https://docs.opencv.org/4.x/
+- ROS 2 TF2 tutorials: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/
+- ARIAC sensor configuration: TODO link into ARIAC docs.
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+
 
 Next Steps
 ----------
 
-In **Lecture 6: Functions -- Advanced**, we will explore more advanced function topics including inline functions, lambda expressions, function pointers, ``std::function``, and an introduction to templates. These concepts build on the fundamentals covered here and are essential for writing flexible, high-performance C++ code.
+- Quiz #2 today (Week 4 BTs).
+- PT1 due today; PT2 (Perception Pipeline) is handed out and due Week 7.
+- Week 6 covers PDDL, the classical task-level planner that consumes the KR
+  and perception output.

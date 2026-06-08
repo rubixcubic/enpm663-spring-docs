@@ -1,54 +1,69 @@
 ====================================================
-L11: ROS 2 -- Configuration and Orchestration
+Week 11: Frames, Transforms, and Motion Planning
 ====================================================
 
 Overview
 --------
 
-This lecture covers the tools and techniques for configuring, launching, and
-orchestrating ROS 2 systems. We begin with **parameters** -- node-specific
-configuration values that allow you to change a node's behavior without
-recompiling. Next, we explore **launch files**, which let you start multiple
-nodes, pass parameters, remap topics, and set up complex systems with a
-single command. We then examine **executors** -- the mechanism that controls
-how callbacks are dispatched -- including single-threaded and multi-threaded
-executors with their associated callback groups. The lecture also covers
-**YAML configuration files** for externalizing parameter values and the
-**ROS 2 CLI tools** for inspecting and modifying parameters at runtime.
+This lecture covers the motion layer of the three-layer architecture: TF2
+in depth, MoveIt2 architecture, the motion planning pipeline (sampling,
+collision checking, trajectory optimization), and parameterized grasps. By
+the end of class, students can ask MoveIt2 to plan a pick-and-place
+trajectory and understand what each stage of the pipeline contributed.
+
 
 .. admonition:: Learning Objectives
    :class: learning-objectives
 
    By the end of this lecture, you will be able to:
 
-   - Declare, get, and set parameters on ROS 2 nodes using ``rclcpp``.
-   - Use parameter callbacks to respond dynamically when parameters change at runtime.
-   - Write Python launch files to start multiple nodes with parameters, remappings, and arguments.
-   - Use launch arguments (``DeclareLaunchArgument``, ``LaunchConfiguration``) to create reusable launch files.
-   - Structure YAML configuration files and load them from launch files.
-   - Distinguish between single-threaded and multi-threaded executors and choose the appropriate one.
-   - Use callback groups (mutually exclusive and reentrant) to control concurrency in multi-threaded executors.
+   - Build and reason about a TF2 frame chain for an ARIAC-style scene.
+   - Describe the MoveIt2 architecture: move_group, planning scene, planners.
+   - Plan a motion in MoveIt2 from Python using the MoveIt2 Python API.
+   - Specify grasp poses as parameterized targets (no learned grasp model).
+   - Reason about collision objects, octomaps, and execution monitoring.
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :titlesonly:
 
-   l11_lecture
-   l11_exercises
-   l11_quiz
-   l11_references
+Topics
+------
+
+- TF2 deep dive: static vs. dynamic transforms, frame conventions,
+  troubleshooting (lookup failures, time inconsistencies).
+- MoveIt2 architecture: move_group node, planning scene, planning pipeline,
+  controllers.
+- Sampling-based planners (RRT-Connect, PRM); when each is appropriate.
+- Trajectory optimization (CHOMP, STOMP) at a high level.
+- Parameterized grasps: defining a grasp pose relative to a part frame.
+
+
+Hands-On Exercise
+-----------------
+
+Using a provided MoveIt2 scene (TODO: starter), plan (do not execute) a
+pick motion to a part at a given pose. Inspect the resulting trajectory in
+RViz; vary the planner and compare. Add a collision object and re-plan.
+
+
+ARIAC Tie-in
+------------
+
+ARIAC uses MoveIt2 for the kitting robot's pick-and-place. PT4 and PT5 both
+call MoveIt2 as the reactive layer beneath the LLM-driven executor. The
+grasp poses for ARIAC parts are parameterized (no learned grasp prediction),
+defined per part type.
+
+
+References
+----------
+
+- MoveIt2 documentation: https://moveit.picknik.ai/main/
+- ROS 2 TF2 tutorials: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/
+- ARIAC robot configurations: TODO link into ARIAC docs.
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+
 
 Next Steps
 ----------
 
-- In the next lecture (**L12: ROS 2 -- Services and Actions**), we will cover:
-
-  - ROS 2 services: synchronous request/reply communication.
-  - Writing service servers and clients in C++.
-  - ROS 2 actions: long-running tasks with feedback.
-  - Writing action servers and clients.
-  - Choosing between topics, services, and actions.
-
-- Before next class: complete the C++ exercises on parameters, launch files,
-  and executors, and take the quiz.
+- Week 12 covers recovery and robustness for AI-driven systems; Quiz #5.
+- Continue PT4; due Week 13.

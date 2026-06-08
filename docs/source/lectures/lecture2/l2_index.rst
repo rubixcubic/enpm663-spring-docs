@@ -1,15 +1,17 @@
 ====================================================
-L2: Introduction to C++
+Week 2: System Architectures for AI-Augmented Robotics
 ====================================================
 
 Overview
 --------
 
-This lecture introduces the fundamentals of C++ programming. You will
-learn how C++ programs are written, built, and executed, and explore
-the core building blocks of the language: variables, types, constants,
-type conversions, scopes, and namespaces. The lecture emphasizes modern
-C++ practices including uniform initialization and ``constexpr``.
+This lecture establishes the architectural vocabulary used throughout the
+course. We begin with the classical architecture taxonomy (reactive,
+behavior-based, subsumption, three-layer/hybrid), then introduce the modern
+three-layer architecture as the dominant pattern for AI-augmented robotic
+systems. The key insight is that AI does not replace the architecture; it
+plugs into specific layers (LLM as deliberative planner, VLM as perception,
+classical motion). PT1 is handed out at the end of this lecture.
 
 
 .. admonition:: Learning Objectives
@@ -17,37 +19,57 @@ C++ practices including uniform initialization and ``constexpr``.
 
    By the end of this lecture, you will be able to:
 
-   - Understand C++ as a statically typed, compiled language and describe the build process (preprocessor, compiler, linker).
-   - Declare, initialize, and use variables with proper naming conventions (snake_case).
-   - Explain memory allocation for variables and use the ``sizeof`` operator.
-   - Use integral types, floating-point types, and boolean types with appropriate modifiers.
-   - Handle implicit type conversions, numeric promotions, and arithmetic conversions.
-   - Implement constants using ``const`` and ``constexpr`` for compile-time optimization.
-   - Manage local and global scope and avoid naming collisions with namespaces.
-   - Perform basic input/output with ``std::cin`` and ``std::cout``.
-   - Use type deduction with the ``auto`` keyword.
+   - Name and contrast classical robot architectures (reactive, behavior-based,
+     subsumption, three-layer/hybrid).
+   - Describe the modern three-layer architecture (deliberative, executive,
+     reactive) and the data flow between layers.
+   - Identify where AI components (LLM, VLM) plug into classical architectures
+     and where classical components remain.
+   - Map ARIAC's node graph onto a three-layer architecture instance.
 
 
-.. toctree::
-   :hidden:
-   :maxdepth: 2
-   :titlesonly:
+Topics
+------
 
-   l2_lecture
-   l2_shell
-   l2_exercises
-   l2_quiz
-   l2_references
+- Classical control architectures: reactive, behavior-based, subsumption,
+  three-layer (Brooks, Gat).
+- The modern three-layer default: deliberative planner, executive (BT),
+  reactive control (MoveIt2 + low-level).
+- Where AI plugs in: LLM as deliberative planner, VLM as perception
+  augmentation, classical components unchanged.
+- Case study: ARIAC's component graph as a three-layer instance.
+
+
+Hands-On Exercise
+-----------------
+
+In teams or pairs, sketch a block diagram for an AI-augmented ARIAC kitting
+task. Label each block with the layer it belongs to and the data exchanged
+with adjacent blocks. Share diagrams; compare design choices.
+
+
+ARIAC Tie-in
+------------
+
+ARIAC's competition kit includes a kitting robot, an AGV, an overhead camera
+system, and the order subscriber. Together they form a textbook three-layer
+architecture. The exercise traces an ARIAC order from arrival through planning
+to execution.
+
+
+References
+----------
+
+- Classical robot architectures (Brooks, Gat): TODO links.
+- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+- Source material: ``Lectures_export/Architectures-2023-Spring.pptx``.
+
 
 Next Steps
 ----------
 
-- In the next lecture, we will cover **Pointers and Memory Management**:
-
-  - Stack vs. heap memory.
-  - Pointers and references.
-  - Dynamic memory allocation with ``new`` and ``delete``.
-  - Memory debugging with Valgrind.
-
-- Watch the **Flow Control and Operations** pre-recorded video on Canvas if you have not already.
-- Practice the shell and C++ exercises.
+- Week 3 covers Knowledge Representation, the symbolic layer that the
+  architecture's blocks exchange.
+- Continue PT1 work; due Week 5.
+- Form teams of 3 by Week 3.

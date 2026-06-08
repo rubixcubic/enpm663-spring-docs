@@ -1,0 +1,17 @@
+# Local Claude Code state
+.claude/
+
+# 2023 lecture source decks (re-authored into new lectures; too large for git)
+Lectures_export/
+
+# Sphinx build artifacts
+docs/_build/
+docs/build/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+EOF
