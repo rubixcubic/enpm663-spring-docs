@@ -1,78 +1,51 @@
 ====================================================
-Assignments
+Team Projects
 ====================================================
 
-This course includes three individual **Real-World Applications (RWAs)**
-focused on core C++ and three team-based **Group Projects (GPs)** focused
-on ROS 2 development. Both RWAs and GPs are **cumulative** --- each
-deliverable builds on the previous one.
+All course work in ENPM663 is team-based. There are no individual assignments.
+The course is built around five cumulative **Team Projects (PT1 through PT5)**
+that assemble an AI-augmented robotic system one layer at a time, using ARIAC
+2025 as the testbed. Each PT builds on the previous deliverable, and PT5 is the
+capstone, evaluated on an unseen ARIAC scenario and demoed live.
 
-
-Real-World Applications (RWAs)
-------------------------------
-
-The RWAs progressively build a C++ application using robotics-themed
-use cases. Each RWA refactors and extends the previous one,
-demonstrating why each new C++ feature improves the codebase.
+Teams of 3 are formed in Week 3 and stay together across all five projects. See
+the syllabus for team-formation and peer-review details.
 
 .. list-table::
    :header-rows: 1
-   :widths: 15 40 15 15 15
+   :widths: 8 44 12 12 12
    :class: compact-table
 
-   * - Assignment
+   * - PT
      - Focus
-     - Posted
+     - Hand out
      - Due
-     - Duration
-   * - :doc:`RWA1 <rwa1>`
-     - C++ Fundamentals (Variables, Types, Pointers)
-     - Week 3
+     - Weight
+   * - :doc:`PT1 <pt1>`
+     - Behavior tree for a simple kitting workflow (``py_trees_ros``)
+     - Week 2
      - Week 5
-     - 2 weeks
-   * - :doc:`RWA2 <rwa2>`
-     - STL Containers and Functions
+     - 10%
+   * - :doc:`PT2 <pt2>`
+     - Perception pipeline (OpenCV + part pose extraction)
      - Week 5
      - Week 7
-     - 2 weeks
-   * - :doc:`RWA3 <rwa3>`
-     - Smart Pointers and OOP
-     - Week 9
-     - Week 11
-     - 2 weeks
-
-
-Group Projects (GPs)
----------------------
-
-The GPs progressively build a ROS 2 application with a mobile robot
-in Gazebo. Each GP extends the previous deliverable.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 15 40 15 15 15
-   :class: compact-table
-
-   * - Project
-     - Focus
-     - Posted
-     - Due
-     - Duration
-   * - :doc:`GP1 <gp1>`
-     - ROS 2 Pub/Sub with Gazebo
-     - Week 11
+     - 10%
+   * - :doc:`PT3 <pt3>`
+     - PDDL planner + BT executor (classical baseline)
+     - Week 7
+     - Week 10
+     - 10%
+   * - :doc:`PT4 <pt4>`
+     - LLM agent for task planning + VLM grounding (extends PT3)
+     - Week 10
      - Week 13
-     - 2 weeks
-   * - :doc:`GP2 <gp2>`
-     - Services, Actions, and Robot Inheritance
-     - Week 13
-     - Week 14
-     - 1 week
-   * - :doc:`GP3 <gp3>`
-     - Coordinate Frames and Lifecycle Nodes
-     - Week 14
+     - 10%
+   * - :doc:`PT5 <pt5>`
+     - Integrated capstone on an unseen ARIAC scenario
+     - Week 12
      - Week 15
-     - 1 week
+     - 20%
 
 
 .. toctree::
@@ -80,9 +53,8 @@ in Gazebo. Each GP extends the previous deliverable.
    :maxdepth: 2
    :titlesonly:
 
-   rwa1
-   rwa2
-   rwa3
-   gp1
-   gp2
-   gp3
+   pt1
+   pt2
+   pt3
+   pt4
+   pt5

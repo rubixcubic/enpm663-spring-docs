@@ -1,6 +1,6 @@
 # Syllabus
 
-## ENPM663 AI-Augmented Robot Software Systems
+## ENPM663 Building AI-Augmented Robotic Systems
 
 **Spring 2027**
 
@@ -19,15 +19,18 @@
 This hands-on course examines how modern AI techniques, including large language models
 (LLMs) and vision-language models (VLMs), are integrated into ROS 2 based robotic
 systems. Students study classical task and motion planning, then add AI-augmented
-counterparts at the task-planning layer: LLM-based task planning, VLM grounding for
-scene understanding, and closed-loop replanning. Motion planning, grasp execution, and
-control remain classical (MoveIt2). The course is structured around the Agile Robotics
-for Industrial Automation Competition (ARIAC) 2026
+counterparts at the task-planning layer: LLM agents for task planning (the
+observe-act-observe loop, tool use, and structured output), VLM grounding for
+scene understanding, and closed-loop replanning. The end-to-end vision-language-action
+(VLA) frontier is surveyed for context, but motion planning, grasp execution, and
+control remain classical (MoveIt2); this course teaches the modular, auditable stack
+rather than training learned policies. The course is structured around the Agile Robotics
+for Industrial Automation Competition (ARIAC) 2025
 (https://pages.nist.gov/ARIAC_docs/en/latest/) as a unifying testbed, but the concepts
 and engineering patterns taught are general to autonomous robotic systems.
 
 Students entering this course are expected to have working knowledge of ROS 2
-(publishers and subscribers, services, actions, parameters, launch files). Week 2
+(publishers and subscribers, services, actions, parameters, launch files). Week 1
 provides a refresher on the ROS 2 topics most directly used in the course (lifecycle
 nodes, TF2, QoS, executors). A significant amount of Python programming is required,
 with selected use of C++ for components where it is the industry standard.
@@ -51,8 +54,9 @@ After successfully completing this course you will be able to:
   failure handling and recovery.
 - Apply classical task-level planning using PDDL to generate executable plans for
   robotic systems.
-- Build LLM-based task planners that produce structured plans via prompting, structured
-  output, and tool/function calling.
+- Build LLM agents for task planning that reason in an observe-act-observe loop,
+  produce structured plans and tool calls via prompting and JSON-schema validation,
+  and invoke robot actions through tool/function calling (MCP).
 - Use vision-language models to ground robotic plans in observed scenes and recover
   from perception failures.
 - Design robust execution patterns (failure handling, recovery, replanning) for
@@ -72,7 +76,7 @@ After successfully completing this course you will be able to:
   https://docs.ros.org/en/jazzy/Installation.html
 - **Simulator:** Gazebo Harmonic: https://gazebosim.org/docs/harmonic/
 - **Editor:** Visual Studio Code: https://code.visualstudio.com/
-- **ARIAC 2026:** https://pages.nist.gov/ARIAC_docs/en/latest/
+- **ARIAC 2025:** https://pages.nist.gov/ARIAC_docs/en/latest/
 - **AI access:** Either a paid LLM API account (e.g., Anthropic Claude, OpenAI, Google
   Gemini) or local open-weight models (e.g., recent Llama or Qwen releases). Course
   team projects will accept either; cost guidance will be provided per project.
@@ -201,9 +205,10 @@ PDDL captures well vs. where it strains.
 
 **Hand-out:** Week 10 / **Due:** Week 13 / **Weight:** 10%
 
-Swap the PDDL planner for an LLM that consumes a VLM-grounded scene description and
-the order, and that outputs a structured plan (JSON schema) which the same BT
-executor from PT3 runs unchanged. ARIAC context: same kitting scenarios as PT3, plus
+Swap the PDDL planner for an LLM agent that consumes a VLM-grounded scene description
+and the order, and that outputs a structured plan (JSON schema) or per-step tool calls
+which the same BT executor from PT3 runs unchanged, replanning in a closed loop when
+execution drifts from the expected state. ARIAC context: same kitting scenarios as PT3, plus
 at least one scenario PT3's PDDL domain cannot handle without code changes (e.g., a
 new part type or an unusual ordering constraint). The LLM should adapt at prompt
 time; PDDL would need a domain rewrite.
@@ -442,8 +447,8 @@ should be self-identified, not presumed or imposed.
 | 6 (TODO: date) | Task-Level Planning with PDDL | -- |
 | 7 (TODO: date) | Plan Execution Patterns with Behavior Trees | Quiz #3; PT2 due; PT3 handed out |
 | 8 (TODO: date) | SPRING BREAK | -- |
-| 9 (TODO: date) | LLM-Based Task Planning I: Prompting, Structured Output, Tool Use | -- |
-| 10 (TODO: date) | LLM-Based Task Planning II: VLM Grounding and Robust Replanning | Quiz #4; PT3 due; PT4 handed out |
+| 9 (TODO: date) | LLM-Based Task Planning I: Agent Loops, Tool Use, and Structured Output | -- |
+| 10 (TODO: date) | LLM-Based Task Planning II: VLM Grounding and Agentic Replanning | Quiz #4; PT3 due; PT4 handed out |
 | 11 (TODO: date) | Frames, Transforms, and Motion Planning | -- |
 | 12 (TODO: date) | Recovery, Robustness, and Failure Handling for AI-Driven Systems | Quiz #5; PT5 handed out |
 | 13 (TODO: date) | Evaluation and Measurement Science for AI-Augmented Systems | PT4 due |
@@ -451,10 +456,9 @@ should be self-identified, not presumed or imposed.
 | 15 (TODO: date) | PT5 Demo and Presentation | PT5 due |
 
 > **Note:** This is a tentative schedule and subject to change as necessary. Monitor
-> the course ELMS page for current deadlines. Week 13 (Guest Lecture) is subject to
-> change based on speaker availability. In the event of a prolonged university closing
-> or extended absence, adjustments to the schedule, deadlines, and assignments will be
-> made based on the duration of the closing and the specific dates missed.
+> the course ELMS page for current deadlines. In the event of a prolonged university
+> closing or extended absence, adjustments to the schedule, deadlines, and assignments
+> will be made based on the duration of the closing and the specific dates missed.
 
 ---
 

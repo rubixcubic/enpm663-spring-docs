@@ -1,7 +1,7 @@
 # CLAUDE.md - ENPM663 Spring 2027
 
 This file gives Claude (or any collaborator using Claude) the context needed to work on
-the ENPM663 "AI-Augmented Robot Software Systems" course development project without
+the ENPM663 "Building AI-Augmented Robotic Systems" course development project without
 re-litigating the design decisions every session.
 
 Read this file at the start of any new conversation about this course.
@@ -10,7 +10,7 @@ Read this file at the start of any new conversation about this course.
 
 ## 1. Project Overview
 
-**Course:** ENPM663 - AI-Augmented Robot Software Systems
+**Course:** ENPM663 - Building AI-Augmented Robotic Systems
 **Term:** Spring 2027
 **Institution:** University of Maryland, MAGE program
 **Instructor:** Zeid (Rob) Kootbally, solo
@@ -23,7 +23,7 @@ co-taught with Craig Schlenoff)
 
 A graduate hands-on course that teaches how modern AI techniques (LLMs, VLMs, learned
 manipulation components) are integrated into ROS 2 based robotic systems. The course is
-structured around the ARIAC 2026 testbed but teaches general patterns for AI-augmented
+structured around the ARIAC 2025 testbed but teaches general patterns for AI-augmented
 robotics. Students come in with ROS 2 knowledge; this course extends classical task and
 motion planning with AI-augmented counterparts at each layer.
 
@@ -68,12 +68,57 @@ bottom of the file) so the next session has accurate state.
 *Live state. Update at the end of every session. Keep it short; details belong in
 commits, not here.*
 
-**Last updated:** 2026-06-07
+**Last updated:** 2026-08-02
 
-- **Repo state:** `main` branch, single commit "first push". Untracked files in the
-  repo root: `CLAUDE.md`, `syllabus.md` (the new canonical syllabus), and the obsolete
-  `syllabus_spring2027_enpm663.pdf`. The repo is a Sphinx + ReadTheDocs project; see
-  Section 6 for the real file layout.
+- **Repo state:** `main` branch. Two commits ("first push" then the Spring 2027
+  redesign commit). Working tree has uncommitted edits from Session 2 (see below).
+  The repo is a Sphinx + ReadTheDocs project; see Section 6 for the real file layout.
+- **Recently completed (Session 2, 2026-08-02):**
+  - Industry-currency review of the 15 lecture stubs, including a web check of the
+    2026 agent-framework and VLA landscape.
+  - Reframed the LLM thread (W9, W10) around the modern agent loop instead of the
+    dated one-shot-planner framing; added MCP, plan-and-execute vs. ReAct, tool
+    design, context/memory, and an explicit "when classical PDDL wins" boundary.
+    Titles updated. See the new decision-log entry Section 3.13.
+  - Added a VLA / robot-foundation-model survey segment to W2 (survey only, no
+    hands-on; the no-learned-manipulation scope is unchanged) plus a
+    multi-robot-coordination-as-multi-agent mention.
+  - Fixed the four smaller flags: W10/W11 motion ordering note (PT4 uses ARIAC action
+    servers), MCP in W9, multi-robot mention, W10 classical-wins honesty note.
+  - Corrected stale content: Section 4.3 arcs (dropped "learned grasping" and "guest
+    lecture" leftovers, re-aligned week ranges to the KR-shifted outline) and a
+    "Week 2 refresher" reference in `syllabus.md` that should read "Week 1".
+  - Renamed the course "AI-Augmented Robot Software Systems" -> "Building
+    AI-Augmented Robotic Systems" (Rob's pick; see Section 3.1). Updated across
+    `syllabus.md`, `CLAUDE.md`, `index.rst`, `README.md`.
+  - Rebranded the Sphinx site from the leftover ENPM702 (C++) course to ENPM663:
+    `conf.py` (project, navbar text, logo image paths, GitHub URLs), `index.rst`
+    (full landing-page rewrite), `README.md`, `_templates/custom-footer.html`.
+    ASSET TODO: `_static/images/enpm663_logo_{light,dark}.png` do not exist yet;
+    the theme falls back to the text logo until they are added. Also confirm the
+    GitHub repo slug `zeidk/enpm663-spring-2027-docs` and the RTD project name.
+  - Changed the testbed from ARIAC 2026 to **ARIAC 2025** (Ubuntu 24.04) per Rob's
+    instruction; reverses the 2026-06-07 call. See Section 3.7. Propagated across
+    `syllabus.md`, `CLAUDE.md`, and `lecture1/l1_index.rst`. Open item #3 in
+    Section 7 is now resolved.
+  - Full ENPM702 -> ENPM663 site cleanup (all toctree-reachable pages). Rewrote
+    `assignments/` (new `pt1.rst`..`pt5.rst` from the syllabus PT descriptions;
+    `index.rst` PT table; deleted `rwa1-3.rst`, `gp1-3.rst`); `setup/` (rewrote
+    `setup.rst`, trimmed `ubuntu_setup.rst` to 24.04-only, fixed `ros_setup.rst`
+    to Week 1 + Gazebo Harmonic, deleted `cpp_setup.rst`, added `ariac_setup.rst`
+    and `ai_setup.rst`); `reading_material/` (ENPM663 supplemental-topics index;
+    deleted the `flow_control/`, `exception_handling/`, `version_control/`
+    subdirs); `glossary/glossary.rst` (ENPM663 starter glossary via the Sphinx
+    glossary directive); `changelog/changelog.rst`; and `syllabus/syllabus.rst`
+    (ENPM663 at-a-glance: 60/25/15 + outline, pointing to the canonical
+    `syllabus.md`). Deleted all 60 orphaned old per-section lecture files
+    (`lN_lecture/exercises/shell/quiz/references.rst`); only `lN_index.rst`
+    remain. Fixed ENPM702/en-dash header comments in the two `_static` CSS files.
+  - Verified with a local Sphinx build (`cd docs && make html`): builds clean,
+    0 warnings. Only remaining notice is the missing enpm663 logo PNGs (expected;
+    theme falls back to text logo).
+- **Repo file note:** Untracked/obsolete `syllabus_spring2027_enpm663.pdf` still in
+  repo root; `syllabus.md` remains the canonical syllabus.
 - **Recently completed (Session 1, 2026-06-06):**
   - Initial course redesign conversation that produced `CLAUDE.md` and a draft
     syllabus PDF.
@@ -161,13 +206,16 @@ commits, not here.*
 This section is the decision log. When in doubt about why something is the way it is,
 look here before changing it.
 
-### 3.1 Title: "AI-Augmented Robot Software Systems"
+### 3.1 Title: "Building AI-Augmented Robotic Systems"
 
 Chosen over alternatives like "Foundation Models for Robotic Systems" (too narrow),
 "Intelligent Robotic Systems: Planning and Perception" (loses the software-engineering
 emphasis), and "Building Intelligent Robot Software Systems" (kept too much of the old
 title). "AI-Augmented" is accurate without overpromising: AI is added at specific layers
-of an otherwise classical robotics stack.
+of an otherwise classical robotics stack. The working name was "AI-Augmented Robot
+Software Systems"; on 2026-08-02 Rob chose "Building AI-Augmented Robotic Systems" to
+foreground the hands-on, integration-heavy, team-project nature of the course (the
+"Building" verb echoes the spirit of the 2025 predecessor title).
 
 ### 3.2 AI direction: LLM + VLM task planning, classical motion
 
@@ -258,12 +306,14 @@ BTs appear in two places in the course:
 - Week 4: BT foundations (language, patterns, basic execution)
 - Week 7: BT-based plan execution (executing externally-produced plans, recovery)
 
-### 3.7 ARIAC version: ARIAC 2026 (per instructor preference)
+### 3.7 ARIAC version: ARIAC 2025 (per instructor preference)
 
-Per Zeid's instruction, the syllabus references ARIAC 2026. Note that as of June 2026,
-NIST runs an "ARIAC 2025-2026" cycle. Zeid is closer to NIST than the AI assistant and
-makes the call on the version name. If by spring 2027 the cycle is named differently
-(e.g., ARIAC 2026-2027), update the syllabus accordingly.
+Per Zeid's instruction (2026-08-02), the course references **ARIAC 2025**, running on
+Ubuntu 24.04. This reverses the earlier 2026-06-07 call that pinned "ARIAC 2026"; Rob
+is closer to NIST and makes the call on the version label. NIST's cycle around this
+time is "ARIAC 2025-2026"; Rob chose the "ARIAC 2025" label. If the cycle is renamed
+before spring 2027, update the syllabus and lectures accordingly. The `/latest/` doc
+URL pins to the active cycle and is safe to link regardless of the label.
 
 ### 3.8 Software stack: Ubuntu 24.04 + ROS 2 Jazzy + Gazebo Harmonic
 
@@ -333,6 +383,43 @@ learned grasping was replaced with recovery/robustness (see Section 3.2). A 9th
 outcome on knowledge representation was added on 2026-06-07 when a dedicated KR
 week was introduced (see Section 2.2).
 
+### 3.13 LLM thread reframed as agents; VLA frontier surveyed (2026-08-02)
+
+An industry-currency review (with a web check of the 2026 agent-framework and VLA
+landscape) found the LLM thread was framed in a pre-agentic (2022 to 2023) way: the
+LLM was treated as a stateless one-shot planner with a replan trigger. That framing
+is dated. The 2026 industry standard is the *agent loop* (an orchestrator runs
+observe-reason-act-observe around the LLM; ReAct and plan-and-execute are the dominant
+patterns), with tools exposed through MCP (Model Context Protocol), which by 2026 is
+the standard tool-integration layer across LangGraph, the OpenAI Agents SDK, and the
+Claude Agent SDK.
+
+Decision: reframe W9 and W10 around the agent loop rather than add a new week (the
+week count is unchanged). W9 becomes "Agent Loops, Tool Use, and Structured Output";
+W10 becomes "VLM Grounding and Agentic Replanning." Added concepts: the agent loop and
+orchestrator, plan-and-execute vs. ReAct, tool design, MCP, context/memory management,
+and an explicit "when classical PDDL is the better tool" boundary (LLM agents earn
+their place on ambiguity, novelty, and recovery, not the happy path). PT4 is now framed
+as an LLM *agent*. This is a framing change, not a scope expansion; no GPU or new ML is
+introduced.
+
+VLA scope: the deliberate no-learned-manipulation decision (Section 3.2, 3.5) is
+UNCHANGED. Vision-language-action models (OpenVLA, Physical Intelligence pi-0, Gemini
+Robotics, Figure Helix) are added to W2 as a *survey segment only* (no policy training,
+no GPU, no hands-on), to acknowledge the frontier and justify the modular choice. A
+useful teaching hook surfaced in the web check: the dominant 2026 VLA design is itself
+two-system (a slow VLM for semantics plus a fast reactive control policy), which mirrors
+this course's deliberative-plus-reactive split. A multi-robot-coordination-as-multi-agent
+mention (ARIAC floor and ceiling robots) was also added to W2.
+
+Cascaded updates: `l2_index.rst` (VLA survey, multi-robot mention), `l9_index.rst`
+(agent-loop rewrite, MCP), `l10_index.rst` (agentic replanning, classical-wins honesty
+note, MoveIt2/action-server ordering note), `syllabus.md` (Course Description, LLM
+learning outcome, W9/W10 outline titles, PT4 description, plus a fix of a stale "Week 2
+refresher" reference that should read "Week 1"), and this file (Section 4.1 titles,
+this entry, Section 2.2). The learned-manipulation scope decision and the 9-outcome
+count are unchanged.
+
 ---
 
 ## 4. Course Structure
@@ -349,8 +436,8 @@ week was introduced (see Section 2.2).
 | 6 | Task-Level Planning with PDDL | -- |
 | 7 | Plan Execution Patterns with Behavior Trees | Quiz #3; PT2 due; PT3 handed out |
 | 8 | SPRING BREAK | -- |
-| 9 | LLM-Based Task Planning I: Prompting, Structured Output, Tool Use | -- |
-| 10 | LLM-Based Task Planning II: VLM Grounding and Robust Replanning | Quiz #4; PT3 due; PT4 handed out |
+| 9 | LLM-Based Task Planning I: Agent Loops, Tool Use, and Structured Output | -- |
+| 10 | LLM-Based Task Planning II: VLM Grounding and Agentic Replanning | Quiz #4; PT3 due; PT4 handed out |
 | 11 | Frames, Transforms, and Motion Planning | -- |
 | 12 | Recovery, Robustness, and Failure Handling for AI-Driven Systems | Quiz #5; PT5 handed out |
 | 13 | Evaluation and Measurement Science for AI-Augmented Systems | PT4 due |
@@ -375,14 +462,17 @@ Peer-Review Contribution category.
 The course is structured in four arcs. When developing lectures, keep the arc context
 in mind:
 
-1. **Foundations (weeks 1-4):** ROS 2 refresher, architectures, BTs, perception. By end
-   of Week 4 students can build a simple BT that consumes perception output.
-2. **Classical-to-AI Planning (weeks 5-9):** PDDL, BT-based execution, then LLM
-   planning, then VLM grounding. The intentional contrast is the centerpiece.
-3. **AI-Augmented Perception and Manipulation (weeks 10-12):** MoveIt2, learned
-   grasping, evaluation. By end of Week 12 students have all the components for the
-   final project.
-4. **Integration and Demo (weeks 13-15):** Guest lecture, project lab, demo day.
+1. **Foundations (weeks 1-4):** ROS 2 refresher, architectures (with a VLA-frontier
+   survey), knowledge representation, BTs. By end of Week 4 students can build a simple
+   BT over the KR designed in W3.
+2. **Classical-to-AI Planning (weeks 5-10):** perception, PDDL, BT-based execution,
+   then LLM agents for planning, then VLM grounding and agentic replanning. The
+   intentional classical-to-AI contrast is the centerpiece.
+3. **Motion, Recovery, and Evaluation (weeks 11-13):** MoveIt2 and parameterized
+   grasps (no learned grasping, see Section 3.2), recovery/robustness, evaluation. By
+   end of Week 13 students have all the components for the capstone.
+4. **PT5 Capstone (weeks 14-15):** project lab and the live demo on an unseen ARIAC
+   scenario. (No guest lecture; see Section 3.9.)
 
 ---
 
@@ -451,7 +541,7 @@ list. Lead with the most consequential question.
 
 ### 5.6 ARIAC conventions
 
-- The course uses ARIAC 2026 as the testbed. If you encounter ambiguity about which
+- The course uses ARIAC 2025 as the testbed. If you encounter ambiguity about which
   ARIAC version (2025-2026 vs. 2026-2027), defer to Rob; he is closer to NIST.
 - **Primary references** (consult these when developing lecture content or PT
   problem statements):
@@ -510,19 +600,24 @@ enpm663-spring-2027-docs/
     └── source/
         ├── conf.py, index.rst
         ├── _static/, _templates/
-        ├── setup/                         (Ubuntu, ROS 2, C++ setup guides; reusable)
-        ├── syllabus/syllabus.rst          (2025 version; replace eventually)
-        ├── assignments/                   (2025 RWA/GP files; replace with PT1-PT5)
-        ├── lectures/                      (lecture notes index/pages)
-        ├── reading_material/, glossary/, changelog/
+        ├── setup/                         (ubuntu, ros, ariac, ai setup; ENPM663)
+        ├── syllabus/syllabus.rst          (ENPM663 at-a-glance; canonical is syllabus.md)
+        ├── assignments/                   (pt1..pt5.rst + index; ENPM663 team projects)
+        ├── lectures/                      (lectureN/lN_index.rst only; ENPM663 stubs)
+        ├── reading_material/, glossary/, changelog/  (ENPM663)
 ```
+
+As of 2026-08-02 the whole toctree-reachable site was migrated off the leftover
+ENPM702 (C++) content; a local `make html` builds clean with 0 warnings.
 
 Conventions for new content:
 
-- **Canonical syllabus:** `syllabus.md` at the repo root for now. Port into the
-  Sphinx site as `docs/source/syllabus/syllabus.rst` (or `.md` via MyST) when stable.
-- **Team project descriptions:** author under `docs/source/assignments/` as `pt1.rst`
-  through `pt5.rst`, replacing the 2025 `rwa*.rst` and `gp*.rst` files.
+- **Canonical syllabus:** `syllabus.md` at the repo root remains canonical. The site's
+  `docs/source/syllabus/syllabus.rst` is now an ENPM663 at-a-glance summary (grade
+  breakdown + outline) that points to `syllabus.md`; a full port/render of the complete
+  syllabus into the site (or `.md` via MyST) is still deferred until it stabilizes.
+- **Team project descriptions:** live under `docs/source/assignments/` as `pt1.rst`
+  through `pt5.rst` (done 2026-08-02; the 2025 `rwa*.rst`/`gp*.rst` files were deleted).
 - **Lecture notes pages:** `docs/source/lectures/weekNN_topic/` for the site.
 - **Lecture slide decks (Beamer):** convention TBD; decide before the first Beamer
   deck is written. Two options under consideration: (a) slides nested next to lecture
@@ -543,8 +638,9 @@ Things that are not yet resolved or that the course developer should watch:
 1. **Spring 2027 academic calendar dates.** Not yet available from UMD. All dates in
    the syllabus are marked `TODO: verify`.
 2. **Classroom and meeting time.** Marked TODO.
-3. **ARIAC version naming.** May need to be updated when NIST publishes the 2026-2027
-   cycle.
+3. **ARIAC version naming.** Resolved 2026-08-02: the course uses "ARIAC 2025"
+   (Ubuntu 24.04) per Rob (Section 3.7). Re-check the label if NIST renames the cycle
+   before spring 2027.
 4. **AI API access for students.** Department-level decision pending: course budget for
    API credits vs. requiring students to provision their own.
 5. **Academic integrity policy.** The syllabus draft includes language permitting AI
@@ -559,13 +655,13 @@ Things that are not yet resolved or that the course developer should watch:
 
 ## 8. Quick Reference
 
-**Course title:** AI-Augmented Robot Software Systems
+**Course title:** Building AI-Augmented Robotic Systems
 **Course code:** ENPM663
 **Term:** Spring 2027
 **Instructor:** Zeid (Rob) Kootbally, solo
-**Stack:** Ubuntu 24.04 + ROS 2 Jazzy + Gazebo Harmonic + ARIAC 2026
+**Stack:** Ubuntu 24.04 + ROS 2 Jazzy + Gazebo Harmonic + ARIAC 2025
 **Primary language:** Python
-**AI direction:** LLM + VLM task planning with closed-loop replanning; classical motion planning
+**AI direction:** LLM agents for task planning (agent loop, tool use via MCP, structured output) + VLM grounding with agentic closed-loop replanning; classical motion planning. VLA frontier surveyed only, not built (see Section 3.13).
 **BT library:** py_trees_ros
 **Planner:** PDDL via Fast Downward or Unified Planning Framework
 **Motion planner:** MoveIt2
@@ -592,6 +688,16 @@ Guest Lecture to make room, all post-W2 topics and PT/quiz dates shift +1, outco
 count grew to 9; drafted high-level PT1 through PT5 descriptions in `syllabus.md`;
 replaced the ENPM702 lecture stubs in the Sphinx site with ENPM663 stubs for all
 15 weeks under `docs/source/lectures/lecture{1..15}/lN_index.rst`).*
+*Last updated: 2026-08-02 (Session 2: industry-currency review with a web check of the
+2026 agent-framework and VLA landscape; reframed the LLM thread (W9, W10) around the
+agent loop with MCP, ReAct vs. plan-and-execute, and a classical-wins boundary; added
+a VLA-frontier survey segment and multi-robot mention to W2 (survey only, scope
+unchanged); fixed the four smaller lecture flags and stale Section 4.3 arcs; new
+decision-log entry Section 3.13; renamed the course to "Building AI-Augmented Robotic
+Systems" (Section 3.1); rebranded the Sphinx site from the leftover ENPM702 course to
+ENPM663 (conf.py, index.rst landing-page rewrite, README, footer; logo assets still
+TODO); switched the testbed from ARIAC 2026 to ARIAC 2025 on Ubuntu 24.04 (Section 3.7,
+reversing the 2026-06-07 call)).*
 *Update this file whenever a design decision is made or revised. The decision log in
 Section 3 is the most important section to keep current. Section 2.2 (Current Status)
 should be refreshed at the end of every working session.*

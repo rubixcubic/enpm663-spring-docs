@@ -1,7 +1,7 @@
 import os, sys
 from datetime import date
 
-project = "ENPM702 Fall 2026"
+project = "ENPM663 Spring 2027"
 author = "Z. Kootbally"
 copyright = f"{date.today().year}, {author}"
 release = "v1.0"
@@ -52,15 +52,17 @@ html_last_updated_fmt = "%b %d, %Y"
 html_theme_options = {
     # Logo (place files in _static/images/)
     "logo": {
-        "text": "ENPM702 Fall 2026",
-        "image_light": "_static/images/enpm702_logo_light.png",
-        "image_dark": "_static/images/enpm702_logo_dark.png",
+        "text": "ENPM663 Spring 2027",
+        # TODO: add these two logo image files to _static/images/ (they do not
+        # exist yet); until then the theme falls back to the "text" logo above.
+        "image_light": "_static/images/enpm663_logo_light.png",
+        "image_dark": "_static/images/enpm663_logo_dark.png",
     },
     # Header / navbar icon links
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/zeidk/enpm702-fall-2026-docs",
+            "url": "https://github.com/zeidk/enpm663-spring-2027-docs",
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
         },
@@ -88,7 +90,7 @@ html_theme_options = {
 # Edit on GitHub button
 html_context = {
     "github_user": "zeidk",
-    "github_repo": "enpm702-fall-2026-docs",
+    "github_repo": "enpm663-spring-2027-docs",
     "github_version": "main",
     "doc_path": "docs/source",
     "default_mode": "dark",

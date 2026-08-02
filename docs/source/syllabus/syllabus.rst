@@ -1,6 +1,17 @@
 Syllabus
 ========
 
+This page is an at-a-glance summary of ENPM663 (Building AI-Augmented Robotic
+Systems), Spring 2027. The full, authoritative syllabus (policies, peer-review
+instrument, academic integrity, and university resources) is distributed on
+ELMS-Canvas.
+
+.. note::
+
+   All course work is team-based. There are no individual assignments. Teams of
+   3 are formed in Week 3 and stay together across all five team projects.
+
+
 Grade Breakdown
 ---------------
 
@@ -11,173 +22,77 @@ Grade Breakdown
 
    * - Component
      - Percentage
-   * - RWAs (3) + GPs (3)
-     - 70%
-   * - Quizzes (5)
+   * - Team Projects (PT1 through PT5)
+     - 60%
+   * - Quizzes (5, closed-notes)
      - 25%
-   * - Participation/Engagement
-     - 5%
+   * - Peer-Review Contribution
+     - 15%
    * - **Total**
      - **100%**
 
-.. note::
-
-   **Participation** is earned by actively engaging in class discussions
-   or by submitting weekly exercise solutions on Canvas.
+PT1 through PT4 are worth 10% each; PT5 (the capstone, evaluated on an unseen
+ARIAC scenario) is worth 20%.
 
 
-.. _course-schedule:
-
-Course Schedule
----------------
+Course Outline
+--------------
 
 .. list-table::
    :header-rows: 1
-   :widths: 10 54 36
+   :widths: 8 56 36
    :class: compact-table
 
    * - Week
      - Topic
-     - Deliverable
-   * - Week 1
-     - Course Introduction, Linux Shell, VSCode, CMake
-     -
-   * - Week 2
-     - Introduction to C++ (Variables, Types, Constants, Namespaces)
-     -
-   * - Week 3
-     - Pointers and Memory Management (Stack, Heap, References)
-     - RWA1 Posted
-   * - Week 4
-     - STL Containers (Strings, Arrays, Vectors, Iterators)
-     - Quiz 1
-   * - Week 5
-     - Functions -- Basics (Declarations, Parameters, Overloading, Recursion)
-     - RWA1 Due, RWA2 Posted
-   * - Week 6
-     - Functions -- Advanced (Templates, Lambdas, Functors, ``std::function``)
-     - Quiz 2
-   * - Week 7
-     - Smart Pointers and Move Semantics (``unique_ptr``, ``shared_ptr``, ``weak_ptr``)
-     - RWA2 Due
-   * - Week 8
-     - OOP Basics (Classes, Objects, Encapsulation, Constructors)
-     - Quiz 3
-   * - Week 9
-     - OOP Advanced (Inheritance, Polymorphism, Abstraction)
-     - RWA3 Posted
-   * - Week 10
-     - ROS 2 -- Foundations (Publisher, Subscriber, Custom Interfaces)
-     - Quiz 4
-   * - Week 11
-     - ROS 2 -- Configuration and Orchestration (Parameters, Launch Files, Executors)
-     - RWA3 Due, GP1 Posted
-   * - Week 12
-     - **THANKSGIVING BREAK**
-     -
-   * - Week 13
-     - ROS 2 -- Communication Patterns (Services, Actions)
-     - GP1 Due, GP2 Posted, Quiz 5
-   * - Week 14
-     - ROS 2 -- Advanced Topics (Frames, Lifecycle Nodes)
-     - GP2 Due, GP3 Posted
-   * - Week 15
-     - No class
-     - GP3 Due
+     - Deliverables
+   * - 1
+     - Course Overview and ROS 2 Refresher
+     - Diagnostic quiz (ungraded)
+   * - 2
+     - System Architectures for AI-Augmented Robotics
+     - PT1 handed out
+   * - 3
+     - Knowledge Representation for AI-Augmented Robotics
+     - Teams formed
+   * - 4
+     - Behavior Trees for Task Execution
+     - Quiz #1
+   * - 5
+     - Sensing and Perception for Robotic Systems
+     - Quiz #2; PT1 due; PT2 handed out
+   * - 6
+     - Task-Level Planning with PDDL
+     - --
+   * - 7
+     - Plan Execution Patterns with Behavior Trees
+     - Quiz #3; PT2 due; PT3 handed out
+   * - 8
+     - Spring Break
+     - --
+   * - 9
+     - LLM-Based Task Planning I: Agent Loops, Tool Use, Structured Output
+     - --
+   * - 10
+     - LLM-Based Task Planning II: VLM Grounding and Agentic Replanning
+     - Quiz #4; PT3 due; PT4 handed out
+   * - 11
+     - Frames, Transforms, and Motion Planning
+     - --
+   * - 12
+     - Recovery, Robustness, and Failure Handling for AI-Driven Systems
+     - Quiz #5; PT5 handed out
+   * - 13
+     - Evaluation and Measurement Science for AI-Augmented Systems
+     - PT4 due
+   * - 14
+     - PT5 Lab
+     - --
+   * - 15
+     - PT5 Demo and Presentation
+     - PT5 due
 
 .. note::
 
-   This is a tentative schedule, and subject to change as necessary.
-   Monitor ELMS-Canvas for current deadlines.
-
-
-Real-World Applications (RWAs)
-------------------------------
-
-The three RWAs are **cumulative** individual assignments that progressively
-build a C++ application using robotics-themed use cases. Each RWA refactors
-and extends the previous one, demonstrating why each new C++ feature
-improves the codebase:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 12 12 12
-   :class: compact-table
-
-   * - Assignment
-     - Posted
-     - Due
-     - Duration
-   * - RWA1: C++ Fundamentals (Variables, Types, Pointers)
-     - Week 3
-     - Week 5
-     - 2 weeks
-   * - RWA2: STL Containers and Functions
-     - Week 5
-     - Week 7
-     - 2 weeks
-   * - RWA3: Smart Pointers and OOP
-     - Week 9
-     - Week 11
-     - 2 weeks
-
-
-Group Projects (GPs)
---------------------
-
-The three GPs are **cumulative** team-based projects that progressively
-build a ROS 2 application with a mobile robot in Gazebo. Each GP extends
-the previous deliverable:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 12 12 12
-   :class: compact-table
-
-   * - Project
-     - Posted
-     - Due
-     - Duration
-   * - GP1: ROS 2 Pub/Sub with Gazebo
-     - Week 11
-     - Week 13
-     - 2 weeks
-   * - GP2: Services, Actions, and Robot Inheritance
-     - Week 13
-     - Week 14
-     - 1 week
-   * - GP3: Coordinate Frames and Lifecycle Nodes
-     - Week 14
-     - Week 15
-     - 1 week
-
-.. tip::
-
-   Start assignments early. RWAs and GPs are cumulative — a strong
-   foundation in each deliverable makes the next one easier.
-
-
-Reading Material
-----------------
-
-The following topics are provided as pre-recorded videos on Canvas.
-Students are expected to watch these outside of class by the recommended
-deadline:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 30 30
-   :class: compact-table
-
-   * - Topic
-     - Description
-     - When to Watch
-   * - Version Control (Git and GitHub)
-     - Distributed version control, branching, merging, pull requests, and the fork workflow.
-     - **Before the semester starts**
-   * - Flow Control and Operations
-     - Conditionals, loops, and operators.
-     - **Before Week 3** (before RWA1 is posted)
-   * - Exception Handling
-     - Exception handling with ``try``, ``catch``, ``throw``, standard and custom exception classes, and RAII.
-     - **Before Week 7** (before Smart Pointers)
+   This is a tentative schedule and subject to change. Monitor ELMS-Canvas for
+   current deadlines. See :doc:`../assignments/index` for the team projects.

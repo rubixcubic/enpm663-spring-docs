@@ -1,5 +1,5 @@
-# ENPM702 — Introductory Robot Programming
+# ENPM663: Building AI-Augmented Robotic Systems
 
-Course documentation for ENPM702, Fall 2026.
+Course documentation for ENPM663, Spring 2027.
 
-📖 **Read the docs**: [enpm702-fall-2026-docs.readthedocs.io](https://enpm702-fall-2026-docs.readthedocs.io/en/latest/)
+📖 **Read the docs**: [enpm663-spring-2027-docs.readthedocs.io](https://enpm663-spring-2027-docs.readthedocs.io/en/latest/)

@@ -7,7 +7,7 @@ Overview
 
 This lecture introduces ENPM663 and refreshes the ROS 2 topics most directly
 used throughout the course. We begin with a quick walkthrough of the syllabus,
-team structure, and the ARIAC 2026 testbed, then move into a calibration
+team structure, and the ARIAC 2025 testbed, then move into a calibration
 refresher on lifecycle nodes, TF2, QoS profiles, and ROS 2 executors. The
 ungraded diagnostic quiz at the start of class helps both the cohort and the
 instructor see where ROS 2 fluency stands.
@@ -29,7 +29,7 @@ Topics
 ------
 
 - Course logistics: syllabus walkthrough, team-formation timeline, PT1 hand-out.
-- ARIAC 2026 overview: kitting and assembly stations, robots, sensors, orders.
+- ARIAC 2025 overview: kitting and assembly stations, robots, sensors, orders.
 - ROS 2 refresher: lifecycle nodes, TF2 transforms, QoS profiles, executors.
 - Diagnostic quiz (ungraded): ROS 2 basics from the prerequisite list.
 

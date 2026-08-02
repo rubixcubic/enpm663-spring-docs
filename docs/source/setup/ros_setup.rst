@@ -4,9 +4,8 @@ ROS 2 Development Environment
 
 .. _setup-ros:
 
-ROS 2 is required starting in **Week 10**. The instructions below are
-for **ROS 2 Jazzy Jalisco** on **Ubuntu 24.04**. If you are using
-Ubuntu 22.04, install **ROS 2 Iron Irwini** instead.
+ROS 2 is required from **Week 1**. The instructions below are for **ROS 2 Jazzy
+Jalisco** on **Ubuntu 24.04**, which is the distribution ARIAC 2025 targets.
 
 
 Set Locale
@@ -171,7 +170,8 @@ receiving them. Press ``Ctrl + C`` in both terminals to stop.
 Gazebo (Simulation)
 -------------------
 
-Gazebo is required for the Group Projects (GP1--GP3). Install it with:
+Gazebo Harmonic is required for the team projects and for ARIAC. Install the
+ROS 2 Jazzy integration with:
 
 .. code-block:: bash
 

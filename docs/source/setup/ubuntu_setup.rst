@@ -2,8 +2,9 @@
 Ubuntu Installation
 ====================================================
 
-This course requires **Ubuntu Desktop 24.04 LTS** (Noble Numbat).
-Ubuntu 22.04 LTS (Jammy Jellyfish) is also supported.
+This course requires **Ubuntu Desktop 24.04 LTS** (Noble Numbat). This is the
+version ARIAC 2025 and ROS 2 Jazzy target; earlier Ubuntu releases are not
+supported.
 
 
 Installation Options
@@ -22,7 +23,6 @@ Installation Options
         Follow the official installation guide for your version:
 
         - `Install Ubuntu 24.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop>`_
-        - `Install Ubuntu 22.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop-2204>`_
 
         .. warning::
 
@@ -45,7 +45,6 @@ Installation Options
         3. Follow the official installation guide:
 
            - `Install Ubuntu 24.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop>`_
-           - `Install Ubuntu 22.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop-2204>`_
 
         .. tip::
 
@@ -62,7 +61,6 @@ Installation Options
         on this machine.
 
         - `Install Ubuntu 24.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop>`_
-        - `Install Ubuntu 22.04 LTS <https://ubuntu.com/tutorials/install-ubuntu-desktop-2204>`_
 
 
 .. note::
