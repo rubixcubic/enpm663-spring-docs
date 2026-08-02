@@ -189,15 +189,24 @@ commits, not here.*
   `docs/source/lectures/week01_ros2_refresher/`. Before starting, settle the Beamer
   slide-deck location convention (see Section 6, "Lecture slide decks").
 - **Open follow-ups (not blocking Week 1):**
-  - Late-penalty schedule is still a TODO inside `syllabus.md`.
+  - Late-penalty schedule: filled 2026-08-02 with a proposed default (10% per calendar
+    day, up to 3 days, no credit after). Rob to confirm or adjust.
+  - `syllabus.pdf` is generated from `syllabus.md` via pandoc + xelatex (repo root,
+    11 pages). Regenerate after editing `syllabus.md`:
+    `pandoc syllabus.md -o syllabus.pdf --pdf-engine=xelatex -V geometry:margin=1in`
+    `-V fontsize=11pt -V colorlinks=true -V linkcolor=RoyalBlue -V urlcolor=RoyalBlue`
+    `-V documentclass=article --toc --toc-depth=2`. Do NOT use pdflatex (pandoc's
+    default template pulls in `lmodern`, which is not installed; xelatex avoids it).
+  - Still TODO inside `syllabus.md` (cannot be filled without UMD info): Spring 2027
+    course dates, weekly meeting time, and classroom (all marked `TODO: verify`).
   - Team contract document (signed by teams at formation in Week 3) recommended but
     not yet drafted. Reinforces the peer-review system.
   - PT5 specific challenge selection and live-demo grading rubric to be written when
     PT5 is detailed (target: before PT4 begins, so teams can plan ahead).
-  - Eventually port `syllabus.md` into the Sphinx site and retire the 2025
-    `syllabus.rst`.
-  - Decide whether to keep the `syllabus_spring2027_enpm663.pdf` in the repo or
-    delete once `syllabus.md` is the unambiguous source.
+  - Site syllabus page (`syllabus/syllabus.rst`) is now an ENPM663 at-a-glance; a full
+    port/render of `syllabus.md` into the Sphinx site is still deferred.
+  - The obsolete `syllabus_spring2027_enpm663.pdf` (v1) is now superseded by the
+    generated `syllabus.pdf`; safe to delete once Rob confirms.
 
 ---
 

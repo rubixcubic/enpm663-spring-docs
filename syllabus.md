@@ -111,9 +111,9 @@ background. The quiz is ungraded.
 - Class meetings combine lecture and in-class exercises. Bring a laptop to every
   meeting. Class attendance and active participation are not graded but are strongly
   encouraged.
-- Late submissions incur a grading penalty (TODO: specify penalty schedule).
-  Extensions are granted only when more than one team needs additional time on a
-  submission.
+- Late submissions are penalized 10% of the team project's grade per calendar day
+  late, up to 3 days; submissions more than 3 days late receive no credit. Extensions
+  are granted only when more than one team needs additional time on a submission.
 - No quizzes or team projects will be dropped. PT5 (the capstone) is required; there
   is no alternative to PT5's grade.
 - PT5 is evaluated on an unseen ARIAC scenario. Teams run their integrated system in
@@ -201,7 +201,7 @@ Unified Planning Framework), BT executor that consumes plans, demo on 2 to 3 ARI
 kitting scenarios (one of which triggers a re-plan), and a brief reflection on what
 PDDL captures well vs. where it strains.
 
-### PT4: LLM-Based Task Planner with VLM Grounding (Extends PT3)
+### PT4: LLM Agent for Task Planning with VLM Grounding (Extends PT3)
 
 **Hand-out:** Week 10 / **Due:** Week 13 / **Weight:** 10%
 
