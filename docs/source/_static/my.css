@@ -244,7 +244,7 @@ html[data-theme="light"] {
   --pst-color-on-surface: #2B2620;
 
   --pst-color-text-base: #2B2620;
-  --pst-color-text-muted: #6F665A;
+  --pst-color-text-muted: #6C6358;  /* was #6F665A: 4.43:1 on #EBE3D5 rows */
   --pst-color-border: #DDD3C2;
   --pst-color-border-muted: rgba(43, 38, 32, 0.2);
   --pst-color-table-inner-border: #DDD3C2;
@@ -273,6 +273,9 @@ html[data-theme="light"] {
   --pst-color-success-bg: #DDEFD6;
   --pst-color-warning: #8F6A00;
   --pst-color-warning-bg: #F6EBC8;
+  /* Badge text on the gold: the theme default ink #14181e gives 3.59:1;
+     the sheet color gives 4.88:1 (WCAG AA needs 4.5:1). */
+  --pst-color-warning-text: #FFFDF8;
   --pst-color-danger: #A3322B;
 }
 
@@ -285,7 +288,7 @@ html[data-theme="light"] .highlight pre {
 
 /* Reading-material entries in the course schedule (distinct color + italic). */
 .reading {
-  color: #1a7f37;
+  color: #187332;  /* was #1a7f37: 3.99:1 on striped rows; now 4.66 */
   font-style: italic;
 }
 html[data-theme="dark"] .reading {
@@ -299,7 +302,7 @@ html[data-theme="dark"] .reading {
 
 /* Quiz entries in the course schedule (distinct color + bold). */
 .quiz {
-  color: #8250df;
+  color: #7740DC;  /* was #8250df: 3.96:1 on striped rows; now 4.64 */
   font-weight: bold;
 }
 html[data-theme="dark"] .quiz {
@@ -314,7 +317,7 @@ html[data-theme="dark"] .quiz {
 /* Assignment (setup and GP) posted and due entries in the course schedule
    (distinct color + bold). */
 .assignment {
-  color: #bc4c00;
+  color: #AA4500;  /* was #bc4c00: 3.95:1 on striped rows; now 4.63 */
   font-weight: bold;
 }
 html[data-theme="dark"] .assignment {
