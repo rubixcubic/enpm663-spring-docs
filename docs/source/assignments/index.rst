@@ -9,8 +9,9 @@ The final project is the capstone of ENPM663. Your team builds an
 **agentic system for the ARIAC 2025 factory**: an LLM agent, grounded by a
 vision-language model, that decides what the robots do next while a
 behavior tree and classical robot skills carry it out. Working in teams of 3
-students, you build it through four cumulative group projects, then run it
-live on an ARIAC trial your team has never seen.
+students, you build it through four cumulative group projects. For the final
+demo, the instructor runs your system's Docker image on an ARIAC trial your
+team has never seen.
 
 The project spans **14 weeks**, from GP1 in Week 2 to the final demo in
 Week 15. Each group project builds on the previous one.
@@ -67,13 +68,13 @@ Each group project extends your team's system from the previous one:
 
    GP1: Behavior tree      ->  One kit built and shipped by a py_trees_ros tree
        |
-   GP2: Inspection         ->  Cameras, defect detection, inspection reports
+   GP2: Inspection         ->  Lidar, defect detection, inspection reports
        |
    GP3: PDDL + executor    ->  Plans for Task 1, run by a plan-to-BT executor
        |
    GP4: LLM agent + VLM    ->  An agent in place of the planner, handling the
        |                       ARIAC challenges
-   Final demo              ->  Task 1 and Task 2 on an unseen trial, live
+   Final demo              ->  Task 1 and Task 2 on an unseen trial
 
 .. important::
 
@@ -86,8 +87,9 @@ The Course Skills Package
 
 ARIAC 2025 gives each robot a joint trajectory action and a gripper action,
 but no pick or place skills. The course provides them: a Python ROS 2
-package, built on MoveIt 2, with skills such as picking a cell, placing it
-and moving an AGV. It is published with GP1.
+package, built on MoveIt 2, with skills such as picking a cell and placing
+it. It is published with GP1. Your team moves the AGVs with ARIAC's own AGV
+move action.
 
 - In GP1 to GP3, your behavior tree calls the skills.
 - In GP4, your LLM agent calls the same skills as tools.
@@ -101,15 +103,15 @@ By completing the final project, you will be able to:
 
 - Build behavior trees in ``py_trees_ros`` that run robot skills and recover
   from failures.
-- Detect defects on battery cells from camera images and report inspection
-  results through ROS 2.
+- Detect defects on battery cells from lidar point clouds and report
+  inspection results through ROS 2.
 - Write a PDDL domain for a factory task and execute its plans through a
   behavior tree.
 - Build an LLM agent that calls robot skills as tools and returns structured
   output checked against a JSON schema.
 - Ground the agent's decisions in VLM descriptions of the camera images.
-- Use a hosted embodied-reasoning model for one perception step and measure
-  it against a classical pipeline.
+- Use a hosted embodied-reasoning model to judge cell defects from camera
+  images, and measure it against your lidar detector.
 - Evaluate an agentic system with the ARIAC scoring formula and your own
   metrics.
 - Package a ROS 2 solution in a Dockerfile.
@@ -159,7 +161,9 @@ Task 2 (module construction), and handles the ARIAC challenges:
    * - Conveyor malfunction
      - The inspection conveyor stops operating.
    * - Voltage tester malfunction
-     - One or both voltage testers stop providing data.
+     - One or both voltage testers stop providing data. (In the ARIAC 2025
+       code, a tester keeps publishing a voltage of -1 with the status
+       MALFUNCTIONING.)
    * - Vacuum tool malfunction
      - The vacuum gripper fails to grasp objects.
    * - High-priority order
@@ -168,10 +172,12 @@ Task 2 (module construction), and handles the ARIAC challenges:
 **Final Deliverables:**
 
 1. **Integrated system:** GP1 to GP4 running end to end from a Dockerfile.
-2. **Physical AI step:** one perception step done by a hosted
-   embodied-reasoning model, measured against your GP2 pipeline.
-3. **Live demo:** your system runs a trial unseen until the demo, and the
-   run is scored.
+2. **Physical AI step:** a hosted embodied-reasoning model judges cell
+   defects from camera images over the inspection conveyor, scored with
+   precision and recall on the same cells as your GP2 lidar detector.
+3. **Evaluation run:** before the Week 15 class, the instructor runs your
+   Docker image, built from your code-freeze tag, on a trial no team has
+   seen, on the same machine as every other team, and the run is scored.
 4. **Presentation (5 to 7 minutes):** architecture, design decisions, failure
    modes you met and how you handled them.
 5. **Peer evaluation:** individual contribution assessment.

@@ -44,7 +44,7 @@ Students enrolling in ENPM663 must have:
 .. note::
 
    L1 includes a short refresher on the ROS 2 topics this course uses most
-   (lifecycle nodes, TF2, QoS and executors), and an ungraded diagnostic
+   (QoS, executors, actions and TF2), and an ungraded diagnostic
    quiz so you can check your own ROS 2 background.
 
 
@@ -162,8 +162,8 @@ Course Resources
 
 **Course Code**
 
-The course skills package (Python ROS 2 actions for picking, placing and
-moving parts with MoveIt 2) and the GP starter code are published with GP1.
+The course skills package (Python ROS 2 actions for picking and placing parts
+with MoveIt 2) and the GP starter code are published with GP1.
 The :doc:`ARIAC Testbed </ariac/ariac>` pages show how to install
 everything else.
 

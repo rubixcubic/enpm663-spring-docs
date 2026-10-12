@@ -33,7 +33,7 @@ Prerequisites
    :class: tip
 
    L1 includes a refresher on the ROS 2 topics this course uses most
-   (lifecycle nodes, TF2, QoS and executors) and an **ungraded diagnostic
+   (QoS, executors, actions and TF2) and an **ungraded diagnostic
    quiz**. Read the ROS 2 Refresher pre-read before L1, and talk to the
    instructor in Week 1 if the diagnostic shows gaps.
 
@@ -486,10 +486,17 @@ cumulative group projects (GP1 to GP4) and a final demo. Each GP extends
 your team's system from the previous one, so that by the final demo your
 team has an LLM agent that runs a full ARIAC 2025 trial.
 
-The robots move through the **course skills package**: Python ROS 2 actions
-for picking, placing and moving parts, built on MoveIt 2 and provided with
+The robot arms move through the **course skills package**: Python ROS 2
+actions for picking and placing parts, built on MoveIt 2 and provided with
 GP1. Your team decides what the robots do; the skills package carries it
-out. L10 shows how the skills are built.
+out. L10 shows how the skills are built. Your team moves the AGVs with
+ARIAC's own AGV move action.
+
+In ARIAC 2025, a cell on the inspection conveyor reaches the inspection
+robot only if your team has submitted a passing inspection report for it.
+A cell with a failing report, or with no report, is pushed into the
+inspection bin. So every project submits an inspection report for every
+cell.
 
 .. list-table::
    :header-rows: 1
@@ -510,8 +517,8 @@ out. L10 shows how the skills are built.
      - Week 5
      - Week 7
      - 10%
-     - Cameras within the sensor budget, defect detection, inspection
-       reports; the GP1 tree recycles failed cells.
+     - Lidar within the sensor budget, defect detection from point clouds,
+       an inspection report for every cell.
    * - GP3: PDDL Planner and BT Executor
      - Week 7
      - Week 10
@@ -528,20 +535,26 @@ out. L10 shows how the skills are built.
      - Week 12
      - Week 15
      - 20%
-     - GP1 to GP4 integrated for Task 1 and Task 2, run live on an unseen
-       trial, with a presentation.
+     - GP1 to GP4 integrated for Task 1 and Task 2, run by the instructor
+       from your Docker image on an unseen trial, with a presentation.
 
 **GP1: Behavior Tree for One Kit.** Build a ``py_trees_ros`` behavior tree
-that builds one kit: feed cells onto the inspection conveyor, read their
-voltages, recycle the cells outside the voltage range, place four cells on
-an AGV tray, move the AGV to shipping and submit the kit. The leaves call
-the course skills package and the ARIAC services. No defect detection yet.
+that builds one kit: feed cells onto the inspection conveyor, submit a
+passing inspection report for each cell, read their voltages, recycle the
+cells outside the voltage range, place four cells on an AGV tray, move the
+AGV to shipping and submit the kit. The leaves call the course skills
+package and the ARIAC services. No defect detection yet. GP1 comes with a
+starter tree: Weeks 2 and 3 go to setup, the skills package and the ARIAC
+services, and the tree work follows L4 (Week 4).
 
-**GP2: Cell Inspection.** Place RGB cameras within the ARIAC sensor budget
-and detect dents, scratches and bulges with OpenCV. Combine the defects with
-the voltage readings into an inspection report for each cell, and report
-the precision and recall of your detector. The GP1 tree now recycles
-defective cells.
+**GP2: Cell Inspection.** Place lidar sensors around the inspection
+conveyor within the ARIAC sensor budget, as ARIAC 2025 requires, and detect
+dents, scratches and bulges from the point clouds. Submit an inspection
+report for each cell before it reaches the inspection door: a failing
+report sends the cell into the inspection bin. The GP1 tree then reads the
+voltage of each cell that passes and places or recycles it. Keep one record
+per cell that joins the two checks, and report the precision and recall of
+your detector.
 
 **GP3: PDDL Planner and BT Executor.** Write a PDDL domain for Task 1 with
 the two inspection robots and the AGVs, and execute its plans through a
@@ -553,14 +566,17 @@ problem, so it is a separate selection step.
 agent that calls the robot skills as tools (through MCP if you choose) and
 returns structured output checked against a JSON schema. A VLM describes
 the cells for the agent. Test the agent on the situations GP3's domain does
-not model: a conveyor malfunction, a voltage tester malfunction, a vacuum
-tool malfunction and high-priority orders. Compare it with GP3 on the same
-trials.
+not model: a conveyor malfunction, a voltage tester malfunction and
+high-priority orders. (The vacuum tool malfunction affects only Task 2, so
+the final demo tests it.) Compare it with GP3 on the same trials.
 
 **Final demo.** Integrate GP1 to GP4 into one system that runs a full trial,
-Task 1 and Task 2 (the assembly robots and the gantry welder). One
-perception step uses a hosted embodied-reasoning model, measured against
-your GP2 pipeline. The trial used for grading is unseen until the demo.
+Task 1 and Task 2 (the assembly robots and the gantry welder). A hosted
+embodied-reasoning model judges cell defects from camera images over the
+inspection conveyor, and is scored with precision and recall on the same
+cells as your GP2 lidar detector. The trial used for grading is unseen:
+before the Week 15 class, the instructor runs every team's Docker image on
+it, on one machine, and each team presents with its recorded run.
 Each team presents for 5 to 7 minutes: architecture, design decisions,
 failure modes met and how they were handled. Your solution runs from a
 Dockerfile, as ARIAC requires.

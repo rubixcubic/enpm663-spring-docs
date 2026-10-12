@@ -24,7 +24,8 @@ By the end of this lecture, you will be able to:
 - Explain what a VLA model is and how it differs from the modular stack built
   in this course.
 - Describe the two-system design (a slow reasoning model above a fast control
-  policy) used by many current VLAs.
+  policy) used by many current VLAs, and compare it with the course's three
+  layers: it has no executive layer that checks each step.
 - Explain what robot foundation models and world models are used for:
   generalizing across tasks, generating training data, testing in simulation.
 - Compare a learned policy and a skills library for a factory task on data
@@ -63,7 +64,8 @@ ARIAC Tie-in
 
 ARIAC 2025 has no learned policies, and the final demo does not need one. The
 final demo does use one physical AI model: a hosted embodied-reasoning model
-for one perception step, measured against your GP2 pipeline.
+judges cell defects from camera images, scored with precision and recall on
+the same cells as your GP2 lidar detector.
 
 
 Starting References

@@ -7,9 +7,10 @@ Overview
 
 Every layer of an agentic robot system exchanges a model of the world, the
 task and the robot's own state. This lecture covers the formalisms that make
-those models precise: frames, ontologies, and hierarchical task and world
-models (4D/RCS). The examples use the ARIAC 2025 factory: battery cells,
-kits, modules, AGV stations and high-priority orders.
+those models precise: frames and ontologies, and two ideas from NIST's
+4D/RCS reference model that the course uses inside the three-layer
+architecture from L2. The examples use the ARIAC 2025 factory: battery
+cells, kits, modules, AGV stations and high-priority orders.
 
 
 Learning Objectives
@@ -21,7 +22,9 @@ By the end of this lecture, you will be able to:
   planners all consume the same world model.
 - Apply frame-based representations to ARIAC cells, kits and modules.
 - Describe ontologies and their role in connecting perception to planning.
-- Distinguish hierarchical representations (4D/RCS) from flat ones.
+- Explain two ideas taken from 4D/RCS, a world model at each layer and
+  errors handled where they are seen with status passed up, and apply them
+  to the three layers of the ARIAC stack.
 - Map one representation onto its consumers: PDDL predicates, a JSON schema
   for an LLM, and a VLM scene description.
 
@@ -41,7 +44,8 @@ Planned Topics
   needs predicates, the executor needs typed action arguments.
 - Frame-based representations: slots, fillers, default values, inheritance.
 - Ontologies: classes, relations, instances.
-- Hierarchical task and world models (4D/RCS).
+- A world model at each layer, and errors that move up: two ideas from
+  4D/RCS, applied to the three layers of the ARIAC stack.
 - ARIAC representations: a cell (Li-Ion or Ni-MH, voltage, defects), a kit
   (four cells on a tray, the kit voltage tolerance), a module (shells, cells,
   welds), AGV stations, high-priority orders.
@@ -53,7 +57,7 @@ ARIAC Tie-in
 One kit representation serves three consumers later in the semester: GP3's
 PDDL planner reads it as typed predicates, GP4's LLM agent reads it as a JSON
 schema, and the final demo's recovery logic updates it when a cell fails
-inspection or a tester stops reporting. A representation that all three can
+inspection or a tester stops giving valid readings. A representation that all three can
 use is the difference between an integrated system and a brittle one.
 
 
@@ -63,6 +67,9 @@ Starting References
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
 - ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
 - ARIAC 2025 scenario: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scenario.html
+- J. Albus et al., *4D/RCS: A Reference Model Architecture for Unmanned
+  Vehicle Systems, Version 2.0*, NISTIR 6910, NIST, 2002:
+  https://doi.org/10.6028/NIST.IR.6910
 - Source material: ``Lectures_export/KR-Lecture-Spring2023.pptx`` (NIST 4D/RCS examples to be re-anchored to ARIAC).
 
 

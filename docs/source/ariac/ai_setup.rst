@@ -72,7 +72,7 @@ Embodied-Reasoning Model (Final Demo)
 -------------------------------------
 
 The final demo uses a hosted embodied-reasoning model for one perception
-step, for example Google's Gemini Robotics-ER through the Gemini API. These
+step, for example Google's Gemini Robotics ER through the Gemini API. These
 models answer spatial questions about an image (where a part is, which
 cell looks damaged) and are part of what the industry calls physical AI.
 Access and cost details are posted with the final demo specification.

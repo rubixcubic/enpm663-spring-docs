@@ -8,9 +8,9 @@ Overview
 This lecture introduces ENPM663 and what this course means by agentic
 physical AI: an AI agent decides what a robot cell does next, and classical
 robot skills carry it out. It walks through the ARIAC 2025 testbed, a
-simulated EV battery factory, and how a trial is scored. The second half
-refreshes the ROS 2 topics the course uses most: lifecycle nodes, TF2, QoS
-profiles and executors. An ungraded diagnostic quiz at the start of class
+simulated EV battery factory, and what a trial's score rewards. The second
+half refreshes the ROS 2 topics the course uses most: QoS profiles,
+executors, actions and TF2. An ungraded diagnostic quiz at the start of class
 shows you, and the instructor, where your ROS 2 background stands.
 
 
@@ -24,10 +24,11 @@ By the end of this lecture, you will be able to:
 - Explain what physical AI and agentic AI mean, and which part of an agentic
   robot system this course builds.
 - Describe the ARIAC 2025 factory: its two tasks, its robots and sensors, and
-  how a trial is scored.
+  what a trial's score rewards (L12 teaches the scoring formula).
 - Recall the ROS 2 Python APIs for publishers, subscribers, services and
   actions.
-- Use lifecycle nodes, TF2, QoS profiles and executors in Python.
+- Use QoS profiles, executors, actions (goal, feedback, cancel, result) and
+  TF2 in Python.
 - Identify gaps in your own ROS 2 background with the diagnostic quiz.
 
 
@@ -49,7 +50,7 @@ Planned Topics
 - ARIAC 2025: Task 1 (inspection and kit building) and Task 2 (module
   construction); the inspection robots, assembly robots, gantry welder and
   AGVs; sensors bought from a budget; the challenges; how a trial is scored.
-- ROS 2 refresher: lifecycle nodes, TF2 transforms, QoS profiles, executors.
+- ROS 2 refresher: QoS profiles, executors, actions, TF2 transforms.
 - Diagnostic quiz (ungraded): the ROS 2 prerequisites.
 
 
@@ -57,9 +58,10 @@ ARIAC Tie-in
 ------------
 
 Trace one battery cell through the factory: the inspection conveyor feeds
-it, a voltage tester reads it, your node submits an inspection report, a robot
-places it in a kit on an AGV tray, and the AGV takes the kit to shipping. Each
-step is a ROS 2 topic, service or action in the ARIAC API.
+it, your node submits an inspection report before the inspection door, a
+robot places it in a voltage tester, the tester reads it, another robot
+places it in a kit on an AGV tray, and the AGV takes the kit to shipping.
+Each step is a ROS 2 topic, service or action in the ARIAC API.
 
 
 Starting References

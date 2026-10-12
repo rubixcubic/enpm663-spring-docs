@@ -42,9 +42,20 @@ Overview
 
 GP1 builds the behavior tree that every later project extends. Your tree
 builds one kit in the ARIAC 2025 factory: it feeds cells onto the inspection
-conveyor, reads their voltages, recycles the cells outside the voltage range,
-places four cells on an AGV tray, moves the AGV to shipping and submits the
-kit. No defect detection yet: GP2 adds it.
+conveyor, submits a passing inspection report for each cell, reads their
+voltages, recycles the cells outside the voltage range, places four cells on
+an AGV tray, moves the AGV to shipping and submits the kit. No defect
+detection yet: GP2 adds it.
+
+.. important::
+
+   A cell reaches the inspection robot only if your team has submitted a
+   passing inspection report for it. A cell with no report is pushed into the
+   inspection bin. In GP1, with no defect detection, every report says the
+   cell passed.
+
+GP1 comes with a starter tree. Spend Weeks 2 and 3 on setup, the skills
+package and the ARIAC services; write the tree after L4 (Week 4).
 
 
 Learning Objectives
@@ -59,17 +70,19 @@ Learning Objectives
 Provided Resources
 ------------------
 
-- The course skills package (pick, place, move an AGV), built on MoveIt 2.
-- A starter ROS 2 package with a launch file for the trial.
+- The course skills package (pick and place for the robot arms), built on MoveIt 2.
+- A starter ROS 2 package with a launch file for the trial, and a starter
+  ``py_trees_ros`` tree that you extend after L4.
 - The ARIAC 2025 example team configuration.
 
 
 Tasks
 -----
 
+- Submit a passing inspection report for each cell before it reaches the inspection door.
 - Read the voltage of each fed cell and decide whether it can go in a kit.
 - Place four acceptable cells on an AGV tray with the skills package.
-- Move the AGV to shipping and submit the kit.
+- Move the AGV to shipping with ARIAC's AGV move action and submit the kit.
 - Handle a skill that fails once (retry) and one that keeps failing (stop cleanly).
 
 

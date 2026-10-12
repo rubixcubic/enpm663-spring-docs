@@ -5,7 +5,7 @@ ARIAC Testbed
 ARIAC (Agile Robotics for Industrial Automation Competition) is a NIST
 competition and simulator for factory robotics. This course uses **ARIAC
 2025**: a simulated EV battery factory with two inspection robots, two
-assembly robots, a gantry welder and four AGVs. Teams inspect battery cells,
+assembly robots, a gantry welder and three AGVs. Teams inspect battery cells,
 build kits of four cells, and assemble and weld battery modules.
 
 .. note::

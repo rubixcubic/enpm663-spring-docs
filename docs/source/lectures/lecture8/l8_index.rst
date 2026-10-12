@@ -67,9 +67,10 @@ ARIAC Tie-in
 ------------
 
 GP4 wraps this loop around the ARIAC factory. The agent's tools are the
-skills GP3's executor already runs (pick a cell, place it, move an AGV,
-submit a kit), so the agent decides the next action and the classical
-executor carries it out.
+actions GP3's executor already runs (pick a cell and place it with the
+skills package, move an AGV and submit a kit through the ARIAC interfaces),
+so the agent decides the next action and the classical executor carries it
+out.
 
 
 Starting References

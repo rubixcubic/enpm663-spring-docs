@@ -6,10 +6,54 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.2.0: New Title, New Site Layout, ARIAC 2025 Factory (2026-10-11)
+.. dropdown:: v0.3.0: Lidar Inspection, Instructor-Run Final Demo, Refresher Topics (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Group projects
+
+   - **GP2 uses lidar.** Teams find dents, scratches and bulges from lidar
+     point clouds, as ARIAC 2025 requires, instead of RGB cameras and OpenCV.
+   - **Inspection reports for every cell, from GP1 on.** A cell reaches the
+     inspection robot only after a passing report; a cell with a failing
+     report, or none, goes into the inspection bin.
+   - **GP1 comes with a starter tree.** Weeks 2 and 3 go to setup, the skills
+     package and the ARIAC services; the tree work follows L4.
+   - **AGV moves:** teams call ARIAC's AGV move action themselves. The skills
+     package covers the robot arms.
+   - **GP4** tests the conveyor and voltage tester malfunctions and
+     high-priority orders. The vacuum tool malfunction is tested in the final
+     demo, where Task 2 runs.
+   - **Final demo:** before the Week 15 class, the instructor runs every team's
+     Docker image on the same unseen trial, on one machine. Class time is for
+     presentations with the recorded runs. The embodied-reasoning model judges
+     cell defects from camera images and is scored against the GP2 lidar
+     detector on the same cells.
+
+   .. rubric:: Lectures
+
+   - **L1:** the ROS 2 refresher covers QoS, executors, actions and TF2.
+     Lifecycle nodes move to the pre-read. The scoring formula is taught in
+     L12.
+   - **L3:** two ideas from NIST's 4D/RCS reference model (a world model at
+     each layer; errors handled where they are seen), used inside the
+     three-layer architecture from L2.
+   - **L5 and L10:** the camera model moves from L5 to L10; L5 covers lidar
+     point clouds for GP2.
+   - **Facts checked against the ARIAC 2025 source:** three AGVs, six welds,
+     and a voltage tester that keeps publishing (voltage -1, status
+     MALFUNCTIONING) when it malfunctions.
+
+   .. rubric:: Syllabus and site
+
+   - The syllabus, project pages, lecture pages and setup pages are updated to
+     match.
+
+
+.. dropdown:: v0.2.0: New Title, New Site Layout, ARIAC 2025 Factory (2026-10-11)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Course
 

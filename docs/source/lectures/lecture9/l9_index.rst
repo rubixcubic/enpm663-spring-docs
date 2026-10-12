@@ -45,7 +45,7 @@ Planned Topics
 --------------
 
 - VLMs in 2026: hosted multimodal APIs (Claude, GPT, Gemini), local models
-  (Qwen-VL, LLaVA), and embodied-reasoning models (Gemini Robotics-ER) that
+  (Qwen-VL, LLaVA), and embodied-reasoning models (Gemini Robotics ER) that
   answer spatial questions about an image.
 - Scene description prompts: from "describe the image" to "list each cell, its
   defects and its slot".
@@ -65,7 +65,7 @@ ARIAC Tie-in
 GP4 builds this loop on ARIAC: a VLM describes the cells for an LLM agent,
 and the agent drives GP3's executor. GP4 tests it on the situations GP3's
 PDDL domain does not model: a conveyor malfunction, a voltage tester that
-stops reporting, a vacuum tool that fails to grasp, and high-priority orders.
+stops giving valid readings, a vacuum tool that fails to grasp, and high-priority orders.
 The agent calls the course skills package, so GP4 needs no MoveIt 2 code;
 L10 opens up the motion layer underneath.
 

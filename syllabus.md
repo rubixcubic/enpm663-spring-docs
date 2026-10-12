@@ -37,7 +37,7 @@ models, robot foundation models and world models.
 Students entering this course are expected to have working knowledge of ROS 2
 (publishers and subscribers, services, actions, parameters, launch files). Week 1
 provides a refresher on the ROS 2 topics most directly used in the course
-(lifecycle nodes, TF2, QoS, executors). A significant amount of Python
+(QoS, executors, actions, TF2). A significant amount of Python
 programming is required.
 
 All project work is team-based. There are no individual assignments. See the
@@ -125,9 +125,11 @@ background. The quiz is ungraded.
   submission.
 - No quiz or group project is dropped. The final demo is required; nothing
   replaces its grade.
-- The final demo runs your team's system live, in class, on an ARIAC trial your
-  team has not seen, and the run is graded. Each team also presents its
-  approach, design decisions and results.
+- The final demo is graded on an ARIAC trial your team has not seen. Before the
+  Week 15 class, the instructor runs every team's Docker image, built from its
+  code-freeze tag, on that trial on one machine, so every team gets the same
+  hardware. In class, each team presents its approach, design decisions and
+  results, with its recorded run.
 - All projects use a peer-review system. Each team member rates the contributions
   of the other team members after each group project and after the final demo.
   See [Peer-Review Contribution](#peer-review-contribution-15-of-grade).
@@ -157,7 +159,8 @@ background. The quiz is ungraded.
 
 - **Final Project.** Four cumulative group projects (GP1 to GP4) and a final demo
   that build an agentic system for the ARIAC 2025 factory. The final demo is
-  graded live on an unseen ARIAC trial. Detailed instructions and submission
+  graded on an unseen ARIAC trial, run by the instructor from your team's
+  Docker image. Detailed instructions and submission
   guidelines are provided for each project. See the [Course Outline](#course-outline)
   for the schedule.
 - **Quizzes.** Quizzes assess your understanding of course material. They are
@@ -171,20 +174,28 @@ background. The quiz is ungraded.
 
 ## Final Project Descriptions
 
-The robots move through the **course skills package**: Python ROS 2 actions for
-picking, placing and moving parts, built on MoveIt 2 and provided with GP1. Teams
+The robot arms move through the **course skills package**: Python ROS 2 actions
+for picking and placing parts, built on MoveIt 2 and provided with GP1. Teams
 decide what the robots do; the skills package carries it out. ARIAC 2025 itself
-provides joint trajectory and gripper actions, but no pick or place skills.
+provides joint trajectory and gripper actions, but no pick or place skills. Teams
+move the AGVs with ARIAC's own AGV move action.
+
+In ARIAC 2025, a cell on the inspection conveyor reaches the inspection robot only
+if your team has submitted a passing inspection report for it. A cell with a
+failing report, or with no report, is pushed into the inspection bin. So every
+project submits an inspection report for every cell.
 
 ### GP1: Behavior Tree for One Kit
 
 **Posted:** Week 2 / **Due:** Week 5 / **Weight:** 10%
 
 Build a `py_trees_ros` behavior tree that builds one kit: feed cells onto the
-inspection conveyor, read their voltages, recycle the cells outside the voltage
-range, place four cells on an AGV tray, move the AGV to shipping and submit the
-kit. The leaves call the course skills package and the ARIAC services. No defect
-detection yet.
+inspection conveyor, submit a passing inspection report for each cell, read their
+voltages, recycle the cells outside the voltage range, place four cells on an AGV
+tray, move the AGV to shipping and submit the kit. The leaves call the course
+skills package and the ARIAC services. No defect detection yet. GP1 comes with a
+starter tree: Weeks 2 and 3 go to setup, the skills package and the ARIAC
+services, and the tree work follows L4 (Week 4).
 
 **Deliverable:** ROS 2 package with a launchable behavior tree, plus a short
 write-up (1 to 2 pages) with the tree diagram and the reason for each composite
@@ -194,10 +205,12 @@ choice.
 
 **Posted:** Week 5 / **Due:** Week 7 / **Weight:** 10%
 
-Place RGB cameras over the inspection conveyor within the ARIAC sensor budget and
-detect dents, scratches and bulges with OpenCV. Combine the defects with the
-voltage readings into an inspection report for each cell. The GP1 tree then
-recycles defective cells.
+Place lidar sensors around the inspection conveyor within the ARIAC sensor budget,
+as ARIAC 2025 requires, and detect dents, scratches and bulges from the point
+clouds. Submit an inspection report for each cell before it reaches the inspection
+door: a failing report sends the cell into the inspection bin. The GP1 tree then
+reads the voltage of each cell that passes and places or recycles it. Keep one
+record per cell that joins the two checks.
 
 **Deliverable:** Perception package, the updated tree, and a results table with
 precision and recall per defect type and the sensor cost.
@@ -225,8 +238,8 @@ Replace the PDDL planner with an LLM agent that calls the robot skills as tools
 (through MCP if the team chooses) and returns structured output checked against a
 JSON schema. A VLM describes the cells for the agent. The same executor from GP3
 runs its decisions. Test the agent on the situations GP3's domain does not model:
-a conveyor malfunction, a voltage tester malfunction, a vacuum tool malfunction
-and high-priority orders.
+a conveyor malfunction, a voltage tester malfunction and high-priority orders.
+(The vacuum tool malfunction affects only Task 2, so the final demo tests it.)
 
 **Deliverable:** Agent module, VLM module, executor changes, a side-by-side
 comparison with GP3 on identical trials (validity, plan length, cost, latency),
@@ -238,12 +251,16 @@ and a reflection on the agent's failure modes and how they were caught.
 
 Integrate GP1 to GP4 into one system that runs a full ARIAC 2025 trial: Task 1 and
 Task 2 (module construction with the assembly robots and the gantry welder),
-with any of the ARIAC challenges. One perception step uses a hosted
-embodied-reasoning model (for example Gemini Robotics-ER), measured against the
-team's GP2 pipeline. The trial used for grading is unseen until the demo.
+with any of the ARIAC challenges. A hosted embodied-reasoning model (for example
+Gemini Robotics ER) judges cell defects from camera images over the inspection
+conveyor, and is scored with precision and recall on the same cells as the
+team's GP2 lidar detector. The trial used for grading is unseen: before the
+Week 15 class, the instructor runs every team's Docker image on it, on one
+machine.
 
-**Deliverable:** Integrated codebase that runs from a Dockerfile, live demo in
-class (graded on the run), and a short presentation (5 to 7 minutes) covering
+**Deliverable:** Integrated codebase that runs from a Dockerfile (its code-freeze
+tag is what the instructor runs and grades), and a short presentation in class
+(5 to 7 minutes) with the recorded run, covering
 architecture, design decisions, failure modes encountered, and how they were
 handled.
 
@@ -266,7 +283,7 @@ handled.
 | GP2 | 10% | |
 | GP3 | 10% | |
 | GP4 | 10% | |
-| Final demo | 20% | Graded live on an unseen ARIAC trial in Week 15. |
+| Final demo | 20% | Graded on the instructor's run of your Docker image on an unseen ARIAC trial; presented in Week 15. |
 
 There is no final exam.
 

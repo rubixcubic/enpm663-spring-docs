@@ -27,7 +27,8 @@ world models), and the final demo uses one hosted embodied-reasoning model.
 - **Python-primary.** C++ appears only where it is the industry standard (read,
   not write).
 - **Team-only final project.** Four cumulative group projects (GP1 to GP4) and a
-  final demo graded live on an **unseen ARIAC trial**. No individual
+  final demo graded on an **unseen ARIAC trial**, run by the instructor from
+  each team's Docker image. No individual
   assignments and no final exam.
 - **Lectures only.** No in-class exercises and no lab sessions.
 - **Grading.** 60% final project (GP1 to GP4 at 10% each, final demo at 20%) /

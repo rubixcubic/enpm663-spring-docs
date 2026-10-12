@@ -40,18 +40,20 @@ GP2: Cell Inspection
 Overview
 --------
 
-GP2 adds perception. Your team places RGB cameras over the inspection
-conveyor within the ARIAC sensor budget, detects dents, scratches and bulges
-with OpenCV, and combines the defects with the voltage readings into an
-inspection report for each cell. The GP1 tree then recycles the cells that
-fail.
+GP2 adds perception. Your team places lidar sensors around the inspection
+conveyor within the ARIAC sensor budget, as ARIAC 2025 requires, and detects
+dents, scratches and bulges from the point clouds. Each cell gets an
+inspection report before it reaches the inspection door: a failing report
+sends the cell into the inspection bin. The GP1 tree then reads the voltage
+of each cell that passes and places or recycles it. Your team keeps one
+record per cell that joins the two checks.
 
 
 Learning Objectives
 -------------------
 
 - Choose and place sensors within a budget.
-- Detect surface defects on cells from RGB images with OpenCV.
+- Detect surface defects on cells from lidar point clouds.
 - Submit inspection reports through the ARIAC service.
 - Measure a detector with precision and recall.
 
@@ -66,10 +68,10 @@ Provided Resources
 Tasks
 -----
 
-- Place cameras and justify their placement and cost.
+- Place lidar sensors inside ARIAC's bounding boxes and justify their placement and cost.
 - Detect each defect type and report it in the inspection report.
 - Measure precision and recall of your detector on a set of cells.
-- Wire the results into the GP1 tree so defective cells are recycled.
+- Wire the results into the GP1 tree: a failing report keeps a defective cell out of the kit.
 
 
 Deliverables

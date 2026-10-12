@@ -44,8 +44,8 @@ GP4 replaces the PDDL planner with an LLM agent. The agent calls the robot
 skills as tools and returns structured output checked against a JSON schema;
 a VLM describes the cells for it. The same executor from GP3 runs its
 decisions. GP4 tests the agent on the situations GP3's domain does not model:
-a conveyor malfunction, a voltage tester malfunction, a vacuum tool
-malfunction and high-priority orders.
+a conveyor malfunction, a voltage tester malfunction and high-priority orders.
+The vacuum tool malfunction affects only Task 2, so the final demo tests it.
 
 
 Learning Objectives

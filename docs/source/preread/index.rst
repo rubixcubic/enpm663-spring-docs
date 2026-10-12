@@ -20,8 +20,9 @@ read *before* the lecture that assumes it.
      - Why it is here
    * - ROS 2 Refresher
      - Before L1
-     - Lifecycle nodes, TF2, QoS profiles and executors, at the depth the
-       course relies on. Every group project depends on it.
+     - QoS profiles, executors, actions and TF2, at the depth the course
+       relies on, and lifecycle nodes for reference. Every group project
+       depends on it.
    * - PDDL Primer
      - Before L6
      - PDDL domains and problems, typed predicates, and running a planner

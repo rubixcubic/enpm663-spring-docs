@@ -85,7 +85,10 @@ useful for visualizing trees.
 OpenCV (Perception)
 -------------------
 
-Classical perception in GP2 uses OpenCV with the ROS 2 ``cv_bridge``:
+Camera images (L5, the Task 2 top shell, and the VLM in GP4) are handled with
+OpenCV and the ROS 2 ``cv_bridge``. GP2's lidar point clouds need no extra
+install: ``sensor_msgs_py``, which reads them, comes with ``ros-jazzy-desktop``.
+For the camera work:
 
 .. code-block:: bash
 

@@ -54,11 +54,12 @@ Planned Topics
 - The end-to-end alternative: VLA models that map camera images and language
   straight to robot actions (OpenVLA, Physical Intelligence's pi-0, Gemini
   Robotics, Figure's Helix). Many current VLAs are two-system designs, a slow
-  VLM for reasoning above a fast control policy, which mirrors the
-  deliberative and reactive split of this course. Tradeoffs: data and GPU
+  VLM for reasoning above a fast control policy. That matches the
+  deliberative and reactive layers of this course, with no executive layer
+  between them. Tradeoffs: data and GPU
   cost, failure modes that are hard to inspect, and auditability.
 - Multi-robot coordination as a multi-agent problem: ARIAC's two inspection
-  robots, two assembly robots, gantry welder and four AGVs share one workspace
+  robots, two assembly robots, gantry welder and three AGVs share one workspace
   and one set of tasks.
 - Case study: ARIAC 2025 as a three-layer instance.
 

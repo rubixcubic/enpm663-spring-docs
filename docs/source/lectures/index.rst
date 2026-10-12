@@ -37,8 +37,8 @@ table shows the plan. Dates are in the :ref:`course schedule
      - Key Concepts
    * - L1
      - Course Overview and ROS 2 Refresher
-     - Physical AI and agents, the ARIAC 2025 EV battery factory and its
-       scoring, lifecycle nodes, TF2, QoS, executors, diagnostic quiz
+     - Physical AI and agents, the ARIAC 2025 EV battery factory and what
+       its score rewards, QoS, executors, actions, TF2, diagnostic quiz
    * - L2
      - System Architectures for AI-Augmented Robotics
      - Reactive, behavior-based and three-layer architectures; where an LLM
@@ -46,16 +46,16 @@ table shows the plan. Dates are in the :ref:`course schedule
        models; multi-robot coordination
    * - L3
      - Knowledge Representation for AI-Augmented Robotics
-     - Frames, ontologies, 4D/RCS; cells, kits and modules as
-       representations; one model for PDDL, an LLM and a VLM
+     - Frames, ontologies; a world model per layer and errors that move up
+       (from 4D/RCS); one model for PDDL, an LLM and a VLM
    * - L4
      - Behavior Trees for Task Execution
      - Sequence, selector, parallel, decorators; ticks and status;
        blackboards; ``py_trees_ros``
    * - L5
      - Sensing and Perception for Robotic Systems
-     - Sensor choice and budget, OpenCV defect detection, camera model and
-       TF2, inspection reports, precision and recall
+     - Sensor choice and budget, lidar point clouds and defect detection,
+       TF2 in a perception pipeline, inspection reports, precision and recall
    * - L6
      - Task-Level Planning with PDDL
      - Domains and problems, Fast Downward and the Unified Planning
@@ -74,8 +74,8 @@ table shows the plan. Dates are in the :ref:`course schedule
        replanning, when PDDL is the better tool
    * - L10
      - Frames, Transforms, and Motion Planning
-     - TF2 in depth, MoveIt 2, sampling-based planners, parameterized
-       grasps, inside the course skills package
+     - TF2 in depth, the pinhole camera model, MoveIt 2, sampling-based
+       planners, parameterized grasps, inside the course skills package
    * - L11
      - Recovery, Robustness, and Failure Handling for AI-Driven Systems
      - Failure taxonomy, BT recovery structures, LLM and VLM output checks,

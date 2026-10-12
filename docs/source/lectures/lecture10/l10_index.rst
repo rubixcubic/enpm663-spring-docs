@@ -5,7 +5,8 @@ L10: Frames, Transforms, and Motion Planning
 Overview
 --------
 
-This lecture opens up the motion layer: TF2 in depth, the MoveIt 2
+This lecture opens up the motion layer: TF2 in depth, the pinhole camera
+model that turns a camera pixel into a robot target, the MoveIt 2
 architecture, the motion planning pipeline (sampling, collision checking,
 trajectory optimization) and parameterized grasps. It also shows how the
 course skills package that you have called since GP1 is built on MoveIt 2,
@@ -18,6 +19,8 @@ Learning Objectives
 By the end of this lecture, you will be able to:
 
 - Build and reason about a TF2 frame chain for an ARIAC robot cell.
+- Convert a camera pixel on a known plane to a world position with the
+  pinhole camera model, the camera intrinsics and TF2.
 - Describe the MoveIt 2 architecture: ``move_group``, the planning scene, the
   planners.
 - Plan a motion with MoveIt 2 from Python.
@@ -40,6 +43,9 @@ Planned Topics
 
 - TF2 in depth: static and dynamic transforms, frame conventions, lookup
   failures.
+- The pinhole camera model: intrinsics and extrinsics; locating an object on
+  a known plane without a depth camera (the Task 2 top shell on the assembly
+  table).
 - MoveIt 2 architecture: ``move_group``, planning scene, planning pipeline,
   controllers.
 - Sampling-based planners (RRT-Connect, PRM) and when each fits.
@@ -61,6 +67,7 @@ builds pick and place skills on top of these, and this lecture shows how.
 Starting References
 -------------------
 
+- OpenCV documentation (camera images): https://docs.opencv.org/4.x/
 - MoveIt 2 documentation: https://moveit.picknik.ai/main/
 - ROS 2 TF2 tutorials: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/
 - ARIAC 2025 ROS API: https://pages.nist.gov/ARIAC_docs/en/latest/pages/api.html

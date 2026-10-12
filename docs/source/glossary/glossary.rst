@@ -275,7 +275,7 @@ E
    Embodied-reasoning model
       A vision-language model trained to answer spatial questions about a
       scene (where an object is, how to grasp it) and to plan for a robot,
-      often by calling tools. Google DeepMind's Gemini Robotics-ER is one. The
+      often by calling tools. Google DeepMind's Gemini Robotics ER is one. The
       final demo uses one for a perception step. L9 · L13
 
    Executor (ROS 2)
