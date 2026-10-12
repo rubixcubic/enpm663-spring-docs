@@ -6,10 +6,22 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.0: Lecture Pages, Project Pages and Glossary (2026-10-12)
+.. dropdown:: v0.4.1: Project Page Corrections (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Group projects
+
+   - **GP3:** Fast Downward is the planner; the Unified Planning Framework is
+     the Python library that calls it.
+   - **Final demo:** one run of 900 s of simulation takes 900 / 0.37 = 2432 s
+     of wall clock (the page said 2430 s).
+
+
+.. dropdown:: v0.4.0: Lecture Pages, Project Pages and Glossary (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lectures
 

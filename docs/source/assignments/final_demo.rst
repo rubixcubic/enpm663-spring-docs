@@ -104,8 +104,8 @@ times real time in the course's ARIAC container on the instructor's
 development PC (measured while building the skills package). So the 900 s
 of the ARIAC example trial takes:
 
-1. 900 s / 0.37 = 2430 s of wall clock,
-2. 2430 s / 60 = about 41 minutes.
+1. 900 s / 0.37 = 2432 s of wall clock,
+2. 2432 s / 60 = about 41 minutes.
 
 That does not fit a class session with every team. Running every team on
 one machine also keeps the run fair: each team gets the same hardware and

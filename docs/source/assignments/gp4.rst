@@ -176,8 +176,8 @@ Tasks
    .. note::
 
       ARIAC requires lidar for defect detection, and its training defects
-      reach only 0.84 to 2.49 mm off the surface (measured in L5). Whether they show in camera images has not been
-      measured. Your GP2 lidar result decides the inspection report; treat a
+      reach only 0.84 to 2.49 mm off the surface (measured in L5). Whether
+      they show in camera images has not been measured. Your GP2 lidar result decides the inspection report; treat a
       VLM defect call as a second opinion.
 
 .. dropdown:: Task 4: Handle a conveyor malfunction

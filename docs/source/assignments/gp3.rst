@@ -45,8 +45,9 @@ GP3 replaces the fixed order of the GP1 tree with a plan. **PDDL**
 actions. A **predicate** is a fact that is true or false, such as "AGV 1 is
 at the inspection station". Each action has preconditions (facts that must
 hold before it) and effects (facts it makes true or false). A planner, such
-as Fast Downward or the Unified Planning Framework, finds a sequence of
-actions that reaches the goal.
+as Fast Downward, finds a sequence of actions that reaches the goal. The
+Unified Planning Framework (UPF) is a Python library that calls planners
+such as Fast Downward (L6).
 
 Your team writes a PDDL domain for ARIAC Task 1, with the two inspection
 robots, the voltage testers, the tray slots on the AGVs and the shipping
@@ -95,7 +96,8 @@ Provided Resources
    * - Your team's GP2 package
      - The tree, the perception node and the per-cell records.
    * - A planner
-     - The Unified Planning Framework or Fast Downward. Your team chooses.
+     - Fast Downward, run directly or through the Unified Planning
+       Framework. Your team chooses.
    * - Course skills package and ARIAC 2025 Task 1 interfaces
      - As in GP1 and GP2.
    * - GP3 trial configurations
