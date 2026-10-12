@@ -6,10 +6,24 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.1: Project Page Corrections (2026-10-12)
+.. dropdown:: v0.4.2: GP4 Checks the VLM Against a Second Source (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Group projects
+
+   - **GP4, Task 3:** before the agent uses a VLM field, the team checks it
+     against its second source, as L9 teaches: slot occupancy against
+     ``/agvN/tray_status``, and cell type against the recorded tester
+     voltage. A disagreement is logged as a flag. The VLM grounding
+     criterion of the draft rubric now asks for that log entry; its points
+     are unchanged.
+
+
+.. dropdown:: v0.4.1: Project Page Corrections (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Group projects
 

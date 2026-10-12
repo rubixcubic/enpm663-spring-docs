@@ -172,13 +172,23 @@ Tasks
    - Write a VLM prompt that asks, for each cell, its type, its position
      and any visible defects, not only labels.
    - Turn the description into an observation for the agent.
+   - Before the agent uses a VLM field, check it against its second source
+     (L9): slot occupancy against ``/agvN/tray_status``, and cell type
+     against the voltage your team recorded for the cell on a tester. A
+     disagreement is a flag, not a verdict: log it, and do not act on that
+     field until a fresh observation settles it.
+
+   **Done when:** one log entry shows a VLM field that disagrees with its
+   second source, the flag, and what the agent did next.
 
    .. note::
 
       ARIAC requires lidar for defect detection, and its training defects
       reach only 0.84 to 2.49 mm off the surface (measured in L5). Whether
-      they show in camera images has not been measured. Your GP2 lidar result decides the inspection report; treat a
-      VLM defect call as a second opinion.
+      they show in camera images has not been measured. Your GP2 lidar
+      result decides the inspection report; treat a VLM defect call as a
+      second opinion. Damage has no second source, so it never overrides
+      the lidar.
 
 .. dropdown:: Task 4: Handle a conveyor malfunction
    :icon: gear
@@ -272,6 +282,8 @@ Submission Checklist
          limit.
    - [ ] One log entry shows an image, the VLM description and the
          observation built from it.
+   - [ ] One log entry shows a VLM field that disagrees with its second
+         source, the flag, and what the agent did next.
    - [ ] There is a run log for each of the three challenges.
    - [ ] The comparison table states the trials, the seeds and the number
          of runs per trial.
@@ -312,7 +324,11 @@ Grading Rubric (Draft)
    * - VLM grounding
      - 10
      - The grader reads the VLM prompt and a log entry that shows an image,
-       the VLM description and the agent observation built from it.
+       the VLM description and the agent observation built from it, and a
+       log entry where a VLM field disagrees with its second source
+       (``/agvN/tray_status`` or a recorded tester voltage): the flag is
+       logged and the agent does not act on that field until it is
+       settled.
    * - Normal Task 1 trial
      - 10
      - The grader runs a trial with no challenges: the kits are submitted

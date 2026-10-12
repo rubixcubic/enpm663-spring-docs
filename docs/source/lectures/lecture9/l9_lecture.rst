@@ -812,8 +812,9 @@ Goal and Test Cases
 - Replace the PDDL planner with an LLM agent. It calls the robot skills as
   tools (through MCP if your team chooses) and returns output checked against
   a JSON schema.
-- A VLM describes the cells for the agent. The GP3 executor runs the agent's
-  decisions.
+- A VLM describes the cells for the agent. Each field with a second source
+  (tray status, tester voltages) is checked against it before the agent acts.
+  The GP3 executor runs the agent's decisions.
 
 **Test cases, each shown on a trial:**
 
