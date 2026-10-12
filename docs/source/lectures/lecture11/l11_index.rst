@@ -1,69 +1,83 @@
-====================================================
-Week 11: Frames, Transforms, and Motion Planning
-====================================================
+=====================================================================
+L11: Recovery, Robustness, and Failure Handling for AI-Driven Systems
+=====================================================================
 
 Overview
 --------
 
-This lecture covers the motion layer of the three-layer architecture: TF2
-in depth, MoveIt2 architecture, the motion planning pipeline (sampling,
-collision checking, trajectory optimization), and parameterized grasps. By
-the end of class, students can ask MoveIt2 to plan a pick-and-place
-trajectory and understand what each stage of the pipeline contributed.
+This lecture is about what happens when things go wrong. Agentic systems
+fail in their own ways: LLMs invent objects, VLMs misread a defect, plans run
+on a stale world state, and factory equipment breaks. The lecture collects
+the patterns at the behavior tree, planner and execution levels for catching
+these failures, classifying them and recovering. Quiz 5 (L9 and L10) is given
+at the start of class. The final demo specification is posted.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Build and reason about a TF2 frame chain for an ARIAC-style scene.
-   - Describe the MoveIt2 architecture: move_group, planning scene, planners.
-   - Plan a motion in MoveIt2 from Python using the MoveIt2 Python API.
-   - Specify grasp poses as parameterized targets (no learned grasp model).
-   - Reason about collision objects, octomaps, and execution monitoring.
-
-
-Topics
-------
-
-- TF2 deep dive: static vs. dynamic transforms, frame conventions,
-  troubleshooting (lookup failures, time inconsistencies).
-- MoveIt2 architecture: move_group node, planning scene, planning pipeline,
-  controllers.
-- Sampling-based planners (RRT-Connect, PRM); when each is appropriate.
-- Trajectory optimization (CHOMP, STOMP) at a high level.
-- Parameterized grasps: defining a grasp pose relative to a part frame.
+- Design BT recovery structures: fallback chains, retry with backoff, parallel
+  monitors.
+- Detect LLM output failures: output that breaks the schema, plans that call
+  missing tools, invented objects.
+- Detect VLM grounding failures: a missed defect, a wrong cell type, a wrong
+  position.
+- Handle equipment that stops reporting: cached state with a timeout, partial
+  replanning.
+- Decide between local recovery (retry) and global recovery (replan).
 
 
-Hands-On Exercise
------------------
+.. admonition:: Materials in progress
+   :class: note
 
-Using a provided MoveIt2 scene (TODO: starter), plan (do not execute) a
-pick motion to a part at a given pose. Inspect the resulting trajectory in
-RViz; vary the planner and compare. Add a collision object and re-plan.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- A failure taxonomy: action failure, sensor failure, plan failure, world
+  drift.
+- BT recovery structures: fallback (selector), retry with backoff, parallel
+  monitors that stop the active branch.
+- LLM output validation as a recovery checkpoint; re-prompting with the
+  validation error.
+- VLM cross-checking: ask twice and compare, or compare with the classical
+  detector; flag disagreement.
+- Equipment that stops reporting: cached state with a time limit, degraded
+  operation.
+- ARIAC 2025 challenges as failure scenarios: conveyor malfunction, voltage
+  tester malfunction, vacuum tool malfunction, high-priority orders; defective
+  cells.
 
 
 ARIAC Tie-in
 ------------
 
-ARIAC uses MoveIt2 for the kitting robot's pick-and-place. PT4 and PT5 both
-call MoveIt2 as the reactive layer beneath the LLM-driven executor. The
-grasp poses for ARIAC parts are parameterized (no learned grasp prediction),
-defined per part type.
+The final demo runs an unseen trial that can include any of the ARIAC 2025
+challenges. Each one needs an explicit recovery pattern, and this lecture is
+the toolkit.
 
 
-References
-----------
+Starting References
+-------------------
 
-- MoveIt2 documentation: https://moveit.picknik.ai/main/
-- ROS 2 TF2 tutorials: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/
-- ARIAC robot configurations: TODO link into ARIAC docs.
+- ``py_trees_ros`` decorators: TODO link.
+- BehaviorTree.CPP: https://www.behaviortree.dev/
+- Papers on detecting LLM hallucinations: TODO links.
+- ARIAC 2025 challenges: https://pages.nist.gov/ARIAC_docs/en/latest/pages/challenges.html
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
 
 
 Next Steps
 ----------
 
-- Week 12 covers recovery and robustness for AI-driven systems; Quiz #5.
-- Continue PT4; due Week 13.
+- Quiz 5 today (L9 and L10).
+- **The final demo specification is posted today.** The demo is in Week 15.
+- GP4 is due in Week 13.
+- In the next lecture, we will cover **evaluation**: how to measure an agentic
+  system.

@@ -1,4 +1,4 @@
-# ENPM663: Building AI-Augmented Robotic Systems
+# ENPM663: Agentic Physical AI for Manufacturing Robotics
 
 Course documentation for ENPM663, Spring 2027.
 

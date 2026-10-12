@@ -1,6 +1,6 @@
 # Syllabus
 
-## ENPM663 Building AI-Augmented Robotic Systems
+## ENPM663 Agentic Physical AI for Manufacturing Robotics
 
 **Spring 2027**
 
@@ -8,34 +8,39 @@
 |---|---|---|---|
 | **Section** | 0101 & RO01 | **Professor** | Z. Kootbally |
 | **Credits** | 3 | **Pronouns** | He/Him |
-| **Course Dates** | TODO: verify Spring 2027 dates | **Email** | zeidk@umd.edu |
-| **Course Times** | TODO: verify weekly meeting time | **Office Hours** | By appointment |
-| **Classroom** | TODO: assigned room | | |
+| **Course Dates** | Jan 27 to May 5, 2027 | **Email** | zeidk@umd.edu |
+| **Course Times** | Wednesdays, 7:00 to 9:40 pm | **Office Hours** | By appointment |
+| **Classroom** | 0101: TBA; RO01: online (details on ELMS) | | |
 
 ---
 
 ## Course Description
 
-This hands-on course examines how modern AI techniques, including large language models
-(LLMs) and vision-language models (VLMs), are integrated into ROS 2 based robotic
-systems. Students study classical task and motion planning, then add AI-augmented
-counterparts at the task-planning layer: LLM agents for task planning (the
-observe-act-observe loop, tool use, and structured output), VLM grounding for
-scene understanding, and closed-loop replanning. The end-to-end vision-language-action
-(VLA) frontier is surveyed for context, but motion planning, grasp execution, and
-control remain classical (MoveIt2); this course teaches the modular, auditable stack
-rather than training learned policies. The course is structured around the Agile Robotics
-for Industrial Automation Competition (ARIAC) 2025
-(https://pages.nist.gov/ARIAC_docs/en/latest/) as a unifying testbed, but the concepts
-and engineering patterns taught are general to autonomous robotic systems.
+This course teaches how to build robot systems in which AI agents decide what a
+factory cell does next and classical robotics carries it out. Physical AI means
+AI systems that perceive, reason and act in the physical world. An agent is a
+program that runs a loop around a large language model (LLM): it observes the
+state of the world, asks the model what to do, calls a tool (here, a robot
+skill), checks the result, and repeats.
+
+The course is built on the Agile Robotics for Industrial Automation Competition
+(ARIAC) 2025 (https://pages.nist.gov/ARIAC_docs/en/latest/), a NIST simulation
+of an EV battery factory in which robots inspect battery cells, build kits and
+assemble modules. Students start from a classical ROS 2 stack (behavior trees,
+perception, PDDL planning) and then add AI where it earns its place: LLM agents
+that plan with tool calls and structured output, vision-language models (VLMs)
+that describe what the cameras see, and replanning when the factory does not
+behave as planned. Motion planning and grasping stay classical (MoveIt 2). The
+course closes with the physical AI frontier: vision-language-action (VLA)
+models, robot foundation models and world models.
 
 Students entering this course are expected to have working knowledge of ROS 2
 (publishers and subscribers, services, actions, parameters, launch files). Week 1
-provides a refresher on the ROS 2 topics most directly used in the course (lifecycle
-nodes, TF2, QoS, executors). A significant amount of Python programming is required,
-with selected use of C++ for components where it is the industry standard.
+provides a refresher on the ROS 2 topics most directly used in the course
+(lifecycle nodes, TF2, QoS, executors). A significant amount of Python
+programming is required.
 
-All course work is team-based. There are no individual assignments. See the
+All project work is team-based. There are no individual assignments. See the
 [Team Formation](#team-formation) and [Peer-Review Contribution](#peer-review-contribution-15-of-grade)
 sections for details.
 
@@ -45,25 +50,27 @@ sections for details.
 
 After successfully completing this course you will be able to:
 
-- Design system architectures that integrate classical robotic components (perception,
-  planning, control) with AI-based components (LLMs, VLMs).
-- Apply knowledge-representation techniques (frames, ontologies, hierarchical task and
-  world models) to design symbolic representations of ARIAC scenes and tasks that are
-  consumable by both classical planners (PDDL) and AI planners (LLM/VLM).
-- Implement behavior trees in `py_trees_ros` for robust task execution, including
-  failure handling and recovery.
-- Apply classical task-level planning using PDDL to generate executable plans for
-  robotic systems.
-- Build LLM agents for task planning that reason in an observe-act-observe loop,
-  produce structured plans and tool calls via prompting and JSON-schema validation,
-  and invoke robot actions through tool/function calling (MCP).
-- Use vision-language models to ground robotic plans in observed scenes and recover
-  from perception failures.
-- Design robust execution patterns (failure handling, recovery, replanning) for
-  AI-driven robotic systems where LLM and VLM outputs may be incorrect.
-- Plan and execute robot motion using MoveIt2 for pick-and-place and assembly tasks.
-- Evaluate AI-augmented robotic systems using quantitative metrics for plan validity,
-  grounding accuracy, execution success, and end-to-end task performance.
+- Design agentic robot architectures that combine classical components
+  (perception, planning, control) with AI components (LLMs, VLMs), and say which
+  layer each one belongs to.
+- Build symbolic models of an ARIAC scene and its tasks (frames, ontologies,
+  hierarchical world models) that both a PDDL planner and an LLM agent can use.
+- Implement behavior trees in `py_trees_ros` that run robot skills and handle
+  failures.
+- Generate executable plans for a robot cell with a classical PDDL planner.
+- Build LLM agents that plan in an observe, act, observe loop, return structured
+  output checked against a JSON schema, and call robot skills as tools through
+  the Model Context Protocol (MCP).
+- Use vision-language models to ground an agent's decisions in camera images and
+  to catch perception failures.
+- Design recovery and replanning for systems where LLM and VLM outputs can be
+  wrong.
+- Plan and execute pick and place motions with MoveIt 2.
+- Compare the modular stack built in this course with vision-language-action
+  models and robot foundation models, and use a hosted embodied-reasoning model
+  for one perception step.
+- Evaluate agentic robot systems with metrics for plan validity, grounding
+  accuracy, execution success and end-to-end task performance.
 
 ---
 
@@ -76,10 +83,11 @@ After successfully completing this course you will be able to:
   https://docs.ros.org/en/jazzy/Installation.html
 - **Simulator:** Gazebo Harmonic: https://gazebosim.org/docs/harmonic/
 - **Editor:** Visual Studio Code: https://code.visualstudio.com/
-- **ARIAC 2025:** https://pages.nist.gov/ARIAC_docs/en/latest/
+- **ARIAC 2025:** https://pages.nist.gov/ARIAC_docs/en/latest/ (Docker or native
+  install; the final demo runs from a Dockerfile)
 - **AI access:** Either a paid LLM API account (e.g., Anthropic Claude, OpenAI, Google
-  Gemini) or local open-weight models (e.g., recent Llama or Qwen releases). Course
-  team projects will accept either; cost guidance will be provided per project.
+  Gemini) or local open-weight models (e.g., recent Llama or Qwen releases). Group
+  projects accept either; cost guidance will be provided per project.
 
 ---
 
@@ -102,42 +110,44 @@ background. The quiz is ungraded.
 
 ## Course Structure
 
-- Before class meetings, students need to consolidate the previous lessons since each
-  week builds directly on the previous one. Early in the course, expect roughly 4 hours
-  per week on team project work. As the course progresses, projects may require 6 to 8
-  hours per week per student.
-- Quizzes are administered in class (unless you are registered as a remote student).
+- The class meets once a week for a lecture. Lectures are exposition; there are
+  no in-class exercises. Before each class, consolidate the previous lectures,
+  since each week builds on the one before. Early in the course, expect roughly
+  4 hours per week on group project work. As the course progresses, projects may
+  require 6 to 8 hours per week per student.
+- Quizzes are given in class (unless you are registered in the online section).
   Absent students cannot take quizzes.
-- Class meetings combine lecture and in-class exercises. Bring a laptop to every
-  meeting. Class attendance and active participation are not graded but are strongly
+- Class attendance and active participation are not graded but are strongly
   encouraged.
-- Late submissions are penalized 10% of the team project's grade per calendar day
-  late, up to 3 days; submissions more than 3 days late receive no credit. Extensions
-  are granted only when more than one team needs additional time on a submission.
-- No quizzes or team projects will be dropped. PT5 (the capstone) is required; there
-  is no alternative to PT5's grade.
-- PT5 is evaluated on an unseen ARIAC scenario. Teams run their integrated system in
-  class, and the performance is graded.
-- A PT5 presentation is required at the end of the semester. Teams discuss their
-  approach, design decisions, and results.
-- All team projects use a peer-review system. Each team member rates the contributions
-  of other team members after each project. See [Peer-Review Contribution](#peer-review-contribution-15-of-grade).
+- Late submissions are penalized 10% of the project's grade per calendar day
+  late, up to 3 days; submissions more than 3 days late receive no credit.
+  Extensions are granted only when more than one team needs additional time on a
+  submission.
+- No quiz or group project is dropped. The final demo is required; nothing
+  replaces its grade.
+- The final demo runs your team's system live, in class, on an ARIAC trial your
+  team has not seen, and the run is graded. Each team also presents its
+  approach, design decisions and results.
+- All projects use a peer-review system. Each team member rates the contributions
+  of the other team members after each group project and after the final demo.
+  See [Peer-Review Contribution](#peer-review-contribution-15-of-grade).
 
 ---
 
 ## Team Formation
 
-- All course work is team-based across 5 team projects (PT1 through PT5). There are no
-  individual assignments.
+- All project work is team-based: four group projects (GP1 to GP4) and the final
+  demo. There are no individual assignments.
 - **Team size: 3 students.** Teams of 2 are allowed only with instructor approval
   (e.g., when cohort numbers do not divide evenly or for remote students). Teams of 4
   or more are not permitted; integration projects of this scope typically generate
   coordination overhead without productivity gain past three members.
-- **Teams are formed in Week 3**, after the diagnostic quiz and the Week 2 lecture on
-  system architectures. This gives students time to meet classmates and self-organize.
-- Teams stay together across all 5 PTs. Stable team composition lets the peer-review
-  signal accumulate across the semester and avoids losing team-formation cost between
-  projects.
+- **Teams are formed in Week 2**, the day GP1 is posted. Each team posts a one-page
+  team charter on ELMS before Week 3: who owns which part of the system, when the
+  team meets, how it uses git, what happens when someone goes quiet, and how it
+  will use AI tools.
+- Teams stay together for all four group projects and the final demo. Stable team
+  composition lets the peer-review signal accumulate across the semester.
 - A team change request requires a written rationale and instructor approval, and is
   expected only in cases of sustained imbalance documented in peer review.
 
@@ -145,95 +155,95 @@ background. The quiz is ungraded.
 
 ## Major Assignments
 
-- **Team Projects (PT1 through PT5).** Five team-based projects that build the
-  AI-augmented robotic system layer by layer. PT5 is the capstone, evaluated on an
-  unseen ARIAC scenario. Detailed instructions and submission guidelines are provided
-  for each project. See the [Course Outline](#course-outline) for the schedule.
+- **Final Project.** Four cumulative group projects (GP1 to GP4) and a final demo
+  that build an agentic system for the ARIAC 2025 factory. The final demo is
+  graded live on an unseen ARIAC trial. Detailed instructions and submission
+  guidelines are provided for each project. See the [Course Outline](#course-outline)
+  for the schedule.
 - **Quizzes.** Quizzes assess your understanding of course material. They are
-  administered at the beginning of class, either on Canvas or on paper, and typically
+  given at the beginning of class, either on Canvas or on paper, and typically
   last 10 to 20 minutes. All quizzes are closed-notes.
-- **Peer-Review Contribution.** After each team project, every student rates the
-  contribution of their teammates. See
+- **Peer-Review Contribution.** After each group project and after the final demo,
+  every student rates the contribution of their teammates. See
   [Peer-Review Contribution](#peer-review-contribution-15-of-grade).
 
 ---
 
-## Team Project Descriptions
+## Final Project Descriptions
 
-### PT1: Behavior Tree for a Simple Kitting Workflow
+The robots move through the **course skills package**: Python ROS 2 actions for
+picking, placing and moving parts, built on MoveIt 2 and provided with GP1. Teams
+decide what the robots do; the skills package carries it out. ARIAC 2025 itself
+provides joint trajectory and gripper actions, but no pick or place skills.
 
-**Hand-out:** Week 2 / **Due:** Week 5 / **Weight:** 10%
+### GP1: Behavior Tree for One Kit
 
-Build a runnable `py_trees_ros` behavior tree that executes a fixed, single-order
-kitting sequence with hard-coded part poses. The focus is BT structure (sequences,
-selectors, decorators, blackboards) and ROS 2 action-client leaves that call ARIAC's
-pick and place skills as opaque actions. No perception or planner integration yet;
-this PT is the "I understand BTs" gate.
+**Posted:** Week 2 / **Due:** Week 5 / **Weight:** 10%
 
-**Deliverable:** ROS 2 package with a launchable BT, plus a short write-up (1 to 2
-pages) including the BT diagram and the rationale for the composite choices.
+Build a `py_trees_ros` behavior tree that builds one kit: feed cells onto the
+inspection conveyor, read their voltages, recycle the cells outside the voltage
+range, place four cells on an AGV tray, move the AGV to shipping and submit the
+kit. The leaves call the course skills package and the ARIAC services. No defect
+detection yet.
 
-### PT2: Perception Pipeline
+**Deliverable:** ROS 2 package with a launchable behavior tree, plus a short
+write-up (1 to 2 pages) with the tree diagram and the reason for each composite
+choice.
 
-**Hand-out:** Week 5 / **Due:** Week 7 / **Weight:** 10%
+### GP2: Cell Inspection
 
-Detect ARIAC parts in camera images and publish their 3D poses to a TF-aware ROS 2
-topic; then wire PT1's BT to consume real perception output instead of hard-coded
-poses. ARIAC context: overhead RGB-D cameras above the supply bins, with ARIAC's
-part types (batteries, sensors, regulators, pumps) in their color variants.
+**Posted:** Week 5 / **Due:** Week 7 / **Weight:** 10%
 
-**Deliverable:** Perception package, comparison of detected vs. ground-truth poses on
-at least 5 ARIAC scenes with error metrics, and the updated PT1 BT that consumes the
-perception topic.
+Place RGB cameras over the inspection conveyor within the ARIAC sensor budget and
+detect dents, scratches and bulges with OpenCV. Combine the defects with the
+voltage readings into an inspection report for each cell. The GP1 tree then
+recycles defective cells.
 
-### PT3: PDDL Planner + BT Executor (Classical Baseline)
+**Deliverable:** Perception package, the updated tree, and a results table with
+precision and recall per defect type and the sensor cost.
 
-**Hand-out:** Week 7 / **Due:** Week 10 / **Weight:** 10%
+### GP3: PDDL Planner and BT Executor
 
-Replace PT1's hard-coded action sequence with a PDDL planner that generates plans
-from a goal; execute those plans through a BT pattern that translates each PDDL
-action into a BT subtree. ARIAC context: multi-part kitting orders with varying
-contents read from ARIAC's order interface, including at least one scenario with a
-faulty part that triggers re-planning. Spans Spring Break.
+**Posted:** Week 7 / **Due:** Week 10 / **Weight:** 10%
 
-**Deliverable:** PDDL domain and problem files, planner integration (Fast Downward or
-Unified Planning Framework), BT executor that consumes plans, demo on 2 to 3 ARIAC
-kitting scenarios (one of which triggers a re-plan), and a brief reflection on what
-PDDL captures well vs. where it strains.
+Write a PDDL domain for Task 1 (inspection and kit building) with the two
+inspection robots and the AGVs, and execute its plans through a behavior tree
+built from the plan. Replan when a cell fails inspection. Choosing four cells
+that meet the kit voltage tolerance is a numeric problem, so it is a separate
+selection step. Spans spring break.
 
-### PT4: LLM Agent for Task Planning with VLM Grounding (Extends PT3)
+**Deliverable:** PDDL files, planner integration (Fast Downward or Unified
+Planning Framework), the executor, a demo on 2 to 3 trials (one of which triggers
+a replan), and a short reflection on what PDDL captured well and where it
+strained.
 
-**Hand-out:** Week 10 / **Due:** Week 13 / **Weight:** 10%
+### GP4: LLM Agent with VLM Grounding
 
-Swap the PDDL planner for an LLM agent that consumes a VLM-grounded scene description
-and the order, and that outputs a structured plan (JSON schema) or per-step tool calls
-which the same BT executor from PT3 runs unchanged, replanning in a closed loop when
-execution drifts from the expected state. ARIAC context: same kitting scenarios as PT3, plus
-at least one scenario PT3's PDDL domain cannot handle without code changes (e.g., a
-new part type or an unusual ordering constraint). The LLM should adapt at prompt
-time; PDDL would need a domain rewrite.
+**Posted:** Week 10 / **Due:** Week 13 / **Weight:** 10%
 
-**Deliverable:** LLM client module, VLM grounding module, executor modifications,
-side-by-side comparison of PDDL vs. LLM plans on identical inputs (validity, plan
-length, cost), demo, and a reflection on LLM failure modes and how they were caught.
+Replace the PDDL planner with an LLM agent that calls the robot skills as tools
+(through MCP if the team chooses) and returns structured output checked against a
+JSON schema. A VLM describes the cells for the agent. The same executor from GP3
+runs its decisions. Test the agent on the situations GP3's domain does not model:
+a conveyor malfunction, a voltage tester malfunction, a vacuum tool malfunction
+and high-priority orders.
 
-### PT5: Integrated Capstone on Unseen ARIAC Scenario
+**Deliverable:** Agent module, VLM module, executor changes, a side-by-side
+comparison with GP3 on identical trials (validity, plan length, cost, latency),
+and a reflection on the agent's failure modes and how they were caught.
 
-**Hand-out:** Week 12 / **Due:** Week 15 / **Weight:** 20%
+### Final Demo
 
-PT5 combines selected ARIAC challenges with scenarios drawn from PT1 through PT4.
-Teams integrate their existing PT1 to PT4 components (behavior tree, perception
-pipeline, PDDL planner, LLM planner with VLM grounding) and apply the recovery and
-robustness patterns introduced in Week 12 to handle a scenario that includes
-ARIAC-specific challenges (e.g., faulty parts, faulty grippers, sensor blackouts,
-kit rearrangement, high-priority orders) that were not present in any single earlier
-PT. Manipulation uses classical MoveIt2 with parameterized grasps; AI complexity
-lives in task planning, scene grounding, and replanning. Specific challenge
-selection is published at PT5 hand-out (Week 12); the exact ARIAC scenario used for
-grading is unseen by teams until the live demo in Week 15.
+**Posted:** Week 12 / **Demo:** Week 15 / **Weight:** 20%
 
-**Deliverable:** Integrated codebase, live demo in class (graded on performance
-against the unseen scenario), short presentation (5 to 7 minutes) covering
+Integrate GP1 to GP4 into one system that runs a full ARIAC 2025 trial: Task 1 and
+Task 2 (module construction with the assembly robots and the gantry welder),
+with any of the ARIAC challenges. One perception step uses a hosted
+embodied-reasoning model (for example Gemini Robotics-ER), measured against the
+team's GP2 pipeline. The trial used for grading is unseen until the demo.
+
+**Deliverable:** Integrated codebase that runs from a Dockerfile, live demo in
+class (graded on the run), and a short presentation (5 to 7 minutes) covering
 architecture, design decisions, failure modes encountered, and how they were
 handled.
 
@@ -243,20 +253,22 @@ handled.
 
 | Component | Percentage |
 |---|---|
-| Team Projects (PT1 through PT5) | 60% |
+| Final Project (GP1 to GP4 and the final demo) | 60% |
 | Quizzes | 25% |
 | Peer-Review Contribution | 15% |
 | **Total** | **100%** |
 
-### Team project weights
+### Final project weights
 
-| Team Project | Weight | Notes |
+| Component | Weight | Notes |
 |---|---|---|
-| PT1 | 10% | |
-| PT2 | 10% | |
-| PT3 | 10% | |
-| PT4 | 10% | |
-| PT5 (capstone) | 20% | Evaluated on an unseen ARIAC scenario, demoed live in Week 15. |
+| GP1 | 10% | |
+| GP2 | 10% | |
+| GP3 | 10% | |
+| GP4 | 10% | |
+| Final demo | 20% | Graded live on an unseen ARIAC trial in Week 15. |
+
+There is no final exam.
 
 ### Final Grade Cutoffs
 
@@ -280,8 +292,8 @@ participation, which is ungraded.
 
 ### Instrument
 
-After each of the 5 team projects, every student completes a peer-review form via
-ELMS-Canvas, rating each teammate (not themselves) on the following five dimensions:
+After each of the four group projects and after the final demo, every student
+completes a peer-review form via ELMS-Canvas, rating each teammate (not themselves) on the following five dimensions:
 
 1. **Technical contribution.** Did this teammate contribute substantively to the
    technical work (code, design decisions, debugging, system integration)?
@@ -319,7 +331,8 @@ Teammates are not told the flag was raised.
   all five dimensions, normalized to a 0 to 100 scale (a mean of 3.0 maps to 80; the
   scale rewards above-expectations contribution while protecting against single-
   teammate penalties).
-- The PT-level peer scores are averaged across all 5 PTs (equal weight) and multiplied
+- The project-level peer scores are averaged across all five (GP1 to GP4 and the
+  final demo, equal weight) and multiplied
   by 15% to produce the final Peer-Review Contribution grade.
 - Outliers are reviewed by the instructor before being applied. If one teammate scores
   a peer 1 across all dimensions while another scores them 4, the instructor reads the
@@ -351,18 +364,17 @@ accordance with the provisions of this code.
 Course assistance websites (such as CourseHero) and AI-generated content are not
 permitted as sources unless the instructor explicitly grants permission. Specifically:
 
-- Using AI tools (including LLM APIs) is required for some team projects (notably PT4
-  and PT5). The expectation is that the team understands, designs, and debugs the code
+- Using AI tools (including LLM APIs) is required in GP4 and the final demo. The expectation is that the team understands, designs, and debugs the code
   that calls these tools. Submitting AI-generated code that the team cannot explain is
   an academic integrity violation.
-- Teams may use AI tools to clarify concepts or look up syntax for any team project,
+- Teams may use AI tools to clarify concepts or look up syntax for any group project,
   but the submitted code and report must be the team's own work, and any team member
   must be able to explain any portion of it on request.
 - For quizzes, no external tools or notes are permitted.
 
-On each team project submission, every team member must sign the following pledge: *"I
+On each group project submission, every team member must sign the following pledge: *"I
 pledge on my honor that I have not given or received any unauthorized assistance on
-this team project."* On each quiz, the same pledge applies to the individual student.
+this group project."* On each quiz, the same pledge applies to the individual student.
 
 ---
 
@@ -372,7 +384,7 @@ this team project."* On each quiz, the same pledge applies to the individual stu
    content with your teammates and classmates. Robotic systems are integration
    problems; you will learn faster by talking through design decisions with peers.
 2. **Manage your time.** The course moves quickly. Block out time in your schedule
-   for team project work and include extra time for environment and dependency
+   for group project work and include extra time for environment and dependency
    issues.
 3. **Coordinate with your team.** Set a recurring meeting time. Use a shared
    repository from day one. Agree early on who owns which subsystem.
@@ -437,23 +449,25 @@ should be self-identified, not presumed or imposed.
 
 ## Course Outline
 
-| Week | Topic | Deliverables |
-|---|---|---|
-| 1 (TODO: date) | Course Overview and ROS 2 Refresher | Diagnostic quiz (ungraded) |
-| 2 (TODO: date) | System Architectures for AI-Augmented Robotics | PT1 handed out |
-| 3 (TODO: date) | Knowledge Representation for AI-Augmented Robotics | Teams formed |
-| 4 (TODO: date) | Behavior Trees for Task Execution | Quiz #1 |
-| 5 (TODO: date) | Sensing and Perception for Robotic Systems | Quiz #2; PT1 due; PT2 handed out |
-| 6 (TODO: date) | Task-Level Planning with PDDL | -- |
-| 7 (TODO: date) | Plan Execution Patterns with Behavior Trees | Quiz #3; PT2 due; PT3 handed out |
-| 8 (TODO: date) | SPRING BREAK | -- |
-| 9 (TODO: date) | LLM-Based Task Planning I: Agent Loops, Tool Use, and Structured Output | -- |
-| 10 (TODO: date) | LLM-Based Task Planning II: VLM Grounding and Agentic Replanning | Quiz #4; PT3 due; PT4 handed out |
-| 11 (TODO: date) | Frames, Transforms, and Motion Planning | -- |
-| 12 (TODO: date) | Recovery, Robustness, and Failure Handling for AI-Driven Systems | Quiz #5; PT5 handed out |
-| 13 (TODO: date) | Evaluation and Measurement Science for AI-Augmented Systems | PT4 due |
-| 14 (TODO: date) | PT5 Lab | -- |
-| 15 (TODO: date) | PT5 Demo and Presentation | PT5 due |
+Lectures meet on Wednesdays. Spring break (Mar 14 to 21) includes Wednesday Mar 17.
+
+| Week | Date | Lecture and topic | Deliverables |
+|---|---|---|---|
+| 1 | 01/27 | L1: Course Overview and ROS 2 Refresher | Diagnostic quiz (ungraded) |
+| 2 | 02/03 | L2: System Architectures for AI-Augmented Robotics | Teams formed; GP1 posted |
+| 3 | 02/10 | L3: Knowledge Representation for AI-Augmented Robotics | Team charter due |
+| 4 | 02/17 | L4: Behavior Trees for Task Execution | Quiz 1 |
+| 5 | 02/24 | L5: Sensing and Perception for Robotic Systems | Quiz 2; GP1 due; GP2 posted |
+| 6 | 03/03 | L6: Task-Level Planning with PDDL | |
+| 7 | 03/10 | L7: Plan Execution Patterns with Behavior Trees | Quiz 3; GP2 due; GP3 posted |
+| 8 | 03/17 | Spring break: no class | |
+| 9 | 03/24 | L8: LLM Agents I: Agent Loops, Tool Use, and Structured Output | |
+| 10 | 03/31 | L9: LLM Agents II: VLM Grounding and Agentic Replanning | Quiz 4; GP3 due; GP4 posted |
+| 11 | 04/07 | L10: Frames, Transforms, and Motion Planning | |
+| 12 | 04/14 | L11: Recovery, Robustness, and Failure Handling for AI-Driven Systems | Quiz 5; final demo specification posted |
+| 13 | 04/21 | L12: Evaluation and Measurement Science for AI-Augmented Systems | GP4 due |
+| 14 | 04/28 | L13: The Physical AI Frontier: VLAs, Robot Foundation Models, and World Models | |
+| 15 | 05/05 | Final demo and presentations | Final demo |
 
 > **Note:** This is a tentative schedule and subject to change as necessary. Monitor
 > the course ELMS page for current deadlines. In the event of a prolonged university
@@ -511,10 +525,9 @@ encouraged to communicate these to the instructor in advance.
 
 ## Participation
 
-Given the hands-on nature of this course, attendance is important to note-taking and
-your performance. Class discussion is a critical component of learning. Each student
-is expected to make substantive contributions to in-class exercises and to their
-team's work. Students with a legitimate reason to miss a session should communicate in
+Attendance is important to note-taking and your performance. Class discussion is a
+critical component of learning. Each student is expected to make substantive
+contributions to their team's work. Students with a legitimate reason to miss a session should communicate in
 advance with the instructor, except in case of emergency. Students who miss a session
 are responsible for learning what they missed.
 

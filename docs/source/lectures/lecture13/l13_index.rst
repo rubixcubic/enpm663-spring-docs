@@ -1,76 +1,84 @@
-====================================================================================
-Week 13: Evaluation and Measurement Science for AI-Augmented Systems
-====================================================================================
+==============================================================================
+L13: The Physical AI Frontier: VLAs, Robot Foundation Models, and World Models
+==============================================================================
 
 Overview
 --------
 
-This lecture covers how to evaluate AI-augmented robotic systems
-quantitatively. AI components introduce new failure modes that traditional
-metrics (cycle time, success rate) only partially capture: plans can be
-valid but wrong; perception can be confident but mistaken. We borrow from
-NIST measurement science to define metrics that capture plan validity,
-grounding accuracy, execution success, and end-to-end task performance, and
-discuss the experimental design needed to compare systems fairly. PT4 is
-due today.
+All semester, your team has built one side of physical AI: an agent that
+reasons about the factory and calls classical robot skills. This lecture
+surveys the other side, where learned models produce the robot's actions.
+It covers vision-language-action (VLA) models, robot foundation models,
+embodied-reasoning models, and world models used to generate training data
+and test policies in simulation. It compares them with the modular stack you
+built, on data, compute, auditability and how each one fails, and looks at
+how manufacturers are combining agents and robots today. The final
+demo questions are answered at the end of class.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Define plan-level metrics: plan validity, plan length, plan cost.
-   - Define perception-level metrics: precision/recall on part detection,
-     pose error distribution.
-   - Define execution-level metrics: action success rate, recovery rate,
-     end-to-end task completion.
-   - Design controlled experiments: hold one variable constant, vary
-     another, repeat for statistical power.
-   - Reason about what PT5's grading rubric likely measures (forward-looking).
-
-
-Topics
-------
-
-- Measurement science: what does "good" mean for an AI-augmented system?
-- Plan validity vs. plan optimality: a valid plan may not be the best.
-- Grounding accuracy: VLM precision/recall on part identity; pose error
-  decomposition (position vs. orientation).
-- End-to-end task metrics: completion rate, time to completion, recovery
-  count, fault-handling correctness.
-- Statistical methods: sample sizes, significance, confidence intervals.
-- ARIAC scoring criteria as a worked example (forward-looking to PT5).
+- Explain what a VLA model is and how it differs from the modular stack built
+  in this course.
+- Describe the two-system design (a slow reasoning model above a fast control
+  policy) used by many current VLAs.
+- Explain what robot foundation models and world models are used for:
+  generalizing across tasks, generating training data, testing in simulation.
+- Compare a learned policy and a skills library for a factory task on data
+  needs, compute, auditability and failure modes.
+- Use a hosted embodied-reasoning model for one perception step, as the final
+  demo requires.
 
 
-Hands-On Exercise
------------------
+.. admonition:: Materials in progress
+   :class: note
 
-In teams, design an evaluation protocol for PT4 (your LLM + VLM planner):
-which metrics, how many runs, what counts as a fair comparison to a PDDL
-baseline. Share protocols; instructor critiques.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- What the industry calls physical AI, and where this course sits in it.
+- VLA models: OpenVLA, Physical Intelligence's pi-0 and pi-0.5, Google
+  DeepMind's Gemini Robotics, NVIDIA GR00T; small open models such as SmolVLA.
+- Two-system designs: an embodied-reasoning model that plans and calls tools
+  above a VLA that moves the robot.
+- World models and simulation: generating training data and testing policies
+  before they reach a robot.
+- What it costs: demonstration data, GPU memory for running and fine-tuning,
+  and testing.
+- Agentic manufacturing in industry: agents that coordinate machines and
+  robots on the factory floor.
+- Final demo questions.
 
 
 ARIAC Tie-in
 ------------
 
-ARIAC has its own scoring criteria for the competition; PT5 will be graded
-on a similar protocol (live demo on an unseen scenario). Today's lecture is
-how you measure your own system before that day.
+ARIAC 2025 has no learned policies, and the final demo does not need one. The
+final demo does use one physical AI model: a hosted embodied-reasoning model
+for one perception step, measured against your GP2 pipeline.
 
 
-References
-----------
+Starting References
+-------------------
 
-- NIST measurement science publications: TODO links.
-- ARIAC scoring documentation: TODO link.
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+- NVIDIA glossary, physical AI: https://www.nvidia.com/en-us/glossary/generative-physical-ai/
+- OpenVLA: https://openvla.github.io/
+- Physical Intelligence openpi (pi-0, pi-0.5): https://github.com/Physical-Intelligence/openpi
+- Gemini Robotics: https://deepmind.google/models/gemini-robotics/
+- NVIDIA Isaac GR00T: https://github.com/NVIDIA/Isaac-GR00T
+- SmolVLA: https://huggingface.co/blog/smolvla
 
 
 Next Steps
 ----------
 
-- PT4 due today; PT5 hand-out was last week (Week 12); PT5 due Week 15.
-- Week 14 is a PT5 lab session.
-- Week 15 is the PT5 live demo.
+- **The final demo is in Week 15.** Bring a tested system and a working
+  Dockerfile.

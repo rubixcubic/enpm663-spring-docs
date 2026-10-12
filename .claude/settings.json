@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(pdfinfo /home/zeid/github/docs/enpm663-spring-2027-docs/syllabus_spring2027_enpm663.pdf)",
-      "Bash(grep -v 'No em dashes\\\\|No en dashes\\\\|No `\\\\\\\\vspace\\\\|Never use\\\\|Never add\\\\|Always grep')"
-    ]
-  }
-}

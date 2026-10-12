@@ -1,104 +1,91 @@
-====================================================================================
-Week 9: LLM-Based Task Planning I (Agent Loops, Tool Use, and Structured Output)
-====================================================================================
+=======================================================
+L9: LLM Agents II: VLM Grounding and Agentic Replanning
+=======================================================
 
 Overview
 --------
 
-This is the first lecture on the AI-augmented planning thread. In industry, an
-LLM is rarely deployed as a one-shot function; it is the reasoning core of an
-*agent*: an orchestrator runs a loop that reads the world state, asks the LLM
-what to do next, executes the tool the LLM chose, feeds the observation back,
-and repeats until the goal is met or a stop condition fires. We introduce that
-loop here and treat the LLM planner as an agent whose "tools" are the robot
-actions PT3's BT executor already exposes. The mechanics that make this
-reliable are prompting (system messages, few-shot examples), structured output
-(JSON schemas, validation, retry), and tool/function calling standardized
-through the Model Context Protocol (MCP).
+This lecture extends the L8 agent in two directions. With VLM grounding, a
+vision-language model describes what the cameras see, and the agent uses that
+description as its observation. With agentic replanning, the orchestrator
+notices that the factory has drifted from the expected state and asks the
+LLM again with the new observations. The lecture also draws the boundary
+honestly: for a fully specified task, the PDDL planner from L6 is often the
+better tool (cheaper, deterministic, auditable). The LLM agent earns its
+place when the situation is ambiguous, new, or needs a recovery the PDDL
+domain did not plan for. Quiz 4 (L7 and L8) is given at the start of class.
+GP3 is due and GP4 is posted.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Describe the agent loop (observe, reason, act, observe result) and the
-     role of the orchestrator that runs it, as distinct from the LLM itself.
-   - Contrast two dominant planning patterns: plan-and-execute (produce a full
-     plan, then run it, the LLM analog of the W6 PDDL planner) and ReAct
-     (interleave reasoning and tool calls step by step).
-   - Design a system prompt for an LLM-as-planner with a clear role, a goal
-     format, and a structured output format.
-   - Specify a JSON schema for plans or tool calls and validate LLM output
-     against it, with a bounded re-prompt-on-error retry loop.
-   - Explain how tool/function calling and MCP expose robot actions to an LLM,
-     and manage context (what state persists across loop iterations), token
-     budget, cost, and latency.
+- Use a VLM (a hosted multimodal API or a local model) to describe a cell or a
+  tray from an ARIAC camera image.
+- Design a prompt that asks a VLM for defects and spatial relations, not only
+  labels.
+- Implement an agentic closed loop: observe, act, re-observe, replan when the
+  state drifts.
+- Decide when to retry one action and when to ask for a new plan.
+- Judge when a PDDL planner is the right tool and when an LLM agent is, and
+  defend the choice for a given situation.
 
 
-Topics
-------
+.. admonition:: Materials in progress
+   :class: note
 
-- LLM mental model: a stateless function from prompt to text; the agent
-  behavior comes from the orchestrator loop wrapped around it, not the model.
-- The agent loop: observe, reason, act (call a tool), observe the result,
-  decide the next step; stop conditions and step caps.
-- Planning patterns: plan-and-execute vs. ReAct; when a robot task wants a full
-  plan up front (auditable, cheaper) vs. step-by-step reasoning (adapts to
-  surprises). Reflexion-style self-critique as an extension.
-- Prompt structure: system + user; few-shot examples; output format
-  constraints.
-- JSON schemas as plan/action KR: typed actions, required fields, enums for
-  action names.
-- Validation and retry: catch malformed output, re-prompt with the error,
-  cap retries.
-- Tool/function calling and MCP: how a schema becomes a callable tool, and how
-  MCP has become the industry-standard protocol (2024 onward) for exposing
-  tools and context to LLMs across frameworks (LangGraph, the OpenAI Agents
-  SDK, the Claude Agent SDK).
-- Context and memory: what world state to carry across iterations, and the
-  token-budget, cost, and latency consequences of a multi-step loop.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
 
 
-Hands-On Exercise
------------------
+Planned Topics
+--------------
 
-Two small steps on a toy scene (3 colored parts, 2 kit slots):
-
-1. Write a one-shot LLM call (Claude, GPT, or local Llama/Qwen) that takes a
-   scene description and a goal (kit each slot with a specific part) and
-   returns a JSON plan. Validate against a provided JSON schema and add a
-   single re-prompt-on-invalid retry.
-2. Turn it into a minimal agent loop: expose one ``place_part(part, slot)``
-   tool via function calling, and let the LLM place parts one at a time,
-   receiving a short "result" observation after each call, until both slots
-   are filled. (TODO: starter prompt, schema, and tool stub.)
+- VLMs in 2026: hosted multimodal APIs (Claude, GPT, Gemini), local models
+  (Qwen-VL, LLaVA), and embodied-reasoning models (Gemini Robotics-ER) that
+  answer spatial questions about an image.
+- Scene description prompts: from "describe the image" to "list each cell, its
+  defects and its slot".
+- The agentic closed loop: act, re-observe, replan when the state drifted; the
+  L8 loop closed around feedback.
+- Replanning triggers: a failed action, an inconsistent world state, a
+  high-priority order.
+- When not to use an LLM: for a fully specified task, PDDL is cheaper,
+  deterministic and auditable.
+- Side by side: PDDL and the LLM agent on the same trial (validity, plan
+  length, cost, latency).
 
 
 ARIAC Tie-in
 ------------
 
-Forward-looking: PT4 (handed out next week) wraps this agent loop around
-ARIAC's real robot actions. The tools the LLM calls are the same pick and
-place actions PT3's BT executor already drives, so the agent produces a plan
-(or a next action) and the classical executor carries it out. Today's exercise
-is a toy version of the PT4 agent.
+GP4 builds this loop on ARIAC: a VLM describes the cells for an LLM agent,
+and the agent drives GP3's executor. GP4 tests it on the situations GP3's
+PDDL domain does not model: a conveyor malfunction, a voltage tester that
+stops reporting, a vacuum tool that fails to grasp, and high-priority orders.
+The agent calls the course skills package, so GP4 needs no MoveIt 2 code;
+L10 opens up the motion layer underneath.
 
 
-References
-----------
+Starting References
+-------------------
 
-- Anthropic API tool use: https://docs.anthropic.com/en/docs/build-with-claude/tool-use
-- OpenAI structured outputs: https://platform.openai.com/docs/guides/structured-outputs
-- Model Context Protocol (MCP): https://modelcontextprotocol.io/
-- ReAct (Yao et al., reason + act): https://arxiv.org/abs/2210.03629
-- JSON Schema specification: https://json-schema.org/
+- Claude vision: https://docs.anthropic.com/en/docs/build-with-claude/vision
+- OpenAI vision: https://platform.openai.com/docs/guides/vision
+- Gemini Robotics: https://deepmind.google/models/gemini-robotics/
+- Qwen-VL: TODO link to model card.
+- LLaVA: TODO link.
+- ARIAC 2025 challenges: https://pages.nist.gov/ARIAC_docs/en/latest/pages/challenges.html
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
 
 
 Next Steps
 ----------
 
-- Week 10 covers VLM grounding and agentic closed-loop replanning, completing
-  the PT4 toolkit.
-- Continue PT3 work; due Week 10.
+- Quiz 4 today (L7 and L8).
+- GP3 is due today. **GP4 is posted today** and is due in Week 13.
+- In the next lecture, we will cover **motion planning**, the layer below the
+  executor.

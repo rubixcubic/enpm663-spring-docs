@@ -1,79 +1,74 @@
-====================================================================================
-Week 3: Knowledge Representation for AI-Augmented Robotics
-====================================================================================
+======================================================
+L3: Knowledge Representation for AI-Augmented Robotics
+======================================================
 
 Overview
 --------
 
-This lecture covers the foundational knowledge-representation (KR) techniques
-that AI-augmented robotic systems rely on. Every architecture's blocks
-exchange representations of the world, the task, and the robot's own state;
-this lecture introduces the formalisms that make those representations
-precise: frames, ontologies, and hierarchical task and world models (4D/RCS).
-Examples are anchored in ARIAC (orders, parts, kits as frame-based
-representations). Teams of 3 are formed at the start of class.
+Every layer of an agentic robot system exchanges a model of the world, the
+task and the robot's own state. This lecture covers the formalisms that make
+those models precise: frames, ontologies, and hierarchical task and world
+models (4D/RCS). The examples use the ARIAC 2025 factory: battery cells,
+kits, modules, AGV stations and high-priority orders.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Explain why knowledge representation matters for AI-augmented robotic
-     systems (LLMs, VLMs, and classical planners all consume some KR).
-   - Apply frame-based representations to model ARIAC orders, parts, and kits.
-   - Describe ontologies and their role in connecting perception to planning.
-   - Distinguish hierarchical KR (4D/RCS) from flat representations.
-   - Map a KR design onto consumers: PDDL predicates, LLM JSON schemas, VLM
-     scene descriptions.
+- Explain why knowledge representation matters when LLMs, VLMs and classical
+  planners all consume the same world model.
+- Apply frame-based representations to ARIAC cells, kits and modules.
+- Describe ontologies and their role in connecting perception to planning.
+- Distinguish hierarchical representations (4D/RCS) from flat ones.
+- Map one representation onto its consumers: PDDL predicates, a JSON schema
+  for an LLM, and a VLM scene description.
 
 
-Topics
-------
+.. admonition:: Materials in progress
+   :class: note
 
-- Why KR matters in AI-augmented systems: the LLM needs to "see" the world
-  as text; the planner needs structured predicates; the executor needs typed
-  action arguments.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- Why representation matters: the LLM reads the world as text, the planner
+  needs predicates, the executor needs typed action arguments.
 - Frame-based representations: slots, fillers, default values, inheritance.
 - Ontologies: classes, relations, instances.
-- Hierarchical task and world models (4D/RCS): time-varying attribute tables.
-- ARIAC representations: orders, products, parts, kit slots, faulty parts,
-  priority levels.
-
-
-Hands-On Exercise
------------------
-
-In teams, design a frame-based representation for an ARIAC kit (slots,
-expected parts per slot, faulty-part handling). Express the same kit as a
-JSON schema for an LLM. Compare what is preserved and what is lost in each
-form.
+- Hierarchical task and world models (4D/RCS).
+- ARIAC representations: a cell (Li-Ion or Ni-MH, voltage, defects), a kit
+  (four cells on a tray, the kit voltage tolerance), a module (shells, cells,
+  welds), AGV stations, high-priority orders.
 
 
 ARIAC Tie-in
 ------------
 
-The same kit representation will be consumed by PT3's PDDL planner (as typed
-predicates), PT4's LLM planner (as JSON schema), and PT5's recovery logic
-(as state to update when a fault is detected). A coherent KR design across
-these consumers is the difference between an integrated and a brittle system.
+One kit representation serves three consumers later in the semester: GP3's
+PDDL planner reads it as typed predicates, GP4's LLM agent reads it as a JSON
+schema, and the final demo's recovery logic updates it when a cell fails
+inspection or a tester stops reporting. A representation that all three can
+use is the difference between an integrated system and a brittle one.
 
 
-References
-----------
+Starting References
+-------------------
 
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
-- ARIAC order interface and configuration files: TODO links into ARIAC docs.
-- Source material: ``Lectures_export/KR-Lecture-Spring2023.pptx`` (NIST 4D/RCS
-  examples to be re-anchored to ARIAC for the new lecture).
+- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+- ARIAC 2025 scenario: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scenario.html
+- Source material: ``Lectures_export/KR-Lecture-Spring2023.pptx`` (NIST 4D/RCS examples to be re-anchored to ARIAC).
 
 
 Next Steps
 ----------
 
-- Teams formed today; one team contract per team (TODO: template) signed
-  before next class.
-- Week 4 covers behavior trees, the executive layer that will consume the KR
-  designed today.
-- Continue PT1 work; due Week 5.
+- Continue GP1; it is due in Week 5.
+- In the next lecture, we will cover **behavior trees**, the executive layer
+  that runs on today's representation.

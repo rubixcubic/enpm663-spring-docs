@@ -1,67 +1,83 @@
 ====================================================
-Week 1: Course Overview and ROS 2 Refresher
+L1: Course Overview and ROS 2 Refresher
 ====================================================
 
 Overview
 --------
 
-This lecture introduces ENPM663 and refreshes the ROS 2 topics most directly
-used throughout the course. We begin with a quick walkthrough of the syllabus,
-team structure, and the ARIAC 2025 testbed, then move into a calibration
-refresher on lifecycle nodes, TF2, QoS profiles, and ROS 2 executors. The
-ungraded diagnostic quiz at the start of class helps both the cohort and the
-instructor see where ROS 2 fluency stands.
+This lecture introduces ENPM663 and what this course means by agentic
+physical AI: an AI agent decides what a robot cell does next, and classical
+robot skills carry it out. It walks through the ARIAC 2025 testbed, a
+simulated EV battery factory, and how a trial is scored. The second half
+refreshes the ROS 2 topics the course uses most: lifecycle nodes, TF2, QoS
+profiles and executors. An ungraded diagnostic quiz at the start of class
+shows you, and the instructor, where your ROS 2 background stands.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Describe the structure, expectations, and grading of ENPM663.
-   - Explain what ARIAC is and why it serves as the course testbed.
-   - Recall ROS 2 publishers/subscribers, services, and actions APIs.
-   - Use lifecycle nodes, TF2, QoS profiles, and ROS 2 executors in Python.
-   - Identify gaps in your own ROS 2 background using the diagnostic quiz.
+- Describe the course structure, the group projects that build up to the final
+  demo, and the grading policies.
+- Explain what physical AI and agentic AI mean, and which part of an agentic
+  robot system this course builds.
+- Describe the ARIAC 2025 factory: its two tasks, its robots and sensors, and
+  how a trial is scored.
+- Recall the ROS 2 Python APIs for publishers, subscribers, services and
+  actions.
+- Use lifecycle nodes, TF2, QoS profiles and executors in Python.
+- Identify gaps in your own ROS 2 background with the diagnostic quiz.
 
 
-Topics
-------
+.. admonition:: Materials in progress
+   :class: note
 
-- Course logistics: syllabus walkthrough, team-formation timeline, PT1 hand-out.
-- ARIAC 2025 overview: kitting and assembly stations, robots, sensors, orders.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- Course logistics: the syllabus, team formation in L2, the four group
+  projects and the final demo.
+- Physical AI and agents: what the terms mean, and the modular stack this
+  course builds.
+- ARIAC 2025: Task 1 (inspection and kit building) and Task 2 (module
+  construction); the inspection robots, assembly robots, gantry welder and
+  AGVs; sensors bought from a budget; the challenges; how a trial is scored.
 - ROS 2 refresher: lifecycle nodes, TF2 transforms, QoS profiles, executors.
-- Diagnostic quiz (ungraded): ROS 2 basics from the prerequisite list.
-
-
-Hands-On Exercise
------------------
-
-Build and run a minimal ROS 2 Python node that publishes a TF transform and
-subscribes to its own publication with a different QoS profile. Verify the
-behavior in ``ros2 topic echo``. (TODO: provide starter package.)
+- Diagnostic quiz (ungraded): the ROS 2 prerequisites.
 
 
 ARIAC Tie-in
 ------------
 
-Open the ARIAC documentation in class and trace one example through the ARIAC
-node graph (orders, sensors, robot controllers). The exercise shows how a
-small ROS 2 system maps to ARIAC's much larger one.
+Trace one battery cell through the factory: the inspection conveyor feeds
+it, a voltage tester reads it, your node submits an inspection report, a robot
+places it in a kit on an AGV tray, and the AGV takes the kit to shipping. Each
+step is a ROS 2 topic, service or action in the ARIAC API.
 
 
-References
-----------
+Starting References
+-------------------
 
 - ROS 2 Jazzy documentation: https://docs.ros.org/en/jazzy/
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC Documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
-- TODO: prerequisite ROS 2 reading list.
+- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+- NVIDIA glossary, physical AI: https://www.nvidia.com/en-us/glossary/generative-physical-ai/
 
 
 Next Steps
 ----------
 
-- PT1 (Behavior Tree for a Simple Kitting Workflow) is handed out today; due Week 5.
-- Form your team of 3 before Week 3 (teams are formed in W3 KR lecture).
-- Read the assigned ARIAC architecture overview before Week 2.
+- Read the ROS 2 Refresher pre-read before this class (see :doc:`Pre-Read
+  </preread/index>`).
+- Install Ubuntu 24.04, ROS 2 Jazzy and ARIAC 2025 with the :doc:`ARIAC
+  Testbed </ariac/ariac>` pages. You need them for GP1, posted in L2.
+- Find two teammates: teams are formed in L2.
+- In the next lecture, we will cover **system architectures**: where AI
+  components plug into a classical robot stack.

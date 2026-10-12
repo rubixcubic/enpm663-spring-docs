@@ -41,47 +41,62 @@ proof_numbered = {
 todo_include_todos = True
 
 templates_path = ["_templates"]
-exclude_patterns = []
+# ---------------------------------------------------------------------------
+# What is published.
+#
+# No lecture is published yet (2026-10-11). L1 to L13 are hidden
+# completely and open one at a time as their decks are finished. To open
+# lecture N:
+#   1. remove N from HIDDEN_LECTURES below,
+#   2. restore its line in the toctree of lectures/index.rst,
+#   3. turn its plain-text tags ("L7") back into links,
+#      :doc:`L7 </lectures/lecture7/l7_index>`, in the glossary and on the
+#      pages that mention it.
+# The source files stay on disk.
+# ---------------------------------------------------------------------------
+HIDDEN_LECTURES = range(1, 14)
+
+exclude_patterns = [f"lectures/lecture{n}/**" for n in HIDDEN_LECTURES]
+
+# GP1 to GP4 are held back until they are posted. Remove an entry here
+# (and restore its toctree line in assignments/index.rst) to publish it.
+HIDDEN_GPS = range(1, 5)
+exclude_patterns += [f"assignments/gp{n}.rst" for n in HIDDEN_GPS]
 
 # ---------------------------------------------------------------------------
 # PyData Sphinx Theme
 # ---------------------------------------------------------------------------
 html_theme = "pydata_sphinx_theme"
-html_last_updated_fmt = "%b %d, %Y"
 
 html_theme_options = {
     # Logo (place files in _static/images/)
     "logo": {
-        "text": "ENPM663 Spring 2027",
-        # TODO: add these two logo image files to _static/images/ (they do not
-        # exist yet); until then the theme falls back to the "text" logo above.
-        "image_light": "_static/images/enpm663_logo_light.png",
-        "image_dark": "_static/images/enpm663_logo_dark.png",
+        # No text: the logo already says ENPM663, and both linked to the home page.
+        "alt_text": "ENPM663 Spring 2027, home",
+        "image_light": "_static/images/enpm663_logo_light.svg",
+        "image_dark": "_static/images/enpm663_logo_dark.svg",
     },
     # Header / navbar icon links
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/zeidk/enpm663-spring-2027-docs",
+            "url": "https://github.com/rubixcubic/enpm663-spring-docs",
             "icon": "fa-brands fa-github",
             "type": "fontawesome",
         },
     ],
     "back_to_top_button": True,
-    "header_links_before_dropdown": 8,
     # Light/dark mode toggle
     "navbar_end": ["theme-switcher", "navbar-icon-links"],
     # Navigation
+    "header_links_before_dropdown": 7,
     "navigation_depth": 3,
     "show_nav_level": 1,
-    "show_toc_level": 2,
+    "show_toc_level": 1,
     "show_prev_next": True,
     # Footer
-    # "footer_start": ["copyright"],
-    "footer_start": ["copyright", "last-updated"],
+    "footer_start": ["copyright"],
     "footer_end": ["theme-version"],
-    # "footer_end": ["custom-footer"],
-    # "footer_end": [],
     # Syntax highlighting for light and dark modes
     "pygments_light_style": "igor",
     "pygments_dark_style": "nord",
@@ -89,8 +104,8 @@ html_theme_options = {
 
 # Edit on GitHub button
 html_context = {
-    "github_user": "zeidk",
-    "github_repo": "enpm663-spring-2027-docs",
+    "github_user": "rubixcubic",
+    "github_repo": "enpm663-spring-docs",
     "github_version": "main",
     "doc_path": "docs/source",
     "default_mode": "dark",
@@ -105,6 +120,13 @@ html_static_path = ["_static"]
 master_doc = "index"
 
 html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
-        "my.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css", "my.css"
+]
+
+# sidebar-persist.js loads without `defer` so the stored sidebar state is
+# applied before the first paint (same as ENPM702 and ENPM818Z).
+html_js_files = [
+    ("sidebar-persist.js", {"defer": None}),
+    # Shape of the Read the Docs version menu; see the file's header.
+    ("flyout-style.js", {"defer": "defer"}),
 ]

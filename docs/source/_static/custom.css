@@ -1,5 +1,5 @@
 /* ============================================================
- * ENPM663 - Custom Theme Enhancements
+ * ENPM702 - Custom Furo Theme Enhancements
  * ============================================================
  * Organized Structure:
  * 1. Imports
@@ -167,7 +167,6 @@ pre {
   --sd-color-success: #66bb6a;
   --sd-color-warning: #ffa726;
   --sd-color-danger: #ff6b6b;
-  --sd-color-dark-orange: #ff8a50;
   
   /* Icon Colors */
   --icon-uml-color: #5b9aff;
@@ -679,7 +678,6 @@ details.sd-dropdown.sd-border-danger > summary {
   border-left: 3px solid var(--sd-color-danger) !important;
 }
 
-
 /* Optional: Add full border instead of just left border */
 details.sd-dropdown.sd-border-full-primary {
   border: 2px solid var(--sd-color-primary) !important;
@@ -709,38 +707,6 @@ details.sd-dropdown.sd-border-full-info {
 .sidebar-logo img {
     max-width: 120px;  /* adjust to taste */
 }
-
-/* ------------------------------------------------------------
- * Figure Centering - Force Center All Figures
- * ------------------------------------------------------------ */
-
-/* Center figures with align-center class */
-figure.align-center,
-.figure.align-center {
-    display: block;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    text-align: center !important;
-}
-
-/* Center images inside figures */
-figure.align-center img,
-.figure.align-center img {
-    display: block;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-
-/* Additional specificity for Furo's structure */
-.content figure.align-center,
-.rst-content figure.align-center,
-.document .documentwrapper figure.align-center {
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
-
-/* Ensure figure captions are centered too */
-figure.align-center figcaption,
-.figure.align-center .caption {
-    text-align: center;
-}
+/* ============================================================
+ * END OF CUSTOM STYLES
+ * ============================================================ */

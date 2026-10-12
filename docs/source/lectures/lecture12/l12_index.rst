@@ -1,81 +1,78 @@
-====================================================================================
-Week 12: Recovery, Robustness, and Failure Handling for AI-Driven Systems
-====================================================================================
+================================================================
+L12: Evaluation and Measurement Science for AI-Augmented Systems
+================================================================
 
 Overview
 --------
 
-This lecture is about what happens when things go wrong. AI-driven systems
-fail in distinctive ways: LLMs hallucinate, VLMs misidentify, plans run on
-stale world state, sensors drop out, parts arrive faulty. This lecture
-collects the BT-level, planner-level, and execution-level patterns for
-catching, classifying, and recovering from these failures. Quiz #5
-(covering W10 LLM II and W11 Motion) is administered at the start of class.
-PT5 (capstone) is handed out today.
+This lecture covers how to measure an agentic robot system. AI components
+add failure modes that the usual metrics (cycle time, success rate) only
+partly capture: a plan can be valid and still wrong, and perception can be
+confident and mistaken. The lecture draws on NIST measurement science to
+define metrics for plan validity, grounding accuracy, execution success and
+end-to-end task performance, and covers the experiment design needed to
+compare two systems fairly. GP4 is due.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Design BT recovery composites: fallback chains, retry with backoff,
-     parallel monitors.
-   - Detect LLM output failures: schema-invalid output, plan calling missing
-     tools, hallucinated objects.
-   - Detect VLM grounding failures: missing parts, wrong colors, position
-     drift.
-   - Handle sensor blackouts: cached state with timeout, partial replanning.
-   - Decide between local recovery (retry) and global recovery (re-plan).
-
-
-Topics
-------
-
-- Failure taxonomy: action failure, sensor failure, plan failure, world
-  drift.
-- BT recovery composites: fallback (selector), retry-with-backoff,
-  parallel monitors that abort the active branch.
-- LLM output validation as a recovery checkpoint; re-prompt with the
-  validation error.
-- VLM cross-checking: ask twice, compare; flag disagreement.
-- Sensor blackout handling: cached state with TTL, degraded operation,
-  ask-for-help signal.
-- ARIAC challenges as failure scenarios: faulty parts, faulty grippers,
-  sensor blackouts, kit rearrangement, high-priority orders.
+- Define plan-level metrics: validity, length, cost.
+- Define perception-level metrics: precision and recall of defect detection,
+  position error.
+- Define execution-level metrics: action success rate, recovery rate, task
+  completion.
+- Design a controlled comparison: change one variable, hold the rest, repeat
+  enough runs.
+- Read the ARIAC 2025 scoring formula and explain what each term rewards or
+  penalizes.
 
 
-Hands-On Exercise
------------------
+.. admonition:: Materials in progress
+   :class: note
 
-Extend a provided BT (TODO: starter) by wrapping a flaky action node with a
-retry decorator (N=3, backoff 1s) and a parallel monitor that watches a
-"part-faulty" topic and triggers a fallback subtree on detection.
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- Measurement science: what "good" means for an agentic system.
+- Plan validity and plan quality: a valid plan may not be the best one.
+- Grounding accuracy: precision and recall of the VLM on defects and cell
+  types.
+- End-to-end metrics: kits and modules completed, time, recoveries, correct
+  handling of each challenge.
+- How many runs: sample size, variation between runs, confidence intervals.
+- ARIAC 2025 scoring as a worked example: base score for kits and modules,
+  bonuses for time, inspection speed, priority orders and sensor cost, and
+  penalties for drops and collisions.
 
 
 ARIAC Tie-in
 ------------
 
-This lecture's content IS the PT5 capstone deliverable's robustness layer.
-The ARIAC challenges that PT5 is graded on (faulty parts, sensor blackouts,
-high-priority orders) all need explicit recovery patterns; today's lecture
-is the toolkit.
+ARIAC scores every trial with a published formula, and the final demo is
+scored the same way on an unseen trial. This lecture is how you measure your
+own system before that day.
 
 
-References
-----------
+Starting References
+-------------------
 
-- ``py_trees_ros`` decorators: TODO link.
-- BehaviorTree.CPP recovery patterns: TODO link.
-- Papers on LLM hallucination detection: TODO links.
-- ARIAC challenge scenarios: TODO link into ARIAC docs.
+- ARIAC 2025 scoring: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scoring.html
+- NIST measurement science publications: TODO links.
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
+- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
 
 
 Next Steps
 ----------
 
-- Quiz #5 today (W10 LLM II, W11 Motion).
-- PT5 (Integrated Capstone) handed out today; due Week 15.
-- PT4 due Week 13.
-- Week 13 covers evaluation and measurement science.
+- GP4 is due today.
+- In the next lecture, we will survey **the physical AI frontier**: the
+  learned models this course did not build.

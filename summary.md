@@ -2,35 +2,44 @@
 
 A short summary of the redesign. The predecessor was ENPM663 "Building a
 Manufacturing Robot Software System" (Spring 2025, co-taught). The new version is
-**ENPM663 Building AI-Augmented Robotic Systems** (Spring 2027, solo).
+**ENPM663 Agentic Physical AI for Manufacturing Robotics** (Spring 2027, solo).
 
 ## The big idea
 
-The course now teaches how modern AI is integrated into an otherwise classical
-ROS 2 robotics stack. AI is concentrated at the **task-planning layer** (LLM
-agents and VLM grounding); motion planning, grasp execution, and control stay
-**classical** (MoveIt2). The classical-to-AI contrast (PDDL first, then an LLM
-agent) is the centerpiece.
+The course teaches how to build robot systems in which AI agents decide what a
+factory cell does next and classical robotics carries it out. AI is concentrated
+at the **task-planning layer** (LLM agents and VLM grounding); motion planning,
+grasp execution and control stay **classical** (MoveIt 2). The classical-to-AI
+contrast (PDDL first, then an LLM agent) is the centerpiece. The last lecture
+surveys the learned side of physical AI (VLA models, robot foundation models,
+world models), and the final demo uses one hosted embodied-reasoning model.
 
 ## What is new
 
-- **New title and framing.** "Manufacturing" dropped to broaden appeal; the
-  focus is general AI-augmented robotics, not manufacturing.
-- **AI direction.** LLM **agents** for task planning (the observe-act-observe
+- **New title.** "Agentic Physical AI for Manufacturing Robotics" (chosen
+  2026-10-11). It brings "manufacturing" back, which matches the ARIAC 2025
+  battery factory.
+- **AI direction.** LLM **agents** for task planning (the observe, act, observe
   loop, tool use via MCP, structured output), VLM grounding, and agentic
-  closed-loop replanning. The vision-language-action (VLA) frontier is surveyed
-  but not built (no policy training, no GPU dependency).
-- **ROS 2 assumed, not taught.** It is now a prerequisite; Week 1 is a refresher
-  plus an ungraded diagnostic, instead of three weeks of ROS 2 from scratch.
+  closed-loop replanning. No policy training and no GPU requirement.
+- **ROS 2 assumed, not taught.** It is a prerequisite; L1 is a refresher plus an
+  ungraded diagnostic, instead of three weeks of ROS 2 from scratch.
 - **Python-primary.** C++ appears only where it is the industry standard (read,
   not write).
-- **Team-only.** Five cumulative team projects (PT1 to PT5), no individual
-  assignments and no separate final. PT5 is the capstone, graded live on an
-  **unseen ARIAC scenario**.
-- **Grading.** 60% team projects / 25% quizzes / 15% peer-review contribution.
-- **New content weeks.** Dedicated Knowledge Representation week (W3); a
-  Recovery, Robustness, and Failure Handling week (W12) replacing learned
-  grasping.
+- **Team-only final project.** Four cumulative group projects (GP1 to GP4) and a
+  final demo graded live on an **unseen ARIAC trial**. No individual
+  assignments and no final exam.
+- **Lectures only.** No in-class exercises and no lab sessions.
+- **Grading.** 60% final project (GP1 to GP4 at 10% each, final demo at 20%) /
+  25% quizzes / 15% peer-review contribution.
+- **New content.** A Knowledge Representation lecture (L3), a Recovery,
+  Robustness, and Failure Handling lecture (L11), and a Physical AI Frontier
+  lecture (L13).
+- **ARIAC 2025.** The projects use the EV battery factory: cell inspection, kit
+  building, module construction, and its challenges (conveyor, voltage tester
+  and vacuum tool malfunctions, high-priority orders).
+- **Course skills package.** ARIAC 2025 gives no pick or place skills, so the
+  course provides them on MoveIt 2 from GP1 on.
 
 ## What was dropped
 
@@ -38,15 +47,15 @@ agent) is the centerpiece.
   behavior tree.
 - Guest lectures (room reallocated to AI content).
 - Learned grasp prediction (kept the AI surface area teachable in one semester).
+- In-class exercises and the Week 14 lab.
 
 ## Stack
 
 Ubuntu 24.04 + ROS 2 Jazzy + Gazebo Harmonic + ARIAC 2025. Behavior trees via
 `py_trees_ros`; PDDL via Fast Downward or the Unified Planning Framework; motion
-via MoveIt2; LLM/VLM via hosted APIs or local open-weight models.
+via MoveIt 2; LLM and VLM via hosted APIs or local open-weight models.
 
 ## Structure at a glance
 
-15 weeks (Week 8 Spring Break) in four arcs: Foundations (W1 to W4),
-Classical-to-AI Planning (W5 to W10), Motion / Recovery / Evaluation (W11 to
-W13), and the PT5 Capstone (W14 to W15).
+Wednesdays, Jan 27 to May 5, 2027 (spring break Mar 14 to 21). 13 lectures
+(L1 to L13) in Weeks 1 to 14, Week 8 spring break, and the final demo in Week 15.

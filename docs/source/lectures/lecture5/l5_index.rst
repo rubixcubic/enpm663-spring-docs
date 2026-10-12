@@ -1,74 +1,78 @@
 ====================================================
-Week 5: Sensing and Perception for Robotic Systems
+L5: Sensing and Perception for Robotic Systems
 ====================================================
 
 Overview
 --------
 
-This lecture covers classical perception for robotic systems: extracting
-structured information (part identities and 3D poses) from camera images.
-We use OpenCV for color segmentation, contour detection, and bounding-box
-extraction, then convert pixel coordinates to robot-frame 3D poses via
-camera intrinsics, extrinsics, and TF2. Quiz #2 (covering Week 4 BTs) is
-administered at the start of class. PT1 is due today; PT2 is handed out.
+This lecture covers classical perception for a factory cell: getting
+structured information out of camera images and sensor topics. In ARIAC 2025
+your team chooses and places its own sensors (RGB cameras, break beams,
+distance sensors, lidar) within a budget. The lecture uses OpenCV to find
+cells and their surface defects (dents, scratches, bulges), combines them
+with the voltage readings, and converts image positions to robot-frame
+positions with the camera model and TF2. Quiz 2 (L4) is given at the start of
+class. GP1 is due and GP2 is posted.
 
 
-.. admonition:: Learning Objectives
-   :class: learning-objectives
+Learning Objectives
+-------------------
 
-   By the end of this lecture, you will be able to:
+By the end of this lecture, you will be able to:
 
-   - Use OpenCV to segment colored objects and extract bounding boxes and
-     centroids.
-   - Convert pixel coordinates to camera-frame 3D coordinates using camera
-     intrinsics and depth.
-   - Transform camera-frame poses to a world frame using TF2.
-   - Wrap a perception pipeline as a ROS 2 node with publish/subscribe.
-   - Evaluate perception output against ground-truth poses.
-
-
-Topics
-------
-
-- Image preprocessing: color spaces (BGR, HSV), thresholding, morphological
-  operations.
-- Contour detection and bounding-box extraction; centroid estimation.
-- Camera model: intrinsics, extrinsics, depth, pixel-to-3D conversion.
-- TF2 in perception pipelines: camera frame to world frame.
-- ROS 2 perception node patterns: image subscriber, pose publisher, latency.
+- Choose sensors and their placement for an inspection task within a budget.
+- Use OpenCV to segment objects and extract features from an RGB image.
+- Convert image coordinates to camera-frame and world-frame positions with the
+  camera model, known geometry and TF2.
+- Wrap a perception pipeline as a ROS 2 node.
+- Evaluate a defect detector with precision and recall against ground truth.
 
 
-Hands-On Exercise
------------------
+.. admonition:: Materials in progress
+   :class: note
 
-Given a static ARIAC scene image (TODO: provide), detect parts by color and
-output their image-frame centroids. Then add TF2 to convert one detection
-into a world-frame pose using a published camera transform. (TODO: starter
-package.)
+   The lecture notes, quiz and references for this lecture are written with
+   the slide deck and are not published yet. This page will link to them
+   once they are ready. The topics below are the plan.
+
+
+Planned Topics
+--------------
+
+- ARIAC 2025 sensors: RGB cameras, break beams, distance sensors and lidar;
+  their cost grades and the sensor budget.
+- Image preprocessing: color spaces, thresholding, morphological operations.
+- Finding cells and surface defects: contours, regions, simple features.
+- Camera model: intrinsics and extrinsics; locating an object on a known plane
+  (the conveyor) without a depth camera.
+- TF2 in a perception pipeline: camera frame to world frame.
+- ROS 2 perception node patterns: image subscriber, result publisher, latency.
+- Inspection reports: pass or fail, the defect list, and the voltage readings.
 
 
 ARIAC Tie-in
 ------------
 
-ARIAC's overhead RGB-D cameras above the supply bins are the input to PT2's
-perception pipeline. The four part colors (red, green, blue, purple) and
-four part types (battery, sensor, regulator, pump) define the detection
-classes.
+GP2 is this lecture applied to the inspection conveyor: place cameras within
+the sensor budget, detect dents, scratches and bulges, combine them with the
+voltage readings, and submit an inspection report for each cell. The GP1
+behavior tree then recycles the cells that fail.
 
 
-References
-----------
+Starting References
+-------------------
 
 - OpenCV documentation: https://docs.opencv.org/4.x/
 - ROS 2 TF2 tutorials: https://docs.ros.org/en/jazzy/Tutorials/Intermediate/Tf2/
-- ARIAC sensor configuration: TODO link into ARIAC docs.
+- ARIAC 2025 sensors: https://pages.nist.gov/ARIAC_docs/en/latest/pages/sensors.html
 - ARIAC GitHub: https://github.com/usnistgov/ARIAC
 
 
 Next Steps
 ----------
 
-- Quiz #2 today (Week 4 BTs).
-- PT1 due today; PT2 (Perception Pipeline) is handed out and due Week 7.
-- Week 6 covers PDDL, the classical task-level planner that consumes the KR
-  and perception output.
+- Quiz 2 today (L4).
+- GP1 is due today. **GP2 is posted today** and is due in Week 7.
+- In the next lecture, we will cover **task planning with PDDL**, the
+  classical planner that consumes the representation and the perception
+  output.
