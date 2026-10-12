@@ -1,0 +1,13 @@
+A. belt at 0.1 m/s, arm starts after 2.0 s
+  arm starts at t = 2.0 s, cell at 0.20 m
+  arm meets it at t = 3.5 s, cell at 0.35 m
+  in reach: move
+B. belt at 0.1 m/s, arm starts after 3.5 s
+  arm starts at t = 3.5 s, cell at 0.35 m
+  arm meets it at t = 5.0 s, cell at 0.50 m
+  out of reach: refuse
+C. belt stops 1.0 s after the beam fires
+  arm starts at t = 2.0 s, cell at 0.10 m
+  arm meets it at t = 3.5 s, cell at 0.10 m
+  in reach: move
+one cell every 10 s at 0.1 m/s: 1.0 m apart

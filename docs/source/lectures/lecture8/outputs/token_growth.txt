@@ -1,0 +1,12 @@
+ReAct, one call per step
+steps last call   input output  cost $
+    5      3000   12500    500  0.0300
+   10      4250   31250   1000  0.0725
+   20      6750   87500   2000  0.1950
+   40     11750  275000   4000  0.5900
+Plan-and-execute, one plan and one replan
+steps     calls   input output  cost $
+    5         2    4000    400  0.0120
+   10         2    4000    800  0.0160
+   20         2    4000   1600  0.0240
+   40         2    4000   3200  0.0400

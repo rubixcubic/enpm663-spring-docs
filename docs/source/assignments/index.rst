@@ -182,6 +182,9 @@ Task 2 (module construction), and handles the ARIAC challenges:
    modes you met and how you handled them.
 5. **Peer evaluation:** individual contribution assessment.
 
+The run rules, the tasks and the rubric are on the final demo page, posted
+with the final demo specification in Week 12.
+
 
 Academic Integrity
 ------------------
@@ -228,3 +231,4 @@ Support Resources
 ..    gp2
 ..    gp3
 ..    gp4
+..    final_demo

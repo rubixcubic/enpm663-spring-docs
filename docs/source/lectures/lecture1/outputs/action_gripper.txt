@@ -1,0 +1,7 @@
+goal to 0.000 m: accepted=True
+  10 feedback messages, last 0.0000 m
+  status SUCCEEDED, result position 0.0000 m
+goal to 0.000 m: accepted=True
+  cancel requested after 0.5 s
+  3 feedback messages, last 0.0595 m
+  status CANCELED, result position 0.0595 m

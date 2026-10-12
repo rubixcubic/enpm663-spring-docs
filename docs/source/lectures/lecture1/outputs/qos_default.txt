@@ -1,0 +1,3 @@
+[WARN] [1791836826.980434805] [beam_listener]: New subscription discovered on topic 'beam/change', requesting incompatible QoS. No messages will be sent to it. Last incompatible policy: RELIABILITY
+[WARN] [1791836826.981080615] [beam_listener]: New publisher discovered on topic 'beam/change', offering incompatible QoS. No messages will be received from it. Last incompatible policy: RELIABILITY
+sent 20, received 0

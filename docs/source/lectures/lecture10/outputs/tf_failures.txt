@@ -1,0 +1,15 @@
+1. a frame nobody publishes
+  LookupException
+    "agv9_frame" passed to lookupTransform argument source_frame
+    does not exist.
+2. a time newer than the newest transform
+  ExtrapolationException
+    Lookup would require extrapolation at time
+    1791838560.048264, but only time 1791838555.048264 is in the
+    buffer, when looking up transform from frame [agv1_frame] to
+    frame [world]
+3. two trees that never connect
+  ConnectivityException
+    Could not find a connection between 'world' and
+    'top_camera_frame' because they are not part of the same
+    tree.Tf has two or more unconnected trees.

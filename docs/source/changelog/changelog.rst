@@ -6,10 +6,41 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.3.0: Lidar Inspection, Instructor-Run Final Demo, Refresher Topics (2026-10-12)
+.. dropdown:: v0.4.0: Lecture Pages, Project Pages and Glossary (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lectures
+
+   - **L1 to L13** each have lecture notes, the lecture code with its
+     outputs, take-home exercises with worked solutions (not graded), a
+     self-check quiz (not graded) and references. The pages stay hidden
+     until each lecture opens.
+   - **Defect depth:** the ARIAC documentation says every defect is at least
+     2 mm from the cell surface. ARIAC's training cell meshes measure 0.84 to
+     2.49 mm. The pages now give the measured range.
+
+   .. rubric:: Group projects
+
+   - The GP1 to GP4 pages and the final demo page are written in full. They
+     stay hidden until each project is posted.
+
+   .. rubric:: Glossary
+
+   - The glossary covers every lecture, with 186 terms. Fixed: ARIAC 2025
+     has three AGVs, and AGVs are moved with ARIAC's own action, not a
+     course skill. Lifecycle nodes are tagged with the pre-read, where they
+     moved in v0.3.0.
+
+   .. rubric:: Site
+
+   - ``tools/check_figures.py`` checks SVG figures too.
+
+
+.. dropdown:: v0.3.0: Lidar Inspection, Instructor-Run Final Demo, Refresher Topics (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Group projects
 

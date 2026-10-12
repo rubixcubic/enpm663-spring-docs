@@ -5,13 +5,43 @@ L1: Course Overview and ROS 2 Refresher
 Overview
 --------
 
-This lecture introduces ENPM663 and what this course means by agentic
-physical AI: an AI agent decides what a robot cell does next, and classical
-robot skills carry it out. It walks through the ARIAC 2025 testbed, a
-simulated EV battery factory, and what a trial's score rewards. The second
-half refreshes the ROS 2 topics the course uses most: QoS profiles,
-executors, actions and TF2. An ungraded diagnostic quiz at the start of class
-shows you, and the instructor, where your ROS 2 background stands.
+This lecture opens ENPM663. It starts with an ungraded **diagnostic quiz** on
+your ROS 2 background, then walks through how the course runs: four group
+projects and a final demo, five quizzes and a peer review. The full rules are
+in the :doc:`syllabus </syllabus/index>`.
+
+The first content block defines the words in the course title. **Physical
+AI**, in NVIDIA's words, lets robots and other autonomous systems "perceive,
+understand, reason, and perform or orchestrate complex actions in the physical
+world." An **agent** is a program that runs a loop around a large language
+model (LLM): it observes the world, asks the model what to do, calls a tool,
+checks the result and repeats. In this course the agent decides what a factory
+cell does next, and classical robot skills carry out each decision.
+
+The second block introduces the testbed you use all semester: **ARIAC 2025**,
+NIST's simulated EV battery factory. You see its two tasks (inspection and kit
+building, then module construction), its robots, the sensors your team buys
+from a budget, the four challenges and what a run's score rewards. A worked
+example computes the **kit voltage window**: the range a kit's total voltage
+must fall in.
+
+The last block traces one battery cell through the ARIAC ROS 2 interfaces, then
+refreshes the four ROS 2 topics the course uses most: **QoS profiles**,
+**executors**, **actions** and **TF2**. Each one comes with a short script and
+its measured output.
+
+.. important::
+
+   **ARIAC tie-in.** Every step of Task 1 is a ROS 2 topic, service or action.
+   A cell rides the inspection conveyor, your node submits its inspection
+   report before the inspection door, a robot places it in a voltage tester,
+   another robot places it on an AGV tray, and the AGV takes the kit to
+   shipping. The refresher topics are what make those interfaces work.
+
+.. important::
+
+   **Group project.** GP1, a behavior tree that builds one kit, is posted in
+   L2. It needs a working ARIAC install, so install it this week.
 
 
 Learning Objectives
@@ -19,67 +49,47 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Describe the course structure, the group projects that build up to the final
-  demo, and the grading policies.
-- Explain what physical AI and agentic AI mean, and which part of an agentic
-  robot system this course builds.
-- Describe the ARIAC 2025 factory: its two tasks, its robots and sensors, and
-  what a trial's score rewards (L12 teaches the scoring formula).
-- Recall the ROS 2 Python APIs for publishers, subscribers, services and
-  actions.
-- Use QoS profiles, executors, actions (goal, feedback, cancel, result) and
-  TF2 in Python.
+- Describe the course structure: GP1 to GP4, the final demo, the grading
+  weights, the quizzes and the AI policy.
+- Explain what physical AI and an LLM agent are, and which layer of a robot
+  system this course builds with AI.
+- Describe the ARIAC 2025 factory: its two tasks, its robots, sensors and
+  challenges, and what a run's score rewards.
+- Compute a kit voltage window from a cell type's nominal voltage and the kit
+  tolerance.
+- Explain, from measured demonstrations, how QoS, executors, actions and TF2
+  affect a node that works with ARIAC.
 - Identify gaps in your own ROS 2 background with the diagnostic quiz.
 
 
-.. admonition:: Materials in progress
-   :class: note
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   The lecture notes, quiz and references for this lecture are written with
-   the slide deck and are not published yet. This page will link to them
-   once they are ready. The topics below are the plan.
-
-
-Planned Topics
---------------
-
-- Course logistics: the syllabus, team formation in L2, the four group
-  projects and the final demo.
-- Physical AI and agents: what the terms mean, and the modular stack this
-  course builds.
-- ARIAC 2025: Task 1 (inspection and kit building) and Task 2 (module
-  construction); the inspection robots, assembly robots, gantry welder and
-  AGVs; sensors bought from a budget; the challenges; how a trial is scored.
-- ROS 2 refresher: QoS profiles, executors, actions, TF2 transforms.
-- Diagnostic quiz (ungraded): the ROS 2 prerequisites.
-
-
-ARIAC Tie-in
-------------
-
-Trace one battery cell through the factory: the inspection conveyor feeds
-it, your node submits an inspection report before the inspection door, a
-robot places it in a voltage tester, the tester reads it, another robot
-places it in a kit on an AGV tray, and the AGV takes the kit to shipping.
-Each step is a ROS 2 topic, service or action in the ARIAC API.
-
-
-Starting References
--------------------
-
-- ROS 2 Jazzy documentation: https://docs.ros.org/en/jazzy/
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
-- NVIDIA glossary, physical AI: https://www.nvidia.com/en-us/glossary/generative-physical-ai/
+   l1_lecture
+   l1_code
+   l1_exercises
+   l1_quiz
+   l1_references
 
 
 Next Steps
 ----------
 
-- Read the ROS 2 Refresher pre-read before this class (see :doc:`Pre-Read
-  </preread/index>`).
-- Install Ubuntu 24.04, ROS 2 Jazzy and ARIAC 2025 with the :doc:`ARIAC
-  Testbed </ariac/ariac>` pages. You need them for GP1, posted in L2.
-- Find two teammates: teams are formed in L2.
-- In the next lecture, we will cover **system architectures**: where AI
-  components plug into a classical robot stack.
+- In the next lecture we cover **L2: System Architectures for AI-Augmented
+  Robotics**:
+
+  - Classical robot architectures and the three-layer architecture.
+  - Where an LLM agent and a VLM plug into a robot stack.
+  - Teams form, and GP1 is posted.
+
+- **Before next class:**
+
+  - Install Ubuntu 24.04, ROS 2 Jazzy and ARIAC 2025 with the
+    :doc:`ARIAC Testbed </ariac/ariac>` pages, and run the example trial.
+  - Run the four L1 scripts (see :doc:`l1_code`) and compare your outputs
+    with the ones in the notes.
+  - Work through the :doc:`L1 exercises <l1_exercises>` and the
+    :doc:`self-check quiz <l1_quiz>`.
+  - Find two teammates. Teams form in L2.

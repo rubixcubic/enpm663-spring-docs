@@ -1,0 +1,20 @@
+A good plan: accepted
+B fifth slot: rejected at layer 2 (schema)
+    actions.0.args.slot: 5 is greater than the maximum of 4
+C made-up tool: rejected at layer 3 (tools)
+    unknown tool 'test_voltage'
+D made-up cell: rejected at layer 4 (objects)
+    cell 'c9' is not in the world state
+
+Policy run 1: bad reply, then a fixed one
+  try 1: rejected at layer 2 (schema)
+    actions.0.args.slot: 5 is greater than the maximum of 4
+  re-prompt: the same request plus that error
+  try 2: accepted, sent to the executor
+Policy run 2: two bad replies in a row
+  try 1: rejected at layer 2 (schema)
+    actions.0.args.slot: 5 is greater than the maximum of 4
+  re-prompt: the same request plus that error
+  try 2: rejected at layer 4 (objects)
+    cell 'c9' is not in the world state
+  fall back: hold the cell, keep the classical plan

@@ -1,0 +1,16 @@
+tool: move-agv
+  description: Move one AGV to a station (ARIAC /agvN/move).
+  input_schema, type: object
+    agv: {"maximum": 3, "minimum": 1, "title": "Agv", "type": "integer"}
+    station: {"enum": ["INSPECTION", "ASSEMBLY", "SHIPPING", "RECYCLING"], "title": "Station", "type": "string"}
+    required: ["agv", "station"]
+call: {"agv": 1, "station": "SHIPPING"}
+  is_error: False
+  result: {"status": "SUCCEEDED", "agv": 1, "station": "SHIPPING"}
+call: {"agv": 1, "station": "ASSEMBLY"}
+  is_error: False
+  result: {"status": "REJECTED", "reason": "no ARIAC path SHIPPING to ASSEMBLY"}
+call: {"agv": 4, "station": "SHIPPING"}
+  is_error: True
+  result: Error executing tool move-agv: 1 validation error for moveArguments
+    Input should be less than or equal to 3

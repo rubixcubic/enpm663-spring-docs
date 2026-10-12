@@ -63,6 +63,13 @@ exclude_patterns = [f"lectures/lecture{n}/**" for n in HIDDEN_LECTURES]
 HIDDEN_GPS = range(1, 5)
 exclude_patterns += [f"assignments/gp{n}.rst" for n in HIDDEN_GPS]
 
+# The final demo page is held back with the GPs until its specification is
+# posted (Week 12). To publish it, delete this line and restore its toctree
+# line and its link in assignments/index.rst.
+HIDE_FINAL_DEMO = True
+if HIDE_FINAL_DEMO:
+    exclude_patterns += ["assignments/final_demo.rst"]
+
 # ---------------------------------------------------------------------------
 # PyData Sphinx Theme
 # ---------------------------------------------------------------------------

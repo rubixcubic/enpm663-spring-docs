@@ -1,0 +1,34 @@
+[INFO] [1791838655.984644555] [gp1_tree]: ... connected to action server [pick_from_tester][FromConstant/pick_from_tester]
+[INFO] [1791838655.985976018] [gp1_tree]: ... connected to action server [place_in_slot][FromConstant/place_in_slot]
+[INFO] [1791838655.986641908] [gp1_tree]: ... connected to service server [/check_kit][FromConstant/check_kit]
+{-} move_cell
+    --> read_voltage
+    -^- retry_pick
+        --> pick_from_tester
+    -^- timeout_place
+        --> place_in_slot
+    --> check_kit
+    --> kit_is_good
+
+ 0.1 s  tick  1: read_voltage RUNNING
+ 0.1 s  tick  1: move_cell RUNNING
+ 0.2 s  tick  2: read_voltage SUCCESS
+ 0.2 s  tick  2: pick_from_tester RUNNING
+ 0.2 s  tick  2: retry_pick RUNNING
+ 0.6 s  [server] pick_from_tester: goal aborted
+ 0.7 s  tick  7: pick_from_tester FAILURE
+ 0.8 s  tick  8: pick_from_tester RUNNING
+ 1.2 s  [server] pick_from_tester: goal succeeded
+ 1.3 s  tick 13: pick_from_tester SUCCESS
+ 1.3 s  tick 13: retry_pick SUCCESS
+ 1.3 s  tick 13: place_in_slot RUNNING
+ 1.3 s  tick 13: timeout_place RUNNING
+ 1.9 s  [server] place_in_slot: goal succeeded
+ 2.0 s  tick 20: place_in_slot SUCCESS
+ 2.0 s  tick 20: timeout_place SUCCESS
+ 2.0 s  tick 20: check_kit RUNNING
+ 2.1 s  tick 21: check_kit SUCCESS
+ 2.1 s  tick 21: kit_is_good SUCCESS
+ 2.1 s  tick 21: move_cell SUCCESS
+check_kit reply: success=True, message='stand-in: kit accepted'
+tree finished: SUCCESS after 21 ticks; 21 voltage messages heard

@@ -5,16 +5,61 @@ L9: LLM Agents II: VLM Grounding and Agentic Replanning
 Overview
 --------
 
-This lecture extends the L8 agent in two directions. With VLM grounding, a
-vision-language model describes what the cameras see, and the agent uses that
-description as its observation. With agentic replanning, the orchestrator
-notices that the factory has drifted from the expected state and asks the
-LLM again with the new observations. The lecture also draws the boundary
-honestly: for a fully specified task, the PDDL planner from L6 is often the
-better tool (cheaper, deterministic, auditable). The LLM agent earns its
-place when the situation is ambiguous, new, or needs a recovery the PDDL
-domain did not plan for. Quiz 4 (L7 and L8) is given at the start of class.
-GP3 is due and GP4 is posted.
+The L8 agent observed ROS 2 topics only, and it ran its plan without checking
+the world after each step. This lecture adds two things to it.
+
+The first is **grounding**. A **vision-language model (VLM)** takes a camera
+image and a text prompt, and returns text. You ask it for a JSON record that
+your code checks against a schema: for each tray slot, whether it is occupied,
+the cell type, any visible damage and a confidence. Your code then checks each
+field against a second source. Tray occupancy comes from ARIAC's
+``/agvN/tray_status`` topic. The cell type comes from the voltage your team
+recorded for the cell on a voltage tester. A field where the two disagree is a
+flag, and the agent does not act on it.
+
+The second is **replanning**. After each action, the orchestrator observes the
+factory again and compares what it sees with the action's expected effect. On
+a mismatch it does one of three things: it **retries** the action, it
+**waits** for a device to come back, or it asks the LLM for a **new plan**. A
+decision chart picks among the three, and the lecture applies it to the four
+ARIAC 2025 challenges.
+
+Two demonstrations in plain Python show both ideas. One checks a VLM's tray
+record before a high-priority order is submitted. The other runs a closed loop
+through a conveyor malfunction, a voltage tester malfunction and a lost grasp.
+Both use **scripted stand-ins** for the models: they return canned replies, and
+a real model's answers vary.
+
+The lecture ends with a limit: for a fully specified task, such as the normal
+Task 1 flow, the PDDL planner from GP3 is the better tool. It costs nothing per
+call, gives the same plan for the same input, and plans from a domain file
+anyone can read. The LLM agent earns its place on ambiguity, on cases the
+domain has no action for, and on recovery the domain did not plan for.
+
+.. important::
+
+   **ARIAC tie-in.** The cameras the VLM reads are yours to place, and each
+   one costs money from the sensor budget. Lidar still finds the defects
+   (GP2). The agent observes the conveyor and voltage tester status topics,
+   the AGV tray status and the high-priority order topic, and it reacts to
+   the conveyor malfunction, the voltage tester malfunction and the
+   high-priority order.
+
+.. important::
+
+   **Group project.** GP3 (PDDL planner and behavior tree executor) is due
+   today. **GP4 (LLM agent with VLM grounding) is posted today** and is due in
+   Week 13 (04/21). GP4 replaces the GP3 planner with an LLM agent, adds a
+   VLM, and tests the agent on a conveyor malfunction, a voltage tester
+   malfunction and high-priority orders. The vacuum tool malfunction happens
+   only in Task 2, so the final demo tests it, not GP4.
+
+.. admonition:: This week
+   :class: warning
+
+   - **Quiz 4** (L7 and L8) opens the class.
+   - **GP3 is due**, with its peer-review form.
+   - **GP4 is posted.**
 
 
 Learning Objectives
@@ -22,70 +67,53 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Use a VLM (a hosted multimodal API or a local model) to describe a cell or a
-  tray from an ARIAC camera image.
-- Design a prompt that asks a VLM for defects and spatial relations, not only
-  labels.
-- Implement an agentic closed loop: observe, act, re-observe, replan when the
-  state drifts.
-- Decide when to retry one action and when to ask for a new plan.
-- Judge when a PDDL planner is the right tool and when an LLM agent is, and
-  defend the choice for a given situation.
+- Describe how a call to a VLM differs from a text-only LLM call (image input,
+  prompt, structured output), and name hosted, local and embodied-reasoning
+  options.
+- Design a VLM prompt and JSON schema that ask for the cell type, tray slot
+  and visible damage of each cell in an ARIAC camera image.
+- Check a VLM's record against a second source, and decide what to do when
+  they disagree.
+- Explain the agentic closed loop: act, observe again, compare the observed
+  state with the expected state, and replan when they differ.
+- Classify an ARIAC failure as a case for retrying one action, waiting, or
+  asking for a new plan, and justify the choice.
+- Compare a PDDL planner and an LLM agent on validity, plan length, cost and
+  latency, and describe the GP4 deliverables.
 
 
-.. admonition:: Materials in progress
-   :class: note
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   The lecture notes, quiz and references for this lecture are written with
-   the slide deck and are not published yet. This page will link to them
-   once they are ready. The topics below are the plan.
-
-
-Planned Topics
---------------
-
-- VLMs in 2026: hosted multimodal APIs (Claude, GPT, Gemini), local models
-  (Qwen-VL, LLaVA), and embodied-reasoning models (Gemini Robotics ER) that
-  answer spatial questions about an image.
-- Scene description prompts: from "describe the image" to "list each cell, its
-  defects and its slot".
-- The agentic closed loop: act, re-observe, replan when the state drifted; the
-  L8 loop closed around feedback.
-- Replanning triggers: a failed action, an inconsistent world state, a
-  high-priority order.
-- When not to use an LLM: for a fully specified task, PDDL is cheaper,
-  deterministic and auditable.
-- Side by side: PDDL and the LLM agent on the same trial (validity, plan
-  length, cost, latency).
-
-
-ARIAC Tie-in
-------------
-
-GP4 builds this loop on ARIAC: a VLM describes the cells for an LLM agent,
-and the agent drives GP3's executor. GP4 tests it on the situations GP3's
-PDDL domain does not model: a conveyor malfunction, a voltage tester that
-stops giving valid readings, a vacuum tool that fails to grasp, and high-priority orders.
-The agent calls the course skills package, so GP4 needs no MoveIt 2 code;
-L10 opens up the motion layer underneath.
-
-
-Starting References
--------------------
-
-- Claude vision: https://docs.anthropic.com/en/docs/build-with-claude/vision
-- OpenAI vision: https://platform.openai.com/docs/guides/vision
-- Gemini Robotics: https://deepmind.google/models/gemini-robotics/
-- Qwen-VL: TODO link to model card.
-- LLaVA: TODO link.
-- ARIAC 2025 challenges: https://pages.nist.gov/ARIAC_docs/en/latest/pages/challenges.html
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+   l9_lecture
+   l9_code
+   l9_exercises
+   l9_quiz
+   l9_references
 
 
 Next Steps
 ----------
 
-- Quiz 4 today (L7 and L8).
-- GP3 is due today. **GP4 is posted today** and is due in Week 13.
-- In the next lecture, we will cover **motion planning**, the layer below the
-  executor.
+- In the next lecture we cover **L10: Frames, Transforms, and Motion
+  Planning** (Wednesday, April 7):
+
+  - TF2 in depth.
+  - The camera model: from a pixel to a pose.
+  - MoveIt 2, and the inside of the course skills package.
+
+- **Quiz 5** (Wednesday, April 14, start of class) covers L9 and L10.
+
+- **Before next class:**
+
+  - Submit GP3 and its peer-review form on ELMS-Canvas.
+  - Read the GP4 specification, and agree on who owns the agent, the VLM
+    module and the comparison.
+  - Set up LLM and VLM access (a hosted API key or a local model with
+    Ollama) with the :doc:`AI Access </ariac/ai_setup>` page.
+  - Run the two L9 scripts (see :doc:`l9_code`) and compare your outputs with
+    the ones in the notes.
+  - Work through the :doc:`L9 exercises <l9_exercises>` and the
+    :doc:`self-check quiz <l9_quiz>`.

@@ -1,0 +1,9 @@
+height 1, width 400, point_step 12, row_step 4800, 4800 bytes
+  field x: offset 0, datatype 7 (7 = FLOAT32)
+  field y: offset 4, datatype 7 (7 = FLOAT32)
+  field z: offset 8, datatype 7 (7 = FLOAT32)
+read back (399, 3), 136 rows still not finite
+after np.isfinite: (263, 3)
+world frame: 212 points on the cell, 51 on the belt
+first point, lidar frame: [ 0.0822 -0.0096 -0.035 ]
+first point, world frame: [0.6596 0.9822 0.422 ]

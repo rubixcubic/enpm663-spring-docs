@@ -5,12 +5,45 @@ L3: Knowledge Representation for AI-Augmented Robotics
 Overview
 --------
 
-Every layer of an agentic robot system exchanges a model of the world, the
-task and the robot's own state. This lecture covers the formalisms that make
-those models precise: frames and ontologies, and two ideas from NIST's
-4D/RCS reference model that the course uses inside the three-layer
-architecture from L2. The examples use the ARIAC 2025 factory: battery
-cells, kits, modules, AGV stations and high-priority orders.
+**L2 drew the boundaries between the layers of a robot system. This lecture
+asks what crosses them.** The answer is a representation of the world, the
+task and the robot. **Knowledge representation** is the study of how to write
+that model down so programs can use it.
+
+Three programs in this course read the same world model, each in its own
+form: a PDDL planner (GP3) needs typed objects and true or false facts, an LLM
+agent (GP4) reads text and must answer in a form a JSON schema can check, and
+the executor (from GP1 on) needs typed action arguments. The lecture starts
+with what goes wrong when they do not share one model.
+
+It then covers two formalisms. **Frames**, from Minsky's 1974 memo, describe a
+kind of object as named slots with fillers and defaults, and more specific
+frames inherit the slots of general ones; the lecture builds frames for ARIAC
+cells, kits, modules, AGVs and high-priority orders. An **ontology** adds the
+classes, the relations between them and the instances that exist now, so
+software can check that a statement makes sense.
+
+Next come two ideas from NIST's **4D/RCS** reference model, used inside L2's
+three layers: each layer keeps only the detail it decides with, and an error
+is handled where it is seen, with status passed up. Then one kit state is
+written three ways (PDDL facts, a JSON record checked by a JSON schema, and
+text), all printed by one script, with a worked example that picks the voltage
+range of the kit's fourth cell. The lecture ends with what the GP1 tree must
+know: which facts are observed, which are inferred and which are unknown.
+
+.. important::
+
+   **ARIAC tie-in.** One kit representation serves three readers later in the
+   semester: GP3's planner reads it as facts, GP4's agent reads it as a record
+   checked by a JSON schema, and the final demo's recovery logic updates it
+   when a cell fails inspection or a tester stops giving valid readings.
+
+.. important::
+
+   **Group project.** GP1 is under way. Its world model lives on the
+   ``py_trees`` blackboard, so decide your key names and types now: they are
+   interfaces, and your team charter, due before this class, assigns who owns
+   them.
 
 
 Learning Objectives
@@ -18,64 +51,47 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Explain why knowledge representation matters when LLMs, VLMs and classical
-  planners all consume the same world model.
-- Apply frame-based representations to ARIAC cells, kits and modules.
-- Describe ontologies and their role in connecting perception to planning.
-- Explain two ideas taken from 4D/RCS, a world model at each layer and
-  errors handled where they are seen with status passed up, and apply them
-  to the three layers of the ARIAC stack.
-- Map one representation onto its consumers: PDDL predicates, a JSON schema
-  for an LLM, and a VLM scene description.
+- Explain why representation matters when a PDDL planner, an LLM agent and
+  an executor use the same world model.
+- Apply frames (slots, fillers, defaults, inheritance) to ARIAC cells, kits,
+  modules and AGVs.
+- Describe an ontology and its role in connecting perception to planning.
+- Explain two ideas from NIST's 4D/RCS reference model, and apply them to
+  the three layers of the ARIAC stack.
+- Write one kit as PDDL facts, as a JSON record checked by a JSON schema, and
+  as text.
+- Identify which facts about a cell are observed, inferred or unknown at a
+  step of Task 1.
 
 
-.. admonition:: Materials in progress
-   :class: note
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   The lecture notes, quiz and references for this lecture are written with
-   the slide deck and are not published yet. This page will link to them
-   once they are ready. The topics below are the plan.
-
-
-Planned Topics
---------------
-
-- Why representation matters: the LLM reads the world as text, the planner
-  needs predicates, the executor needs typed action arguments.
-- Frame-based representations: slots, fillers, default values, inheritance.
-- Ontologies: classes, relations, instances.
-- A world model at each layer, and errors that move up: two ideas from
-  4D/RCS, applied to the three layers of the ARIAC stack.
-- ARIAC representations: a cell (Li-Ion or Ni-MH, voltage, defects), a kit
-  (four cells on a tray, the kit voltage tolerance), a module (shells, cells,
-  welds), AGV stations, high-priority orders.
-
-
-ARIAC Tie-in
-------------
-
-One kit representation serves three consumers later in the semester: GP3's
-PDDL planner reads it as typed predicates, GP4's LLM agent reads it as a JSON
-schema, and the final demo's recovery logic updates it when a cell fails
-inspection or a tester stops giving valid readings. A representation that all three can
-use is the difference between an integrated system and a brittle one.
-
-
-Starting References
--------------------
-
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
-- ARIAC 2025 scenario: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scenario.html
-- J. Albus et al., *4D/RCS: A Reference Model Architecture for Unmanned
-  Vehicle Systems, Version 2.0*, NISTIR 6910, NIST, 2002:
-  https://doi.org/10.6028/NIST.IR.6910
-- Source material: ``Lectures_export/KR-Lecture-Spring2023.pptx`` (NIST 4D/RCS examples to be re-anchored to ARIAC).
+   l3_lecture
+   l3_code
+   l3_exercises
+   l3_quiz
+   l3_references
 
 
 Next Steps
 ----------
 
-- Continue GP1; it is due in Week 5.
-- In the next lecture, we will cover **behavior trees**, the executive layer
-  that runs on today's representation.
+- **Quiz 1** is next week (Wednesday, February 17), at the start of class:
+  closed notes, on ELMS-Canvas or paper, covering L1 to L3. Review the ARIAC
+  2025 tasks, challenges and what the score rewards; QoS, executors, actions
+  and TF2 and their demo results; the classical and three-layer architectures
+  and where AI plugs in; frames, ontologies, the two 4D/RCS ideas and the
+  three views of a kit.
+- In the next lecture we cover **L4: Behavior Trees for Task Execution**, the
+  executive layer that runs on today's representation. After L4, your team
+  writes the GP1 tree.
+- **Before next class:**
+
+  - Run ``kit_views.py`` (see :doc:`l3_code`) and compare your output with
+    the notes.
+  - Work through the :doc:`L3 exercises <l3_exercises>` and the
+    :doc:`self-check quiz <l3_quiz>`.
+  - Continue GP1 setup, and agree on your blackboard key names.

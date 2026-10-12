@@ -1,0 +1,5 @@
+slot 1 of AGV 1, in meters
+in world, AGV at inspection: x = 2.085, y = 1.550, z = 0.387
+in world, AGV at assembly  : x = 5.050, y = 4.565, z = 0.387
+in agv1_frame, any station : x = 0.050, y = 0.065, z = 0.382
+a pose cached at inspection is 4.229 m off

@@ -1,0 +1,1 @@
+single: 11 status reads in 5 s (50 expected at 10 Hz)

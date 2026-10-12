@@ -5,13 +5,50 @@ L12: Evaluation and Measurement Science for AI-Augmented Systems
 Overview
 --------
 
-This lecture covers how to measure an agentic robot system. AI components
-add failure modes that the usual metrics (cycle time, success rate) only
-partly capture: a plan can be valid and still wrong, and perception can be
-confident and mistaken. The lecture draws on NIST measurement science to
-define metrics for plan validity, grounding accuracy, execution success and
-end-to-end task performance, and covers the experiment design needed to
-compare two systems fairly. GP4 is due.
+**How do you know your system works, and how sure can you be?** Every team
+has just compared its GP4 agent with its GP3 planner. This lecture is about
+the measurement behind that comparison. A claim about a system needs three
+things: a **defined metric**, a **source of truth** to compare against, and
+enough runs to know how far the number moves by chance.
+
+The lecture sorts the metrics of an agentic robot system into **four
+levels**, from narrow to broad. **Plan level:** is the plan valid, short and
+cheap, and for an LLM planner, does the reply pass the schema, name only
+objects that exist, and come back fast and cheaply? **Perception level:**
+**precision** and **recall** of the defect detector, worked from 20 labeled
+cells, and the **position error** of the top shell estimate over 8 spawns.
+**Execution level:** action success rate, recovery rate, challenge handling
+and collisions. **End to end:** kits and modules completed, times, and the
+ARIAC run score.
+
+The middle of the lecture asks how many runs a claim needs. A success rate
+measured over a few runs moves by chance, by about its **standard error**. A
+worked example (GP3 completes 17 of 20 runs, GP4 15 of 20) shows that a gap
+of 0.10 is smaller than one standard error, so those runs do not show that
+GP4 is worse. A simulation shows how far chance moves a success rate for 5
+to 100 runs. A **controlled comparison** then changes one variable and holds
+the rest, so a difference has only one cause.
+
+The last part reads the **ARIAC 2025 scoring formula** term by term, with the
+real weights from the ARIAC source, and works two runs of the same trial. A
+run that misses one kit loses 3201.25 points: its share of the base score and
+every bonus, because ARIAC pays bonuses only when every order is complete.
+The lecture ends with what a final demo test plan contains.
+
+.. important::
+
+   **ARIAC tie-in.** NIST runs ARIAC as a common test with a common score,
+   and the final demo is scored the same way, on a trial no team has seen.
+   The scoring section uses ``scoring_weights.yaml`` and ``scoring.py`` from
+   the ARIAC source (branch ariac2025, commit 0c3e722), and the worked
+   example is checked with a calculator that follows ``scoring.py``.
+
+.. important::
+
+   **Group project.** GP4 is due today: submit it on ELMS-Canvas with the
+   repository link, and fill in the GP4 peer-review form. There is no quiz
+   today. The GP4 comparison with GP3 is the first place you use this
+   lecture's rules. The final demo test plan is the second.
 
 
 Learning Objectives
@@ -19,60 +56,49 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Define plan-level metrics: validity, length, cost.
-- Define perception-level metrics: precision and recall of defect detection,
-  position error.
+- Define plan-level metrics (validity, length, cost) and the extra measures
+  an LLM planner needs (schema-valid rate, invented objects, tokens and
+  latency per decision).
+- Compute precision and recall for defect detection from a confusion count,
+  and explain which error costs more in ARIAC.
 - Define execution-level metrics: action success rate, recovery rate, task
-  completion.
-- Design a controlled comparison: change one variable, hold the rest, repeat
-  enough runs.
-- Read the ARIAC 2025 scoring formula and explain what each term rewards or
-  penalizes.
+  completion and challenge handling.
+- Design a controlled comparison that changes one variable, and estimate
+  whether a difference in success rate is larger than chance.
+- Compute an ARIAC 2025 run score from the scoring formula and the published
+  weights, and explain what each term rewards or penalizes.
+- Evaluate a test plan for the final demo against these metrics.
 
 
-.. admonition:: Materials in progress
-   :class: note
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   The lecture notes, quiz and references for this lecture are written with
-   the slide deck and are not published yet. This page will link to them
-   once they are ready. The topics below are the plan.
-
-
-Planned Topics
---------------
-
-- Measurement science: what "good" means for an agentic system.
-- Plan validity and plan quality: a valid plan may not be the best one.
-- Grounding accuracy: precision and recall of the VLM on defects and cell
-  types.
-- End-to-end metrics: kits and modules completed, time, recoveries, correct
-  handling of each challenge.
-- How many runs: sample size, variation between runs, confidence intervals.
-- ARIAC 2025 scoring as a worked example: base score for kits and modules,
-  bonuses for time, inspection speed, priority orders and sensor cost, and
-  penalties for drops and collisions.
-
-
-ARIAC Tie-in
-------------
-
-ARIAC scores every trial with a published formula, and the final demo is
-scored the same way on an unseen trial. This lecture is how you measure your
-own system before that day.
-
-
-Starting References
--------------------
-
-- ARIAC 2025 scoring: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scoring.html
-- NIST measurement science publications: TODO links.
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
-- ARIAC documentation: https://pages.nist.gov/ARIAC_docs/en/latest/index.html
+   l12_lecture
+   l12_code
+   l12_exercises
+   l12_quiz
+   l12_references
 
 
 Next Steps
 ----------
 
-- GP4 is due today.
-- In the next lecture, we will survey **the physical AI frontier**: the
-  learned models this course did not build.
+- In the next lecture we cover **L13: The Physical AI Frontier** (Wednesday,
+  April 28):
+
+  - VLAs, robot foundation models and world models: the learned side of
+    physical AI.
+  - Final demo questions are answered at the end of class.
+
+- **Before next class:**
+
+  - Write your team's final demo test plan: trial configurations, runs per
+    configuration, and the metrics recorded per run.
+  - Recompute Run 1 of the worked example with your own measurements and
+    sensor list.
+  - Run ``run_all.sh`` (see :doc:`l12_code`) and compare the outputs with
+    the ones in the notes.
+  - Work through the :doc:`L12 exercises <l12_exercises>` and take the
+    :doc:`self-check quiz <l12_quiz>` (ungraded).

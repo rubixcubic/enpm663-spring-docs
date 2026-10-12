@@ -5,15 +5,57 @@ L8: LLM Agents I: Agent Loops, Tool Use, and Structured Output
 Overview
 --------
 
-This is the first lecture on LLM-based planning. In industry an LLM is rarely
-called once; it is the reasoning core of an *agent*. A program called the
-orchestrator runs a loop: it reads the state of the world, asks the LLM what
-to do next, runs the tool the LLM chose, feeds the result back, and repeats
-until the goal is met or a stop condition fires. This lecture builds that
-loop and treats the robot skills that GP3's executor already runs as the
-agent's tools. Three mechanisms make the loop reliable: prompting, structured
-output checked against a JSON schema, and tool calling through the Model
-Context Protocol (MCP).
+This is the first of two lectures on planning with a large language model
+(LLM), and the first class after spring break. GP4 replaces GP3's PDDL
+planner with an **LLM agent**. The lecture answers one question: what must the
+code around the LLM do so that the robots stay safe?
+
+It starts with where the LLM goes in the GP3 stack. Only the decision part
+changes. The world model, the plan-to-BT executor, the skills package and the
+GP2 lidar detector stay. An LLM call takes a list of messages and returns
+text, keeps nothing between calls, and can return a different answer to the
+same messages. So the program around it must send the state on every call,
+check every output before anything moves, and limit the cost.
+
+That program is the **orchestrator**. It runs the **agent loop**: read the
+state, ask the LLM, check and run the tool call it returns, record the
+result, and stop when a stop condition fires. A live demonstration runs an
+orchestrator with a scripted stand-in model and a stand-in for ARIAC's AGV
+move action. The lecture then compares **plan-and-execute** with **ReAct**
+on ARIAC situations, shows how to write a system message for a planner, and
+keeps the arithmetic (the kit voltage window) in code.
+
+The second half covers **structured output**: a JSON schema for one AGV
+move, validation in five steps with semantic checks and a bounded retry, and
+what constrained output from a provider does and does not remove. Next comes
+**tool calling** and the **Model Context Protocol (MCP)**, with a one-tool
+MCP server listed and called from a client. The last section measures how the
+input grows with each loop step, what a run costs, and how a model's latency
+compares with the factory's clocks.
+
+.. important::
+
+   **ARIAC tie-in.** The agent's tools are the actions GP3's executor already
+   runs, with the same names as the L6 domain (``move-agv``,
+   ``place-in-slot``). The demonstrations copy the rules of ARIAC's
+   ``/agvN/move`` action from the ARIAC source: a goal to the AGV's own
+   station is rejected, and only seven paths are accepted. The factory's
+   clocks (the conveyor at up to 0.1 m/s, a 4 s target for each inspection
+   report) decide which loops stay classical.
+
+.. important::
+
+   **Group project.** GP3 is due next week (Week 10, March 31), and GP4, the
+   LLM agent with VLM grounding, is posted then. GP4 uses everything in this
+   lecture: the loop, the guards, the schemas and the cost report.
+
+.. note::
+
+   **Not in this lecture.** VLM grounding, replanning around feedback and the
+   comparison of the planner with the agent on the same trial are
+   :doc:`L9 </lectures/lecture9/l9_index>`. The pre-reads for this lecture,
+   LLM Prompting and Structured Output and Model Context Protocol (MCP), are
+   listed on the :doc:`Pre-Read </preread/index>` page.
 
 
 Learning Objectives
@@ -23,73 +65,48 @@ By the end of this lecture, you will be able to:
 
 - Describe the agent loop (observe, reason, act, observe the result) and the
   orchestrator that runs it, as distinct from the LLM itself.
-- Contrast plan-and-execute (produce a full plan, then run it) with ReAct
-  (interleave reasoning and tool calls).
-- Design a system prompt for an LLM planner with a role, a goal format and an
-  output format.
-- Specify a JSON schema for plans or tool calls and validate LLM output
-  against it, with a bounded retry.
-- Explain how tool calling and MCP expose robot skills to an LLM, and manage
-  the context, token budget, cost and latency of a loop.
+- Compare plan-and-execute with ReAct, and choose one for a given ARIAC
+  situation with a reason.
+- Design a system prompt for an LLM planner with a role, the factory facts,
+  rules and an output format.
+- Write a JSON schema for an agent decision and validate LLM output against
+  it, with semantic checks and a bounded retry.
+- Explain how tool calling and MCP expose robot actions to an LLM, and what
+  guards the orchestrator keeps between the LLM and the robots.
+- Estimate how context size, cost and latency grow with the number of loop
+  steps, and say which ARIAC decisions are too time-critical for an LLM.
 
 
-.. admonition:: Materials in progress
-   :class: note
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   The lecture notes, quiz and references for this lecture are written with
-   the slide deck and are not published yet. This page will link to them
-   once they are ready. The topics below are the plan.
-
-
-Planned Topics
---------------
-
-- The LLM as a function from a prompt to text; the agent behavior comes from
-  the orchestrator loop around it.
-- The agent loop: observe, reason, call a tool, observe the result; stop
-  conditions and step limits.
-- Planning patterns: plan-and-execute and ReAct, and when a robot task wants
-  each one.
-- Prompt structure: system and user messages, few-shot examples, output
-  format.
-- JSON schemas as a representation of plans and actions: typed actions,
-  required fields, enums.
-- Validation and retry: catch malformed output, re-prompt with the error, cap
-  the retries.
-- Tool calling and MCP: how a schema becomes a callable tool, and how MCP
-  standardizes tools across agent frameworks. ROS 2 MCP servers such as
-  ``ros-mcp-server`` expose topics and services this way.
-- Context and memory: which state to carry between iterations, and the cost
-  and latency of a loop.
-
-
-ARIAC Tie-in
-------------
-
-GP4 wraps this loop around the ARIAC factory. The agent's tools are the
-actions GP3's executor already runs (pick a cell and place it with the
-skills package, move an AGV and submit a kit through the ARIAC interfaces),
-so the agent decides the next action and the classical executor carries it
-out.
-
-
-Starting References
--------------------
-
-- Anthropic API tool use: https://docs.anthropic.com/en/docs/build-with-claude/tool-use
-- OpenAI structured outputs: https://platform.openai.com/docs/guides/structured-outputs
-- Model Context Protocol (MCP): https://modelcontextprotocol.io/
-- ros-mcp-server: https://github.com/robotmcp/ros-mcp-server
-- ReAct (Yao et al.): https://arxiv.org/abs/2210.03629
-- JSON Schema: https://json-schema.org/
-- ARIAC GitHub: https://github.com/usnistgov/ARIAC
+   l8_lecture
+   l8_code
+   l8_exercises
+   l8_quiz
+   l8_references
 
 
 Next Steps
 ----------
 
-- Read the LLM Prompting and MCP pre-reads before this class (see
-  :doc:`Pre-Read </preread/index>`).
-- GP3 is due in Week 10.
-- In the next lecture, we will add **VLM grounding and agentic replanning** to
-  the agent.
+- In the next lecture we cover **L9: LLM Agents II: VLM Grounding and
+  Agentic Replanning** (Wednesday, March 31):
+
+  - A VLM describes the camera images for the agent.
+  - The loop closes around feedback for replanning.
+  - The class compares the PDDL planner and the agent on the same trial.
+  - **Quiz 4** at the start of class covers L7 and L8. GP3 is due, and GP4
+    is posted.
+
+- **Before next class:**
+
+  - Set up LLM access: a hosted API account or a local open-weight model.
+  - Run the L8 scripts (see :doc:`l8_code`) and compare your outputs with the
+    ones in the notes. The MCP demo needs the ``mcp`` package in a virtual
+    environment; the code page gives the commands.
+  - Work through the :doc:`L8 exercises <l8_exercises>` and the
+    :doc:`self-check quiz <l8_quiz>`.
+  - Finish GP3: the executor and the replanning demo.

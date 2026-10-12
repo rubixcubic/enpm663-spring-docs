@@ -19,10 +19,16 @@ Usage (from the repo root):
   /usr/bin/python3 tools/check_figures.py lectures/lecture3   # one folder or file
   /usr/bin/python3 tools/check_figures.py --all            # list ok files too
 
+SVG files are rendered to PNG with Inkscape first, so the same checks
+apply. Without Inkscape, an SVG is reported as CHECK.
+
 Exit status is 1 if any image FAILs or is missing, else 0.
 """
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageSequence
@@ -47,6 +53,8 @@ def images_used(scope):
 
 def check(path):
     """Return (status, detail) for one image file."""
+    if path.suffix.lower() == ".svg":
+        return check_svg(path)
     with Image.open(path) as im:
         frames = [f.convert("RGBA") for f in ImageSequence.Iterator(im)]
     transparent = sum(sum(1 for a in f.getchannel("A").getdata() if a < 255) for f in frames)
@@ -60,6 +68,19 @@ def check(path):
     if share < WHITE_SHARE:
         return "CHECK", f"border {share:.0%} white (photo or screenshot?)"
     return "ok", f"border {share:.0%} white"
+
+
+def check_svg(path):
+    """Render an SVG to PNG with Inkscape, then check the PNG."""
+    inkscape = shutil.which("inkscape")
+    if not inkscape:
+        return "CHECK", "SVG not checked: Inkscape not found"
+    with tempfile.TemporaryDirectory() as tmp:
+        png = Path(tmp) / "figure.png"
+        subprocess.run(
+            [inkscape, "--export-type=png", f"--export-filename={png}", str(path)],
+            check=True, capture_output=True)
+        return check(png)
 
 
 def main(argv):
