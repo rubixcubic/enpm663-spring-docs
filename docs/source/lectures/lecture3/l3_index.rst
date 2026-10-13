@@ -1,5 +1,5 @@
 ======================================================
-L3: Knowledge Representation for AI-Augmented Robotics
+L3: Knowledge Representation for Agentic Robotics
 ======================================================
 
 Overview

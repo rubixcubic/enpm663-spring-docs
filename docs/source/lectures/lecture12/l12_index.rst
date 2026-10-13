@@ -1,5 +1,5 @@
 ================================================================
-L12: Evaluation and Measurement Science for AI-Augmented Systems
+L12: Evaluation and Measurement Science for Agentic Systems
 ================================================================
 
 Overview

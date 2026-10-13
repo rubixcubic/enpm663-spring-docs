@@ -1,5 +1,5 @@
 ====================================================
-L2: System Architectures for AI-Augmented Robotics
+L2: System Architectures for Agentic Robotics
 ====================================================
 
 Overview
@@ -86,7 +86,7 @@ Next Steps
 ----------
 
 - In the next lecture we cover **L3: Knowledge Representation for
-  AI-Augmented Robotics** (Wednesday, February 10):
+  Agentic Robotics** (Wednesday, February 10):
 
   - Frames and ontologies for cells, kits and AGVs.
   - A world model at each layer, and errors that move up (two ideas from

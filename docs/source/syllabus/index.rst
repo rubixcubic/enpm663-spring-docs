@@ -395,13 +395,13 @@ given as MM/DD.
        | :quiz:`Diagnostic quiz (ungraded)`
    * - 02/03
      - 2
-     - System Architectures for AI-Augmented Robotics
+     - System Architectures for Agentic Robotics
      - L2
      - | Teams formed
        | :assignment:`GP1 posted`
    * - 02/10
      - 3
-     - Knowledge Representation for AI-Augmented Robotics
+     - Knowledge Representation for Agentic Robotics
      - L3
      - Team charter due
    * - 02/17
@@ -449,13 +449,13 @@ given as MM/DD.
      -
    * - 04/14
      - 12
-     - Recovery, Robustness, and Failure Handling for AI-Driven Systems
+     - Recovery, Robustness, and Failure Handling for Agentic Systems
      - L11
      - | :quiz:`Quiz 5`
        | :assignment:`Final demo specification posted`
    * - 04/21
      - 13
-     - Evaluation and Measurement Science for AI-Augmented Systems
+     - Evaluation and Measurement Science for Agentic Systems
      - L12
      - :assignment:`GP4 due`
    * - 04/28

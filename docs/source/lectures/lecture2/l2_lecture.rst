@@ -1049,7 +1049,7 @@ Forming Your Team
 Next Class
 ----------
 
-**L3: Knowledge Representation for AI-Augmented Robotics** (Wednesday,
+**L3: Knowledge Representation for Agentic Robotics** (Wednesday,
 February 10):
 
 - Frames and ontologies for cells, kits and AGVs.

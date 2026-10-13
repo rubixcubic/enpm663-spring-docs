@@ -764,7 +764,7 @@ L10 covers TF2 and motion in depth.
 Next Class
 ----------
 
-**L2: System Architectures for AI-Augmented Robotics** (Wednesday,
+**L2: System Architectures for Agentic Robotics** (Wednesday,
 February 3):
 
 - Classical robot architectures and the three-layer architecture.

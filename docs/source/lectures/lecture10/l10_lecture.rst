@@ -1059,7 +1059,7 @@ VLM grounding and replanning; static and moving frames; the pinhole model and
 the pixel-to-table steps; the MoveIt 2 parts; RRT-Connect, PRM and Pilz; the
 conveyor example; the skill failure results.
 
-**L11: Recovery, Robustness, and Failure Handling for AI-Driven Systems.** What
+**L11: Recovery, Robustness, and Failure Handling for Agentic Systems.** What
 your tree and agent do with today's failure results. The final demo
 specification is posted.
 

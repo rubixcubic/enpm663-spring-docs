@@ -1,5 +1,5 @@
 =====================================================================
-L11: Recovery, Robustness, and Failure Handling for AI-Driven Systems
+L11: Recovery, Robustness, and Failure Handling for Agentic Systems
 =====================================================================
 
 Overview
@@ -101,7 +101,7 @@ Next Steps
 ----------
 
 - In the next lecture we cover **L12: Evaluation and Measurement Science
-  for AI-Augmented Systems**:
+  for Agentic Systems**:
 
   - How to measure an agentic system with the ARIAC scoring formula.
   - Recovery rate, challenge handling, and how the ARIAC score rewards or

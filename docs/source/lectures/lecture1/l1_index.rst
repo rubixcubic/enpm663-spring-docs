@@ -77,7 +77,7 @@ By the end of this lecture, you will be able to:
 Next Steps
 ----------
 
-- In the next lecture we cover **L2: System Architectures for AI-Augmented
+- In the next lecture we cover **L2: System Architectures for Agentic
   Robotics**:
 
   - Classical robot architectures and the three-layer architecture.

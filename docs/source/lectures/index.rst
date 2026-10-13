@@ -40,12 +40,12 @@ table shows the plan. Dates are in the :ref:`course schedule
      - Physical AI and agents, the ARIAC 2025 EV battery factory and what
        its score rewards, QoS, executors, actions, TF2, diagnostic quiz
    * - L2
-     - System Architectures for AI-Augmented Robotics
+     - System Architectures for Agentic Robotics
      - Reactive, behavior-based and three-layer architectures; where an LLM
        agent and a VLM plug in; the course skills package; end-to-end VLA
        models; multi-robot coordination
    * - L3
-     - Knowledge Representation for AI-Augmented Robotics
+     - Knowledge Representation for Agentic Robotics
      - Frames, ontologies; a world model per layer and errors that move up
        (from 4D/RCS); one model for PDDL, an LLM and a VLM
    * - L4
@@ -77,11 +77,11 @@ table shows the plan. Dates are in the :ref:`course schedule
      - TF2 in depth, the pinhole camera model, MoveIt 2, sampling-based
        planners, parameterized grasps, inside the course skills package
    * - L11
-     - Recovery, Robustness, and Failure Handling for AI-Driven Systems
+     - Recovery, Robustness, and Failure Handling for Agentic Systems
      - Failure taxonomy, BT recovery structures, LLM and VLM output checks,
        the ARIAC 2025 challenges
    * - L12
-     - Evaluation and Measurement Science for AI-Augmented Systems
+     - Evaluation and Measurement Science for Agentic Systems
      - Plan, perception and execution metrics; controlled comparisons;
        the ARIAC 2025 scoring formula
    * - L13

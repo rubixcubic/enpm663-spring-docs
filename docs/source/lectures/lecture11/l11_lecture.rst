@@ -946,7 +946,7 @@ Next Class
   demonstration code is on ELMS-Canvas and on the :doc:`code page
   <l11_code>`.
 
-**L12: Evaluation and Measurement Science for AI-Augmented Systems.** How to
+**L12: Evaluation and Measurement Science for Agentic Systems.** How to
 measure an agentic system with the ARIAC scoring formula, recovery included:
 recovery rate, challenge handling, and how the ARIAC score rewards or
 penalizes each choice.

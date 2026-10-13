@@ -471,8 +471,8 @@ Lectures meet on Wednesdays. Spring break (Mar 14 to 21) includes Wednesday Mar 
 | Week | Date | Lecture and topic | Deliverables |
 |---|---|---|---|
 | 1 | 01/27 | L1: Course Overview and ROS 2 Refresher | Diagnostic quiz (ungraded) |
-| 2 | 02/03 | L2: System Architectures for AI-Augmented Robotics | Teams formed; GP1 posted |
-| 3 | 02/10 | L3: Knowledge Representation for AI-Augmented Robotics | Team charter due |
+| 2 | 02/03 | L2: System Architectures for Agentic Robotics | Teams formed; GP1 posted |
+| 3 | 02/10 | L3: Knowledge Representation for Agentic Robotics | Team charter due |
 | 4 | 02/17 | L4: Behavior Trees for Task Execution | Quiz 1 |
 | 5 | 02/24 | L5: Sensing and Perception for Robotic Systems | Quiz 2; GP1 due; GP2 posted |
 | 6 | 03/03 | L6: Task-Level Planning with PDDL | |
@@ -481,8 +481,8 @@ Lectures meet on Wednesdays. Spring break (Mar 14 to 21) includes Wednesday Mar 
 | 9 | 03/24 | L8: LLM Agents I: Agent Loops, Tool Use, and Structured Output | |
 | 10 | 03/31 | L9: LLM Agents II: VLM Grounding and Agentic Replanning | Quiz 4; GP3 due; GP4 posted |
 | 11 | 04/07 | L10: Frames, Transforms, and Motion Planning | |
-| 12 | 04/14 | L11: Recovery, Robustness, and Failure Handling for AI-Driven Systems | Quiz 5; final demo specification posted |
-| 13 | 04/21 | L12: Evaluation and Measurement Science for AI-Augmented Systems | GP4 due |
+| 12 | 04/14 | L11: Recovery, Robustness, and Failure Handling for Agentic Systems | Quiz 5; final demo specification posted |
+| 13 | 04/21 | L12: Evaluation and Measurement Science for Agentic Systems | GP4 due |
 | 14 | 04/28 | L13: The Physical AI Frontier: VLAs, Robot Foundation Models, and World Models | |
 | 15 | 05/05 | Final demo and presentations | Final demo |
 

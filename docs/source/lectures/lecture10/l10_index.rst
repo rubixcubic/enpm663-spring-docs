@@ -99,7 +99,7 @@ Next Steps
 ----------
 
 - In the next lecture we cover **L11: Recovery, Robustness, and Failure
-  Handling for AI-Driven Systems**: what your tree and your agent do with
+  Handling for Agentic Systems**: what your tree and your agent do with
   today's failure results. The final demo specification is posted.
 
 - **Quiz 5** (Wednesday, April 14, start of class) covers L9 and L10. From

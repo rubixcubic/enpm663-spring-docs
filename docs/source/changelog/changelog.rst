@@ -6,10 +6,24 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.4: Final Demo Code Freeze Set (2026-10-12)
+.. dropdown:: v0.4.5: Agentic in the Lecture Titles (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lectures
+
+   - Four lecture titles now say "Agentic", the first word of the course
+     title, instead of "AI-Augmented" or "AI-Driven": L2 System
+     Architectures for Agentic Robotics, L3 Knowledge Representation for
+     Agentic Robotics, L11 Recovery, Robustness, and Failure Handling for
+     Agentic Systems, and L12 Evaluation and Measurement Science for Agentic
+     Systems. The syllabus and the lecture schedule match.
+
+
+.. dropdown:: v0.4.4: Final Demo Code Freeze Set (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Final demo
 
