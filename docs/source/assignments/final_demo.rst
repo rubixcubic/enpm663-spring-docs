@@ -30,8 +30,8 @@ Final Demo: Full ARIAC Trial, Unseen
    code (the course skills package, with its assembly robot and gantry
    welder skills) is released with the project, on the day the final demo
    specification is posted in Week 12. The code freeze is Friday, April 30, 2027, at 11:59 pm.
-   The tag name, the split of the 20% and how the run score maps to points
-   are set in that specification.
+   The tag name is set in that specification. The grading rubric is at the
+   end of this page.
 
 
 .. admonition:: AI tools
@@ -326,15 +326,14 @@ Submission Checklist
          :ref:`peer-evaluation`).
 
 
-Grading Rubric (Draft)
-----------------------
+Grading Rubric
+--------------
 
-.. admonition:: Draft rubric
+.. admonition:: How the points add up
    :class: note
 
-   This rubric is a draft. The final split of the 20% and how the run score
-   maps to points are set in the specification posted in Week 12. The total
-   is 100 points, scaled to 20% of the course grade.
+   The total is 100 points, scaled to 20% of the course grade: 75 points
+   for the run and 25 for the class session (presentation and questions).
 
 .. list-table::
    :widths: 26 10 64
@@ -350,28 +349,33 @@ Grading Rubric (Draft)
        with the README commands on the grading machine.
    * - Task 1 on the unseen trial
      - 15
-     - ARIAC run results: points scale with kits accepted over kits wanted,
-       high-priority kits included.
+     - ARIAC run results. Points = 15 x (kits accepted / kits wanted),
+       high-priority kits included. Example: 3 of 4 kits accepted gives
+       15 x 3 / 4 = 11.25 points.
    * - Task 2 on the unseen trial
      - 15
-     - ARIAC run results: points scale with modules accepted over modules
-       wanted.
+     - ARIAC run results. Points = 15 x (modules accepted / modules
+       wanted).
    * - Challenges handled
      - 15
      - The grader compares the trial's challenge list with the run log:
        each challenge detected, a recovery action taken, and the run
-       continuing. Points are split equally among the challenges in the
-       trial.
+       continuing. The 15 points are split equally among the challenges in
+       the trial. For each challenge, half its share is for detecting it,
+       and the other half for the recovery action and the run continuing.
    * - Safe run
      - 5
-     - ARIAC penalty table for the run: robot collisions, AGV collisions and
-       objects on invalid surfaces.
+     - ARIAC penalty table for the run: 5 points minus 1 for each penalty
+       event (robot collisions, AGV collisions, objects on invalid surfaces),
+       not below 0.
    * - Embodied-reasoning step
      - 15
      - The run log shows the model call during the evaluation run, and the
        grader reads the comparison table with the GP2 lidar detector: same
        cells, precision and recall per defect type, latency and cost, and
-       the number of cells used.
+       the number of cells used. The points are for doing the step and
+       reporting it honestly; the model's precision and recall do not change
+       the points.
    * - Presentation
      - 15
      - The grader times the talk (5 to 7 minutes) and checks the four

@@ -6,10 +6,24 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.5: Agentic in the Lecture Titles (2026-10-12)
+.. dropdown:: v0.4.6: Final Demo Rubric Set (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Final demo
+
+   - **Rubric:** 75 points for the run and 25 for the presentation and
+     questions, scaled to 20% of the course grade. Task 1 and Task 2 points
+     are 15 x accepted / wanted. Each challenge gives half its share for
+     detecting it and half for recovering. A safe run loses 1 point per
+     penalty event. The embodied-reasoning step is graded on doing it and
+     reporting it, not on its precision or recall.
+
+
+.. dropdown:: v0.4.5: Agentic in the Lecture Titles (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lectures
 

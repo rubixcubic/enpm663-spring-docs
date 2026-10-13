@@ -62,8 +62,9 @@ examples.
      is the last quiz of the course.
    - **The final demo specification is posted** on ELMS-Canvas and the
      course site. The demo is in Week 15 (05/05) and is 20% of the course
-     grade. The code freeze is Friday, April 30, 2027, at 11:59 pm. The grading rubric and
-     the embodied-reasoning model are to be announced.
+     grade. The code freeze is Friday, April 30, 2027, at 11:59 pm, and the
+     grading rubric is on the final demo page. The embodied-reasoning model
+     is to be announced.
 
 
 Learning Objectives

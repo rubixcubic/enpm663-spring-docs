@@ -110,10 +110,12 @@ simulation time. Gazebo ran at about 0.37 times real time on the development
 PC, so one run takes about :math:`900 / 0.37 = 2432` s, or 41 minutes, of
 wall-clock time.
 
-Two things are **to be announced**:
+**Set: the grading rubric.** 75 points for the run and 25 for the class
+session, scaled to 20% of the course grade. The final demo page lists each
+criterion and how its points are computed.
 
-- **The grading rubric.**
-- **Which embodied-reasoning model you can use, and what it costs.**
+One thing is **to be announced**: which embodied-reasoning model you can use,
+and what it costs.
 
 
 What the Unseen Trial Means
