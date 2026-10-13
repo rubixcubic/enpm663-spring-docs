@@ -36,9 +36,9 @@ rejects a plan with two steps swapped.
 The last part shows where PDDL strains. Choosing four cells whose voltages
 add up to the kit tolerance is arithmetic, and Fast Downward does not plan
 with numbers. So GP3 makes that choice in a **selection step** written in
-plain Python, and gives PDDL the result as goals. The lecture ends with
-partial observation, time, the growth in ground actions as the problem
-grows, and PDDL as a knowledge representation (L3).
+plain Python, and gives PDDL the result as goals. The lecture ends with the
+growth in ground actions as the problem grows, and the GP3 pipeline:
+numbers in Python, order in PDDL.
 
 .. important::
 

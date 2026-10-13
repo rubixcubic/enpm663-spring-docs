@@ -226,8 +226,8 @@ links point to the ``ariac2025`` branch of the ARIAC repository.
 
          **MoveIt: Motion Planning (concepts)**
 
-         The planning pipeline and its adapters, such as
-         ``CheckStartStateBounds`` and ``CheckStartStateCollision``.
+         The planning pipeline: request adapters, a planner plugin, and
+         response adapters.
 
       .. grid-item-card:: MoveIt Python API
          :link: https://moveit.picknik.ai/main/doc/examples/motion_planning_python_api/motion_planning_python_api_tutorial.html
@@ -243,9 +243,8 @@ links point to the ``ariac2025`` branch of the ARIAC repository.
 
          **usnistgov/ariac_example_team**
 
-         MoveIt configurations for the five robots (``moveit_cpp.yaml``,
-         ``ompl_planning.yaml``), ``robot_interface.py`` and the Move Robots
-         demo.
+         MoveIt configurations for the five robots, ``robot_interface.py``
+         and the Move Robots demo.
 
       .. grid-item-card:: Example team planners
          :link: https://github.com/usnistgov/ariac_example_team/blob/main/moveit_configs/inspection_robot_1_moveit_config/config/moveit_cpp.yaml

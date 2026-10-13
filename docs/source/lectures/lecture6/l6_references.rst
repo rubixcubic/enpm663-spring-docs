@@ -65,6 +65,15 @@ files and the packages that the slides name. Every link was checked on
          recycling station for a rejected kit, and the cell and kit voltage
          tolerances.
 
+      .. grid-item-card:: Types as frame classes
+         :link: /lectures/lecture3/l3_index
+         :link-type: doc
+         :class-card: sd-border-secondary
+
+         **L3: frames, relations and instances**
+
+         The frame classes whose role PDDL types play in the domain header.
+
       .. grid-item-card:: Four slots per tray
          :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_interfaces/msg/AgvTrayStatus.msg
          :class-card: sd-border-secondary
@@ -269,17 +278,6 @@ files and the packages that the slides name. Every link was checked on
 
    .. grid:: 1 1 2 2
       :gutter: 2
-
-      .. grid-item-card:: PDDL as knowledge representation
-         :link: /lectures/lecture3/l3_index
-         :link-type: doc
-         :class-card: sd-border-secondary
-
-         **L3: frames, relations and instances**
-
-         The frame classes, relations and world model that PDDL types,
-         predicates and problem files map to, and L3's own PDDL facts
-         (``at``, ``passed``, ``slot-empty``).
 
       .. grid-item-card:: Running the plan
          :link: /lectures/lecture7/l7_index

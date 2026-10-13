@@ -6,10 +6,24 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.2: GP4 Checks the VLM Against a Second Source (2026-10-12)
+.. dropdown:: v0.4.3: Lecture Notes Follow the Trimmed Decks (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lectures
+
+   - **L2, L6, L10 and L11:** the slide decks were shortened, and the lecture
+     notes now follow them. Slides that repeated other slides are gone; their
+     points sit where the decks now have them. The full code and outputs stay
+     on each code page, and the exercises point there where they need them.
+   - **L10:** the notes add why Pilz cannot go around an obstacle, from
+     MoveIt's own Pilz test.
+
+
+.. dropdown:: v0.4.2: GP4 Checks the VLM Against a Second Source (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Group projects
 

@@ -155,7 +155,9 @@ Four Failure Types and the Signal for Each
    Red: the planner or agent.
 
 Read the figure one column at a time, top to bottom: the failure type, the
-signal that detects it, and the layer where recovery starts.
+signal that detects it, and the layer where recovery starts. The two dashed
+boxes on top are new sources of failure that come with AI components: VLM
+output feeds the sensor column, and LLM output feeds the plan column.
 
 
 Each Type in ARIAC 2025
@@ -192,28 +194,6 @@ Each Type in ARIAC 2025
    close to the action, in the tree. Plan failures and world drift go back
    to the planner or agent. Sensor failures need a check before the value is
    used.
-
-
-Two Failure Sources That Come with AI Components
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**LLM output.**
-
-- Output that breaks the schema, a call to a tool that does not exist, or an
-  object that is not in the world: an invented cell ID, AGV slot 5.
-- These show up as plan failures, and a check before the plan runs can catch
-  them.
-
-**VLM grounding.** Grounding (L9) means tying the agent's decisions to what a
-camera sees.
-
-- A missed defect, a wrong cell type, a wrong slot or position.
-- These show up as sensor failures: wrong data.
-
-.. warning::
-
-   **A VLM error is well formed and confident.** A schema check passes it, so
-   only a second source can catch it (see :ref:`l11-vlm`).
 
 
 .. _l11-bt-recovery:
@@ -304,6 +284,9 @@ first choice; tester 2 is the fallback; holding the cell is the last resort.
    failures. 4: last resort, hold the cell (always ``RUNNING``). Blue: tree
    nodes. Gray: skill calls.
 
+Runs B, C and D below are **separate runs of this tree**, each with its own
+injected failure.
+
 
 The Tree in Code
 ~~~~~~~~~~~~~~~~
@@ -318,21 +301,8 @@ The Tree in Code
 - ``LoggedRetry`` and ``LoggedGuard`` are Retry and EternalGuard with a print
   added, so the trace shows what they do.
 
-The four runs below are **separate runs of the same tree**, each with its own
-injected failure.
-
-
-Run A: One Injected Failure, One Retry
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. literalinclude:: outputs/recovery_tree.txt
-   :language: text
-   :lines: 1-10
-
-1. Tick 1: the place fails. Retry has seen 1 failure of 3, so it returns
-   ``RUNNING`` and the selector waits.
-2. Tick 2: the same skill starts again. It succeeds on tick 3, so the
-   selector never tries tester 2.
+The script also prints a Run A, with one injected failure and one retry. Its
+output is on the :doc:`code page <l11_code>`.
 
 
 Run B: Three Failures, Then the Fallback
@@ -383,8 +353,8 @@ off. Ticks 1 and 2 are the same as in Run B. Ticks 3 and 4:
    tick.
 2. On tick 4 it goes back to tester 1, the Retry count starts again at 1, and
    the place on tester 2 is stopped halfway.
-3. With memory on (Runs A to C), the selector goes on from its running child,
-   so it stays with tester 2.
+3. With memory on (Runs B and C), the selector goes on from its running
+   child, so it stays with tester 2.
 
 
 Timeout Turns a Hang into a Failure
@@ -409,26 +379,6 @@ durations are chosen for this example. Ticks 3 and 4 of the output:
 ``pick_cell`` never finishes. At 0.6 s, more than 0.5 s after it started,
 Timeout stops it and fails, and the selector reports the failure up through
 ``report_to_planner``.
-
-
-The Same Guard Watches the Inspection Conveyor
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The same pattern works for the conveyor malfunction. It is a monitor beside
-the work:
-
-1. One branch does the normal work: pick a cell from the conveyor and test
-   it.
-2. A guard checks the operating status on ``/inspection_conveyor/status``
-   before every tick.
-3. When the status reports a malfunction, the guard stops the pick branch,
-   and a fallback branch waits while it watches the status.
-4. When the status reports ``OPERATIONAL`` again, the tree starts the pick
-   branch again.
-
-EternalGuard checks one condition before its child. A Parallel ticks a
-monitor and the work side by side, for a monitor that must keep running on
-its own, such as a watcher with a time limit.
 
 
 .. _l11-llm-checks:
@@ -730,19 +680,6 @@ Degraded Operation: A Malfunction and the Recovery Over Time
    watcher goes UP, and a new plan uses both testers.
 
 
-Keep Working with One Tester
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-1. While tester 1 is down, inspection robot 1 places cells on tester 2 only.
-2. Each cell now waits for one tester instead of two, so fewer cells per
-   minute are tested. The kit still continues.
-3. When tester 1's status returns to ``OPERATIONAL``, both testers are used
-   again.
-
-In the docs' behavior (Run 2), the watcher goes DOWN at 180.5 s instead of
-180.0 s: the 0.5 s time limit is the price of detecting silence.
-
-
 .. _l11-challenges:
 
 The ARIAC Challenges as Failure Scenarios
@@ -985,38 +922,30 @@ written, and if not, what is missing: in the tree, or in the PDDL domain.
    not plan for.
 
 
-.. _l11-evidence:
-
-From Recovery to Evidence
--------------------------
-
-**Build a challenge test matrix now.** A **challenge test matrix** is a
-table of test runs: each challenge, alone and combined, on several trial
-configurations. Run each cell of the matrix more than once.
-
-**Log every detection and every recovery**, with its time, and for a
-rejected LLM reply, the layer that stopped it and the error message. The GP4
-reflection and the final demo presentation both ask how failures were
-caught. The log is your evidence.
-
-**Next week.** L12 measures recovery: recovery rate, challenge handling, and
-how the ARIAC score rewards or penalizes each choice.
-
-
 Next Class
 ----------
 
-**GP4 (due Wednesday, April 21).** Add the checks and the challenge handling
-from today, and log every detection and recovery.
+**GP4 (due Wednesday, April 21).**
+
+- Add the checks and the challenge handling from today, and log every
+  detection and recovery.
+- Log each one with its time, and for a rejected LLM reply, the layer that
+  stopped it and the error message.
+- The GP4 reflection and the final demo presentation both ask how failures
+  were caught. The log is your evidence.
 
 **Before L12:**
 
 - Read the final demo specification as a team, and list your questions for
   L13.
-- Start your challenge test matrix.
+- Start your **challenge test matrix**, a table of test runs: each
+  challenge, alone and combined, on several trial configurations. Run each
+  cell of the matrix more than once.
 - Take the :doc:`L11 self-check quiz <l11_quiz>` (ungraded). The
   demonstration code is on ELMS-Canvas and on the :doc:`code page
   <l11_code>`.
 
 **L12: Evaluation and Measurement Science for AI-Augmented Systems.** How to
-measure an agentic system with the ARIAC scoring formula.
+measure an agentic system with the ARIAC scoring formula, recovery included:
+recovery rate, challenge handling, and how the ARIAC score rewards or
+penalizes each choice.

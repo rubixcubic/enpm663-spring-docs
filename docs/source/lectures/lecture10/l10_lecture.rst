@@ -615,62 +615,16 @@ The Parts Between a Skill Goal and the Controller
 action.
 
 
-The Planning Pipeline in the Example Team's Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Source: the example team's ``ompl_planning.yaml`` for each robot. The
-descriptions come from the MoveIt 2.12.4 plugin descriptions.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 40 60
-   :class: compact-table
-
-   * - **Adapter**
-     - **What it does**
-   * - *Request adapters, before planning*
-     -
-   * - ``ResolveConstraintFrames``
-     - Turns goals set on collision objects into goals on robot links
-   * - ``CheckStartStateBounds``
-     - Fixes a start state just outside the joint limits
-   * - ``CheckStartStateCollision``
-     - If the start state is in collision, nudges the joints to find a free
-       one nearby
-   * - *Response adapters, after planning*
-     -
-   * - ``AddTimeOptimalParameterization``
-     - Adds time stamps within the velocity and acceleration limits
-   * - ``ValidateSolution``
-     - Checks the path for collisions and constraints
-   * - ``DisplayMotionPath``
-     - Publishes the path for RViz
-
-
-What ARIAC and the Example Team Ship
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**ARIAC:** no MoveIt configuration.
-
-**The ARIAC example team** (``usnistgov/ariac_example_team``):
-
-- A MoveIt configuration for each of the five robots: one **planning group**
-  (the set of joints MoveIt plans for), ``{robot_name}_arm``, and a named
-  state, ``home``.
-- Three planner settings in ``moveit_cpp.yaml``: ``pilz_ptp`` and ``pilz_lin``
-  (time limit 0.1 s), and ``ompl_rrts``, OMPL's RRTstar (5 attempts, 0.2 s).
-- One MoveItPy instance per robot, driven from Python. Its ``plan_to_pose``
-  uses Pilz PTP by default, Pilz LIN for a straight line, and RRTstar on
-  request (``robot_interface.py``).
-
-.. tip::
-
-   The course skills package starts from these configurations. Your code never
-   imports MoveIt: it sends skill goals and reads results.
-
-
 Instructor Demonstration: The Example Team's Move Robots Demo
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**What the example team ships** (``usnistgov/ariac_example_team``):
+
+- ARIAC ships no MoveIt configuration. The example team ships one for each of
+  the five robots, and the course skills package starts from it.
+- Its planner settings: Pilz PTP by default, Pilz LIN for a straight line, and
+  OMPL's RRTstar on request (``moveit_cpp.yaml``, ``robot_interface.py``). The
+  next section explains each planner.
 
 .. code-block:: bash
 
@@ -724,23 +678,14 @@ Sampling-Based Planners (OMPL)
    and a planner can run out of time even when a path exists. L12 counts this
    as run-to-run variation.
 
+**The class demonstration** (``rrt_connect_toy.py``):
 
-A Teaching Toy: RRT-Connect in a Flat Square
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. literalinclude:: code/rrt_connect_toy.py
-   :language: python
-   :lines: 68-77
-   :caption: rrt_connect_toy.py (excerpt)
-
-- ``extend`` takes one 0.5 m step from the nearest node toward a target;
-  ``connect`` repeats it until the target is reached or a wall blocks it. The
-  trees swap roles each round.
-- This is a teaching toy, not MoveIt or OMPL: it plans for a point in a 10 m
-  square. OMPL samples the same way in the arm's joint space, six joint
-  angles for a UR arm.
+- A teaching toy, not MoveIt or OMPL: RRT-Connect for a point in a 10 m
+  square, in 0.5 m steps. OMPL samples the same way in a UR arm's six joint
+  angles.
 - The walls, the start, the goal and the step are chosen for this example
   (Kuffner and LaValle, ICRA 2000).
+- The full script is on the :doc:`code page <l10_code>`.
 
 
 The Two Trees for Seed 1
@@ -796,6 +741,10 @@ The Pilz Industrial Motion Planner
   motions".
 - A straight-line descent is what you want when you lower a cell into a
   voltage tester or a tray slot: predictable and repeatable.
+- Each motion has a fixed shape, so it cannot go around an obstacle. MoveIt's
+  own Pilz integration test plans a PTP move into a box and expects planning
+  to fail. The MoveIt documentation does not say this in words; the test
+  does.
 
 
 Choosing a Planner for an ARIAC Motion
@@ -1031,8 +980,8 @@ zone locks and return "canceled" with what it holds.
   and your recovery logic would never be tested.
 
 
-Robots Sharing Space: Why Two Safe Plans Can Collide
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Robots Sharing Space: Two Safe Plans Can Collide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - MoveIt 2 plans each robot as if it were alone: inspection robot 1's planning
   scene does not contain inspection robot 2.
@@ -1044,10 +993,6 @@ Robots Sharing Space: Why Two Safe Plans Can Collide
 - A collision between two robots counts twice: each robot is charged.
 - L12 works through the scoring formula.
 
-
-Robots Sharing Space: Zone Locks and Static Obstacles
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 **Zone locks.** A **zone lock** lets one robot at a time into a shared area.
 The package is planned to have:
 
@@ -1055,12 +1000,6 @@ The package is planned to have:
   around the module (the assembly robots and the welder).
 - A skill takes a zone's lock before its arm enters and releases it when the
   arm is out. A lock that is not free in time returns "zone busy".
-
-**Static obstacles.**
-
-- Each robot's planning scene holds boxes for the fixed equipment: testers,
-  conveyors, tables, tool holders.
-- AGV boxes are added and removed as AGVs arrive and leave.
 
 .. warning::
 

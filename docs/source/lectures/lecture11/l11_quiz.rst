@@ -69,8 +69,8 @@ Multiple Choice (Questions 1 to 11)
 
    A. A plan failure; layer 2 (schema) catches it.
 
-   B. A sensor failure; only a second source, such as ``/agvN/tray_status``,
-      can catch it.
+   B. A sensor failure; a second source, such as ``/agvN/tray_status``, can
+      catch it.
 
    C. An action failure; the tree's Retry catches it.
 
@@ -81,10 +81,12 @@ Multiple Choice (Questions 1 to 11)
 
    **B**.
 
-   VLM grounding errors show up as sensor failures: wrong data. A VLM error
-   is well formed and confident, so a schema check passes it (**A** is
-   wrong). ``/agvN/tray_status`` says which of the four slots are occupied,
-   so it is a second source for this exact fact.
+   In the taxonomy figure, VLM output feeds the sensor column: a wrong slot
+   is wrong data from a sensor. A VLM error is well formed, so a schema
+   check passes it (**A** is wrong). The Cross-Checking the VLM section
+   compares the VLM with a second source, and ``/agvN/tray_status`` says
+   which of the four slots are occupied, so it is a second source for this
+   exact fact.
 
 
 .. admonition:: Question 3

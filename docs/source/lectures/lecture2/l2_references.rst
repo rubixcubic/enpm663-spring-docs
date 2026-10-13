@@ -170,15 +170,6 @@ order of the slides, grouped by section. Every link was checked on
          The BT Navigator's configuration, including the ``NavigateToPose``
          action that a client application sends.
 
-      .. grid-item-card:: Nav2: Detailed Behavior Tree Walkthrough
-         :link: https://docs.nav2.org/jazzy/getting_started/nav2_behavior_trees/detailed_behavior_tree_walkthrough/detailed_behavior_tree_walkthrough/
-         :class-card: sd-border-secondary
-
-         **Nav2 documentation (Jazzy)**
-
-         The default tree: replanning at 1 Hz, contextual recoveries, then
-         the Recovery subtree, up to 6 retries.
-
       .. grid-item-card:: MoveIt: the move_group node
          :link: https://moveit.picknik.ai/main/doc/concepts/move_group.html
          :class-card: sd-border-secondary

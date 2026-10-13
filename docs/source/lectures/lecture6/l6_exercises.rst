@@ -40,6 +40,11 @@ result first, write the prediction down, then run the script.
    predict what the planner does with each, and see that a mistake can hide
    in one problem and show in another.
 
+   The notes show only the output of ``mistakes.py``. This exercise edits
+   the script's ``MISTAKES`` dictionary (lines 15 to 22): read the full
+   script on the :doc:`code page <l6_code>` (Demo 5) first. Each entry is
+   the text to find, its replacement, and the step numbers to print.
+
    .. raw:: html
 
       <hr>
@@ -758,7 +763,9 @@ result first, write the prediction down, then run the script.
          python "$FD" --plan-file filled_small.plan domain_filled.pddl problem.pddl --search "astar(lmcut())" | grep -e "Translator operators" -e "Plan length" -e "Expanded [0-9]"
          python "$FD" --plan-file filled_large.plan domain_filled.pddl ../outputs/problem_large.pddl --search "astar(lmcut())" | grep -e "Translator operators" -e "Plan length" -e "Expanded [0-9]"
 
-      Compare with ``outputs/fd_summary.txt``.
+      Compare with ``outputs/fd_summary.txt``. The notes quote only its
+      expanded-state counts (124 and 2346); the full file is on the
+      :doc:`code page <l6_code>`, under "Run everything".
 
    .. dropdown:: Solution
       :color: success

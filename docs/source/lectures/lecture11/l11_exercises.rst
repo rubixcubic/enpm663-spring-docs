@@ -328,8 +328,9 @@ local or global recovery.
 
       Without the wait (Run B in the notes), ``place_cell`` succeeded on
       tick 4. The wait cost :math:`10 - 4 = 6` ticks: 2 waiting ticks for
-      each of the 3 attempts. Run A, with one failure, now succeeds on
-      tick 7 instead of tick 3.
+      each of the 3 attempts. Run A, with one failure (its output is on the
+      :doc:`code page <l11_code>`), now succeeds on tick 7 instead of
+      tick 3.
 
       **2.** The wait is the first child of the sequence, and Retry runs the
       whole sequence on every attempt, the first one included. To wait only

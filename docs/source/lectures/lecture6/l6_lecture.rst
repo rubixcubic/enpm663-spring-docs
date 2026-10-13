@@ -347,18 +347,10 @@ Granularity: One Action per Skill Call or ARIAC Call
 Two Modeling Mistakes, Made on Purpose
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: code/mistakes.py
-   :language: python
-   :lines: 15-22
-   :caption: lecture6/code/mistakes.py (lines 15 to 22)
-
-- Each entry removes one piece of ``domain.pddl``, in memory: a precondition
-  of ``submit-kit``, then a delete effect of ``pick-from-conveyor``.
-- The script plans ``problem.pddl`` with each changed domain and prints the
-  steps that show the mistake.
-
-What the Planner Does with Each Mistake
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+``mistakes.py`` removes one piece of ``domain.pddl`` in memory (a
+precondition of ``submit-kit``, then a delete effect of
+``pick-from-conveyor``), plans ``problem.pddl``, and prints the steps that
+show the mistake. The full script is on the :doc:`code page <l6_code>`.
 
 .. literalinclude:: outputs/mistakes.txt
    :language: text
@@ -607,7 +599,9 @@ All 19 Steps, One Row per Robot
 - Each line of the plan is a **ground action**, an action name with its
   arguments. In L7, each one becomes a behavior tree subtree.
 - One step per column: a classical plan is a single sequence, even when the
-  two robots could work at the same time (steps 5 and 6).
+  two robots could work at the same time (steps 5 and 6). In GP3, the
+  executor may run steps for different robots together when they touch
+  different objects.
 - c2 waits on tester2 from step 4 to step 15. The model has no time, so it
   sees no cost in that.
 
@@ -698,8 +692,12 @@ Valid in the Model Is Not the Same as Working in the Factory
   ``(tester-free tester2)`` can be true in the problem and useless in the
   factory.
 
-**Plan quality measures for GP3 and GP4:** validity, plan length, plan cost
-(here, cost 1 for every action, so cost equals length), and planning time.
+**Plan quality measures for GP3 and GP4:**
+
+- Validity, plan length, plan cost (here, cost 1 for every action, so cost
+  equals length), and planning time.
+- GP4 compares its LLM agent with this planner on the same trials, with
+  these four measures.
 
 
 .. _l6-strains:
@@ -707,8 +705,7 @@ Valid in the Model Is Not the Same as Working in the Factory
 Where PDDL Strains
 ------------------
 
-This section covers numbers (the kit voltage window), partial observation,
-time, and many objects.
+This section covers numbers (the kit voltage window) and many objects.
 
 .. _l6-kit-rule:
 
@@ -836,49 +833,23 @@ Placing Cells as They Arrive, With Look-Ahead
    0.05 / :math:`\sqrt{10}` = 0.016 V, L5). Leave a margin at the window's
    edges.
 
-Partial Observation and Time
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**Partial observation:**
-
-- A cell's voltage is unknown until it is tested. Classical PDDL has no
-  action whose result is unknown in advance.
-- So the problem assumes the likely result (``voltage-ok``), and the executor
-  replans when a reading disagrees. Each new fact (a new cell, a failed
-  check) means a new problem and a new plan.
-- Only two testers exist, and cells lock to the tray, so the selection step
-  runs each time a reading arrives, as in the demo.
-
-**Time and parallel robots:**
-
-- A classical plan is one sequence (:ref:`the timeline figure
-  <l6-timeline>`). GP3 either runs it one step at a time, or lets the
-  executor run steps for different robots together when they touch
-  different objects.
-
 .. _l6-many-objects:
 
 Many Objects: Ground Actions Multiply
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Both runs below are A* with LM-cut from the command line (``run_all.sh``).
-Small: ``problem.pddl``. Large: 8 cells and 2 AGVs.
-
-.. literalinclude:: outputs/fd_summary.txt
-   :language: text
-   :caption: outputs/fd_summary.txt
-
 .. literalinclude:: outputs/ground_actions.txt
    :language: text
-   :caption: outputs/ground_actions.txt
+   :caption: Output: lecture6/outputs/ground_actions.txt
 
-**Reading the ground action counts:**
-
-1. ``check-kit`` has four cell parameters. With 4 cells there are
-   4 × 4 × 4 × 4 = 256 ways to fill them: 256 of the 311 ground actions.
-2. With 8 cells and 2 AGVs: 2 × 8 × 8 × 8 × 8 = 8192 of the 8334.
-3. Doubling the cells and the AGVs took the search from 124 to 2346 expanded
-   states.
+1. Small is ``problem.pddl``. ``check-kit`` has four cell parameters. With 4
+   cells there are 4 × 4 × 4 × 4 = 256 ways to fill them: 256 of the 311
+   ground actions.
+2. Large has 8 cells and 2 AGVs: 2 × 8 × 8 × 8 × 8 = 8192 of the 8334.
+3. Doubling the cells and the AGVs took A* with LM-cut from 124 to 2346
+   expanded states (``outputs/fd_summary.txt``). The full
+   ``fd_summary.txt`` is on the :doc:`code page <l6_code>`, under "Run
+   everything".
 
 .. important::
 
@@ -892,11 +863,10 @@ Small: ``problem.pddl``. Large: 8 cells and 2 AGVs.
 PDDL in GP3
 -----------
 
-This section covers the GP3 pipeline, PDDL as knowledge representation, and
-the classical baseline for GP4.
+This section covers the GP3 pipeline: numbers in Python, order in PDDL.
 
-The GP3 Pipeline
-~~~~~~~~~~~~~~~~
+The GP3 Pipeline: Numbers in Python, Order in PDDL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l6/gp3_pipeline.svg
    :alt: A block diagram of the GP3 pipeline in two rows. Top row, left to
@@ -920,46 +890,6 @@ The GP3 Pipeline
 
 Gray: files and data; white: programs and the factory. Numbers stay in
 ordinary code; PDDL orders the actions.
-
-PDDL as Knowledge Representation (L3)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. list-table::
-   :header-rows: 1
-   :widths: 34 33 33
-   :class: compact-table
-
-   * - **L3 idea**
-     - **PDDL**
-     - **In today's files**
-   * - Frame class
-     - Type
-     - ``cell``, ``agv``, ``slot``
-   * - Relation
-     - Predicate
-     - ``(in-slot ?c ?a ?s)``
-   * - Instance
-     - Object
-     - ``c1``, ``agv1``
-   * - World model at one moment
-     - Problem file
-     - ``problem.pddl``
-
-- L3 wrote one kit as PDDL facts with other example names (``at``,
-  ``passed``, ``slot-empty``). Your team picks one set of names and uses it
-  everywhere.
-- The same facts can be written as JSON for the LLM agent in L8, so GP3 and
-  GP4 share one world model.
-
-The Classical Baseline, and a Class Discussion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**The baseline for GP4:**
-
-- A PDDL plan can be checked mechanically, as the validator did in this
-  lecture. An LLM agent's output must be checked by code before it runs (L8).
-- GP4 compares the agent with this planner on the same trials: validity, plan
-  length, cost and planning time.
 
 **Class discussion:** which facts about the ARIAC factory can PDDL state, and
 which can it not? Name examples from Task 1 and the four challenges (conveyor

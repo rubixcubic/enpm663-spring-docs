@@ -112,75 +112,6 @@ The Three-Layer Architecture (Gat, 1998)
    Gat calls the three layers the **deliberator**, the **sequencer** and the
    **controller**.
 
-.. important::
-
-   The stack you build in this course follows this pattern, and it is the
-   frame we use all semester.
-
-
-The Four Architectures Side by Side
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. figure:: /_static/images/l2/four_architectures.svg
-   :alt: Four panels side by side, each standing on a gray bar labeled World. Panel 1: Sense, Model, Plan, Act in a loop: the world feeds Sense, Sense feeds Model, Model feeds Plan, Plan feeds Act, and Act changes the world. Panel 2: Sense feeds a Rule that acts on the world directly; a dashed empty box reads no model, no plan. Panel 3: three behavior boxes, Level 0, Level 1 and Level 2, all fed by the sensors; the output of Level 1 and of Level 2 each enters a circle marked S on the output line of Level 0, which drives the world. Panel 4: three stacked boxes, Deliberative, Executive and Reactive, with arrows going down on the left and up on the right, and the Reactive box connected to the world.
-   :width: 100%
-   :align: center
-
-   1: sense-plan-act. 2: reactive. 3: subsumption; at each S, a higher level
-   replaces the signal on the line below it (Brooks calls this suppression).
-   4: three-layer. Blue: deliberation. Amber: the executive. Green: reaction.
-   Gray: the world and sensing.
-
-Panel 1 puts a model and a plan between every reading and every action.
-Panel 2 puts nothing there. Panels 3 and 4 are two ways to have both.
-
-
-.. _l2-why-neither:
-
-Why Neither Planning Nor Reacting Alone Works in ARIAC
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. grid:: 1 1 2 2
-   :gutter: 3
-
-   .. grid-item-card:: Planning alone
-      :class-card: sd-border-secondary
-
-      A fixed plan sends cells to testers 1 and 2 in turn and never checks a
-      tester's status.
-
-      When tester 1 malfunctions, the plan reads its −1 V as a voltage,
-      calls a good cell out of range, and recycles it.
-
-   .. grid-item-card:: Reacting alone
-      :class-card: sd-border-secondary
-
-      Reaction can close a gripper on time, and can move a cell away from a
-      tester that reports a malfunction.
-
-      It keeps no memory of the cells on the tray, so it cannot decide which
-      four cells make a kit whose total is within 14.25 V to 14.55 V (the
-      kit voltage window from L1).
-
-.. important::
-
-   A factory cell needs both: a layer that decides over the whole order, and
-   a layer that reacts within milliseconds. The three-layer architecture puts
-   an executive between them. The toy factory later in this lecture runs all
-   three and shows each failure.
-
-
-.. _l2-three-layer:
-
-The Three-Layer Architecture
-----------------------------
-
-This section covers what each layer decides, how often, and what passes
-between the layers.
-
-What Each Layer Does
-~~~~~~~~~~~~~~~~~~~~
-
 .. list-table::
    :header-rows: 1
    :widths: 16 44 40
@@ -210,6 +141,37 @@ layer slowest.
    picking a cell from the conveyor. In this course each skill is a ROS 2
    action from the course skills package. It reports success, or a failure
    reason, in its result.
+
+.. important::
+
+   The stack you build in this course follows this pattern, and it is the
+   frame we use all semester.
+
+
+The Four Architectures Side by Side
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/l2/four_architectures.svg
+   :alt: Four panels side by side, each standing on a gray bar labeled World. Panel 1: Sense, Model, Plan, Act in a loop: the world feeds Sense, Sense feeds Model, Model feeds Plan, Plan feeds Act, and Act changes the world. Panel 2: Sense feeds a Rule that acts on the world directly; a dashed empty box reads no model, no plan. Panel 3: three behavior boxes, Level 0, Level 1 and Level 2, all fed by the sensors; the output of Level 1 and of Level 2 each enters a circle marked S on the output line of Level 0, which drives the world. Panel 4: three stacked boxes, Deliberative, Executive and Reactive, with arrows going down on the left and up on the right, and the Reactive box connected to the world.
+   :width: 100%
+   :align: center
+
+   1: sense-plan-act. 2: reactive. 3: subsumption; at each S, a higher level
+   replaces the signal on the line below it (Brooks calls this suppression).
+   4: three-layer. Blue: deliberation. Amber: the executive. Green: reaction.
+   Gray: the world and sensing.
+
+Panel 1 puts a model and a plan between every reading and every action.
+Panel 2 puts nothing there. Panels 3 and 4 are two ways to have both.
+
+
+.. _l2-three-layer:
+
+The Three-Layer Architecture
+----------------------------
+
+This section is the frame of the course: what passes between the layers, and
+one example of goals going down and status coming up.
 
 
 What Passes Between the Layers
@@ -285,7 +247,9 @@ What the Toy Keeps from ARIAC, and What It Makes Up
   (``voltage_tester/model.sdf``). A new reading comes every 0.1 s. An empty
   tester reads about 0 V.
 - A malfunctioning tester keeps publishing: −1 V with the status
-  ``MALFUNCTIONING`` (``voltage_tester_plugin.cpp``).
+  ``MALFUNCTIONING`` (``voltage_tester_plugin.cpp``). ARIAC's challenge page
+  says a malfunctioning tester stops publishing; the toy follows the code.
+  **Check the status field, not only the voltage.**
 
 **Chosen for this example.** 10 cells; step times of 3 s to 10 s; each pick
 fails with probability 0.2; tester 1 malfunctions from 20 s for 45 s (45 s is
@@ -297,23 +261,6 @@ the duration in ARIAC's example configuration); seed 1.
    A **seed** is the number that starts a random number generator. The same
    seed gives the same "random" cell voltages, reading noise and grasp
    failures, so every run with seed 1 repeats exactly.
-
-
-The Tester Model: What a Malfunction Looks Like
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. literalinclude:: code/toy_factory.py
-   :language: python
-   :lines: 59-63, 70-77
-   :caption: lecture2/code/toy_factory.py (excerpt)
-
-- ``a.start`` and ``a.duration`` play the roles of ARIAC's ``START_TIME`` and
-  ``DURATION`` for a voltage tester malfunction.
-- Each call to ``read`` moves the toy's clock ``self.t`` forward by one
-  reading, 0.1 s.
-- ARIAC's challenge page says a malfunctioning tester stops publishing. The
-  ARIAC code keeps publishing −1 V with ``MALFUNCTIONING``, and the toy
-  follows the code. **Check the status field, not only the voltage.**
 
 
 Architecture 1: Plan Only
@@ -649,33 +596,6 @@ Sources (Nav2 documentation, Jazzy):
 `Behavior Trees <https://docs.nav2.org/jazzy/getting_started/navigation_concepts/behavior_trees/>`__,
 `Navigation Servers <https://docs.nav2.org/jazzy/getting_started/navigation_concepts/navigation_servers/>`__,
 `Behavior-Tree Navigator <https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/>`__.
-
-
-Nav2: Recovery Starts Where the Failure Is, Then Widens
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Nav2's default tree, as its documentation describes it:
-
-1. The tree is ``navigate_to_pose_w_replanning_and_recovery.xml``. "This
-   behavior tree replans the global path periodically at 1 Hz and it also has
-   recovery actions."
-2. "If either of the two main behaviors in the Navigation subtree fail (path
-   calculation or path following), contextual recoveries will be attempted."
-3. "If the contextual recoveries were still not enough, the Navigation
-   subtree will return FAILURE. The system will move on to the Recovery
-   subtree to attempt to clear any system level navigation failures."
-4. "This happens until the number_of_retries for the parent RecoveryNode is
-   exceeded (which by default is 6)."
-
-.. important::
-
-   This is the same idea as the toy: recover at the step that failed first,
-   try a wider recovery next, and only then send a failure up. L11 builds
-   your recovery on this order.
-
-Source: `Detailed Behavior Tree Walkthrough
-<https://docs.nav2.org/jazzy/getting_started/nav2_behavior_trees/detailed_behavior_tree_walkthrough/detailed_behavior_tree_walkthrough/>`__
-(Nav2 documentation, Jazzy).
 
 
 MoveIt: A Motion Layer, Not an Executive

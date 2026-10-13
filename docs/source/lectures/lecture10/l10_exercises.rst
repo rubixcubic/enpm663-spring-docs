@@ -353,6 +353,10 @@ Exercise 6 is paper only, and is the one closest to GP4.
    Check the toy's shortest route by hand, then measure how much a sampling
    planner varies, and what a sample limit does to it.
 
+   The lecture notes describe the toy but do not show its code. Parts B to D
+   change ``rrt_connect_toy.py``: read the full script on the
+   :doc:`code page <l10_code>` first.
+
    .. raw:: html
 
       <hr>
