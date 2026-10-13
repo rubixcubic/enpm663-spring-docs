@@ -19,6 +19,8 @@ Final Demo: Full ARIAC Trial, Unseen
         - 3 students
       * - **Submission**
         - Canvas + GitHub repository link + code-freeze tag
+      * - **Code freeze**
+        - Friday, April 30, 2027, at 11:59 pm
 
 
 .. admonition:: Specification draft
@@ -27,9 +29,9 @@ Final Demo: Full ARIAC Trial, Unseen
    This page is the specification draft for the final demo. The provided
    code (the course skills package, with its assembly robot and gantry
    welder skills) is released with the project, on the day the final demo
-   specification is posted in Week 12. The code-freeze date, the tag name,
-   the split of the 20% and how the run score maps to points are set in
-   that specification.
+   specification is posted in Week 12. The code freeze is Friday, April 30, 2027, at 11:59 pm.
+   The tag name, the split of the 20% and how the run score maps to points
+   are set in that specification.
 
 
 .. admonition:: AI tools
@@ -185,8 +187,8 @@ Provided Resources
      - Now including the assembly robot and gantry welder skills.
    * - Final demo specification
      - Posted in Week 12: the run rules, the trial parameters that may vary
-       and their ranges (not their values), the code-freeze date and tag
-       name, and the grading procedure.
+       and their ranges (not their values), the code-freeze tag name, and
+       the grading procedure.
    * - An embodied-reasoning model
      - Access to a hosted model, or instructions to get it. To be confirmed
        before Week 12. See :doc:`/ariac/ai_setup`.

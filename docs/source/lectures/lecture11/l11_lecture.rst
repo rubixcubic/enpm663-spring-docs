@@ -104,13 +104,14 @@ How the Demo Is Run and Graded
 What Is Still to Be Decided
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Three things are **to be announced**:
+**Set: the code freeze is Friday, April 30, 2027, at 11:59 pm.** That leaves time for
+every team's run. The ARIAC docs' example trial has a time limit of 900 s of
+simulation time. Gazebo ran at about 0.37 times real time on the development
+PC, so one run takes about :math:`900 / 0.37 = 2432` s, or 41 minutes, of
+wall-clock time.
 
-- **The code-freeze date.** It must leave time for every team's run. The
-  ARIAC docs' example trial has a time limit of 900 s of simulation time.
-  Gazebo ran at about 0.37 times real time on the development PC, so one
-  run takes about :math:`900 / 0.37 = 2432` s, or 41 minutes, of wall-clock
-  time.
+Two things are **to be announced**:
+
 - **The grading rubric.**
 - **Which embodied-reasoning model you can use, and what it costs.**
 

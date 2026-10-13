@@ -6,10 +6,21 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.3: Lecture Notes Follow the Trimmed Decks (2026-10-12)
+.. dropdown:: v0.4.4: Final Demo Code Freeze Set (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Final demo
+
+   - **Code freeze:** Friday, April 30, 2027, at 11:59 pm. The syllabus, the
+     final demo page and the L11 pages give the date. The grading rubric and
+     the embodied-reasoning model are still to be announced.
+
+
+.. dropdown:: v0.4.3: Lecture Notes Follow the Trimmed Decks (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lectures
 
