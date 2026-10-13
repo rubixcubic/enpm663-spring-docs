@@ -8,8 +8,8 @@ Exercises
    this page goes to ELMS-Canvas.
 
    They exist so you can check your own understanding before the graded
-   work, which is the five in-class quizzes and the four group projects
-   listed in the :doc:`syllabus </syllabus/index>`.
+   work, which is the five in-class quizzes, the four group projects and
+   the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
 Six take-home exercises on the L6 slides and scripts. Exercises 1 and 3
 change the domain or the generator and ask what the planner then does;

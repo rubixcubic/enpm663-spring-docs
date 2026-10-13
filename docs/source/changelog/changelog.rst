@@ -6,10 +6,38 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.9: Syllabus PDF Rebuilt (2026-10-12)
+.. dropdown:: v0.4.10: All Pages Published, Pre-Reads Written (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Published
+
+   - **Lectures L1 to L13**, **GP1 to GP4**, the **final demo** page and the
+     **Course Skills Package** page are now on the site. Each project still
+     opens for work in the week the syllabus gives. The glossary's lecture
+     tags are links, so its lecture filter works.
+
+   .. rubric:: Pre-Read
+
+   - Four pre-read pages: the **ROS 2 Refresher** (before L1), the **PDDL
+     Primer** (before L6), **LLM Prompting and Structured Output** and
+     **Model Context Protocol (MCP)** (before L8). Each covers what its
+     lecture assumes, and points to the lecture for the rest. Their terms are
+     in the glossary.
+
+   .. rubric:: Fixes
+
+   - L2: the GP1 timeline follows the GP1 page (Week 2: install the
+     packages and run the trial; Week 3: blackboard keys).
+   - L9: GP3 is due at the start of L9; only its peer review comes later.
+   - L12: the GP4 peer-review form is filled in after the deadline.
+   - The exercise pages count the final demo with the graded work.
+
+
+.. dropdown:: v0.4.9: Syllabus PDF Rebuilt (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Syllabus
 

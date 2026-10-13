@@ -108,7 +108,7 @@ Next Steps
 
 - **Before next class:**
 
-  - Submit GP3 and its peer-review form on ELMS-Canvas.
+  - Fill in the GP3 peer-review form on ELMS-Canvas (GP3 was due today).
   - Read the GP4 specification, and agree on who owns the agent, the VLM
     module and the comparison.
   - Set up LLM and VLM access (a hosted API key or a local model with

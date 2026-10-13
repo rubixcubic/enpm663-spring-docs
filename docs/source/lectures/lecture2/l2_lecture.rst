@@ -1012,9 +1012,9 @@ What You Get, What You Submit, and When
    * - **Week**
      - **GP1 work**
    * - 2 (02/03)
-     - Setup, repository, run the trial
+     - Install packages, run the trial
    * - 3 (02/10)
-     - Skills package, ARIAC services
+     - Blackboard keys (L3)
    * - 4 (02/17)
      - L4: write the tree
    * - 5 (02/24)

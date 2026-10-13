@@ -8,8 +8,8 @@ Exercises
    this page goes to ELMS-Canvas.
 
    They exist so you can check your own understanding before the graded
-   work, which is the five in-class quizzes and the four group projects
-   listed in the :doc:`syllabus </syllabus/index>`.
+   work, which is the five in-class quizzes, the four group projects and
+   the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
 Six take-home exercises on the L3 slides and ``kit_views.py``. Exercises 1 to
 3 are on paper: a frame, the observed, inferred and unknown facts of Task 1,

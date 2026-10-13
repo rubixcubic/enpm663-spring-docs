@@ -23,9 +23,8 @@ exercises. Lecture materials are available on Canvas and on this site.
 Schedule
 --------
 
-The lectures open here one at a time, as their slides are finished; the
-table shows the plan. Dates are in the :ref:`course schedule
-<course-schedule>`.
+Each lecture's page holds its notes, its code, take-home exercises and a
+self-check quiz. Dates are in the :ref:`course schedule <course-schedule>`.
 
 .. list-table::
    :widths: 8 40 52
@@ -35,56 +34,56 @@ table shows the plan. Dates are in the :ref:`course schedule
    * - Lecture
      - Topic
      - Key Concepts
-   * - L1
+   * - :doc:`L1 <lecture1/l1_index>`
      - Course Overview and ROS 2 Refresher
      - Physical AI and agents, the ARIAC 2025 EV battery factory and what
        its score rewards, QoS, executors, actions, TF2, diagnostic quiz
-   * - L2
+   * - :doc:`L2 <lecture2/l2_index>`
      - System Architectures for Agentic Robotics
      - Reactive, behavior-based and three-layer architectures; where an LLM
        agent and a VLM plug in; the course skills package; end-to-end VLA
        models; multi-robot coordination
-   * - L3
+   * - :doc:`L3 <lecture3/l3_index>`
      - Knowledge Representation for Agentic Robotics
      - Frames, ontologies; a world model per layer and errors that move up
-       (from 4D/RCS); one model for PDDL, an LLM and a VLM
-   * - L4
+       (from 4D/RCS); one kit state in three views for a PDDL planner, an LLM agent and an executor
+   * - :doc:`L4 <lecture4/l4_index>`
      - Behavior Trees for Task Execution
      - Sequence, selector, parallel, decorators; ticks and status;
        blackboards; ``py_trees_ros``
-   * - L5
+   * - :doc:`L5 <lecture5/l5_index>`
      - Sensing and Perception for Robotic Systems
      - Sensor choice and budget, lidar point clouds and defect detection,
        TF2 in a perception pipeline, inspection reports, precision and recall
-   * - L6
+   * - :doc:`L6 <lecture6/l6_index>`
      - Task-Level Planning with PDDL
-     - Domains and problems, Fast Downward and the Unified Planning
+     - Domains and problems, Fast Downward through the Unified Planning
        Framework, plan validity, where PDDL strains (numbers)
-   * - L7
+   * - :doc:`L7 <lecture7/l7_index>`
      - Plan Execution Patterns with Behavior Trees
      - Plan-to-BT factory, retry and timeout, replanning triggers,
        ``BehaviorTree.CPP``
-   * - L8
+   * - :doc:`L8 <lecture8/l8_index>`
      - LLM Agents I: Agent Loops, Tool Use, and Structured Output
      - The orchestrator loop, plan-and-execute and ReAct, JSON schemas and
        validation, tool calling, MCP, context and cost
-   * - L9
+   * - :doc:`L9 <lecture9/l9_index>`
      - LLM Agents II: VLM Grounding and Agentic Replanning
      - VLM scene descriptions, embodied-reasoning models, closed-loop
        replanning, when PDDL is the better tool
-   * - L10
+   * - :doc:`L10 <lecture10/l10_index>`
      - Frames, Transforms, and Motion Planning
      - TF2 in depth, the pinhole camera model, MoveIt 2, sampling-based
        planners, parameterized grasps, inside the course skills package
-   * - L11
+   * - :doc:`L11 <lecture11/l11_index>`
      - Recovery, Robustness, and Failure Handling for Agentic Systems
      - Failure taxonomy, BT recovery structures, LLM and VLM output checks,
        the ARIAC 2025 challenges
-   * - L12
+   * - :doc:`L12 <lecture12/l12_index>`
      - Evaluation and Measurement Science for Agentic Systems
      - Plan, perception and execution metrics; controlled comparisons;
        the ARIAC 2025 scoring formula
-   * - L13
+   * - :doc:`L13 <lecture13/l13_index>`
      - The Physical AI Frontier: VLAs, Robot Foundation Models, and World
        Models
      - VLA models, two-system designs, world models and simulation, cost of
@@ -95,9 +94,6 @@ table shows the plan. Dates are in the :ref:`course schedule
    :maxdepth: 3
    :titlesonly:
 
-..
-   Hidden until each deck is finished (see HIDDEN_LECTURES in conf.py).
-   To open a lecture, move its line into the toctree above.
    lecture1/l1_index
    lecture2/l2_index
    lecture3/l3_index

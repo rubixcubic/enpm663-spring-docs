@@ -54,6 +54,12 @@ build kits of four cells, and assemble and weld battery modules.
 
    LLMs and VLMs <ai_setup>
 
+.. toctree::
+   :hidden:
+   :caption: Robot Skills
+
+   Course Skills Package <skills>
+
 Course Configuration
 --------------------
 

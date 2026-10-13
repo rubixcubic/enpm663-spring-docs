@@ -18,26 +18,34 @@ read *before* the lecture that assumes it.
    * - Page
      - When
      - Why it is here
-   * - ROS 2 Refresher
+   * - :doc:`ROS 2 Refresher </preread/ros2-refresher>`
      - Before L1
-     - QoS profiles, executors, actions and TF2, at the depth the course
-       relies on, and lifecycle nodes for reference. Every group project
-       depends on it.
-   * - PDDL Primer
+     - The ROS 2 the syllabus assumes: workspaces and packages, nodes and
+       topics, the ``ros2`` tools, parameters, services, actions, launch
+       files and reading C++ code, plus lifecycle nodes for reference. L1
+       then teaches QoS, executors, actions in depth and TF2.
+   * - :doc:`PDDL Primer </preread/pddl-primer>`
      - Before L6
-     - PDDL domains and problems, typed predicates, and running a planner
-       from Python. GP3 builds on it.
-   * - LLM Prompting and Structured Output
+     - What a planning problem is, on a two-room toy world: facts, actions
+       with preconditions and effects, a goal, and a plan by hand. L6 builds
+       the ARIAC domain and runs Fast Downward.
+   * - :doc:`LLM Prompting and Structured Output </preread/llm-prompting>`
      - Before L8
-     - System and user prompts, output constrained by a JSON schema,
-       validation and retry, and tool calling.
-   * - Model Context Protocol (MCP)
+     - What an LLM API call sends and returns, why the history is resent on
+       every call, tokens, the API key, and JSON basics. L8 teaches system
+       prompts, schemas with validation and retry, and tool calling.
+   * - :doc:`Model Context Protocol (MCP) </preread/mcp>`
      - Before L8
-     - How MCP exposes tools and context to an LLM agent. GP4 exposes the
-       robot skills this way.
+     - Why a standard protocol for tools, host, client and server, the three
+       primitives, the messages and the two transports. L8 builds and calls
+       an MCP server.
 
-.. note::
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :titlesonly:
 
-   These pages are being written for the Spring 2027 offering. Each page is
-   linked from the table above once it is published, and the
-   :doc:`changelog </changelog/changelog>` announces it.
+   ros2-refresher
+   pddl-primer
+   llm-prompting
+   mcp

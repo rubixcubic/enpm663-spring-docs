@@ -18,9 +18,10 @@ Week 15. Each group project builds on the previous one.
 
 .. note::
 
-   Group projects are posted one at a time as the semester progresses.
-   **No group project is posted yet.** GP1 is posted in Week 2. See the
-   :doc:`syllabus </syllabus/index>` for the full schedule and weights.
+   All four group projects and the final demo are on this site. Each one
+   opens for work in the week the syllabus gives: GP1 in Week 2, GP2 in
+   Week 5, GP3 in Week 7, GP4 in Week 10 and the final demo in Week 12. See
+   the :doc:`syllabus </syllabus/index>` for the full schedule and weights.
 
 
 Project Weight
@@ -37,23 +38,23 @@ The final project accounts for **60% of your overall course grade**:
      - % of course grade
      - Duration
      - Lectures
-   * - GP1: Behavior Tree for One Kit
+   * - :doc:`GP1: Behavior Tree for One Kit <gp1>`
      - 10%
      - Week 2 to Week 5
      - L1 to L4
-   * - GP2: Cell Inspection
+   * - :doc:`GP2: Cell Inspection <gp2>`
      - 10%
      - Week 5 to Week 7
      - L5
-   * - GP3: PDDL Planner and BT Executor
+   * - :doc:`GP3: PDDL Planner and BT Executor <gp3>`
      - 10%
      - Week 7 to Week 10
      - L6 and L7
-   * - GP4: LLM Agent with VLM Grounding
+   * - :doc:`GP4: LLM Agent with VLM Grounding <gp4>`
      - 10%
      - Week 10 to Week 13
      - L8 and L9
-   * - Final demo
+   * - :doc:`Final demo <final_demo>`
      - 20%
      - Week 12 to Week 15
      - L10 to L13
@@ -88,7 +89,7 @@ The Course Skills Package
 ARIAC 2025 gives each robot a joint trajectory action and a gripper action,
 but no pick or place skills. The course provides them: a Python ROS 2
 package, built on MoveIt 2, with skills such as picking a cell and placing
-it. It is published with GP1. Your team moves the AGVs with ARIAC's own AGV
+it. Its page is :doc:`Course Skills Package </ariac/skills>`. Your team moves the AGVs with ARIAC's own AGV
 move action.
 
 - In GP1 to GP3, your behavior tree calls the skills.
@@ -182,8 +183,8 @@ Task 2 (module construction), and handles the ARIAC challenges:
    modes you met and how you handled them.
 5. **Peer evaluation:** individual contribution assessment.
 
-The run rules, the tasks and the rubric are on the final demo page, posted
-with the final demo specification in Week 12.
+The run rules, the tasks and the rubric are on the :doc:`final demo page
+<final_demo>`.
 
 
 Academic Integrity
@@ -226,9 +227,8 @@ Support Resources
    :maxdepth: 2
    :titlesonly:
 
-.. GP1 to GP4 are hidden (see HIDDEN_GPS in conf.py). Add a line here to publish:
-..    gp1
-..    gp2
-..    gp3
-..    gp4
-..    final_demo
+   gp1
+   gp2
+   gp3
+   gp4
+   final_demo

@@ -46,8 +46,8 @@ The lecture ends with what a final demo test plan contains.
 .. important::
 
    **Group project.** GP4 is due today: submit it on ELMS-Canvas with the
-   repository link, and fill in the GP4 peer-review form. There is no quiz
-   today. The GP4 comparison with GP3 is the first place you use this
+   repository link. After the deadline, fill in the GP4 peer-review form.
+   There is no quiz today. The GP4 comparison with GP3 is the first place you use this
    lecture's rules. The final demo test plan is the second.
 
 

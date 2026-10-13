@@ -8,8 +8,8 @@ Exercises
    this page goes to ELMS-Canvas.
 
    They exist so you can check your own understanding before the graded
-   work, which is the five in-class quizzes and the four group projects
-   listed in the :doc:`syllabus </syllabus/index>`.
+   work, which is the five in-class quizzes, the four group projects and
+   the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
 Six take-home exercises on the L12 slides and the three L12 scripts.
 Exercise 1 changes the detector's threshold in ``cells.csv`` and prices each

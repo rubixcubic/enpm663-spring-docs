@@ -4,7 +4,7 @@ from datetime import date
 project = "ENPM663 Spring 2027"
 author = "Z. Kootbally"
 copyright = f"{date.today().year}, {author}"
-release = "v0.4.9"
+release = "v0.4.10"
 
 extensions = [
     "myst_parser",
@@ -44,36 +44,34 @@ templates_path = ["_templates"]
 # ---------------------------------------------------------------------------
 # What is published.
 #
-# No lecture is published yet (2026-10-11). L1 to L13 are hidden
-# completely and open one at a time as their decks are finished. To open
-# lecture N:
-#   1. remove N from HIDDEN_LECTURES below,
-#   2. restore its line in the toctree of lectures/index.rst,
-#   3. turn its plain-text tags ("L7") back into links,
-#      :doc:`L7 </lectures/lecture7/l7_index>`, in the glossary and on the
-#      pages that mention it.
+# All lectures, group projects, the final demo and the skills package page
+# were published on 2026-10-12 (user decision). To hide lecture N again:
+#   1. add N to HIDDEN_LECTURES below,
+#   2. move its line out of the toctree of lectures/index.rst,
+#   3. turn its glossary tags back into plain text ("L7") in
+#      claude-spring2027/ENPM663/rtd/glossary_build.py (LINK_TAGS).
 # The source files stay on disk.
 # ---------------------------------------------------------------------------
-HIDDEN_LECTURES = range(1, 14)
+HIDDEN_LECTURES = []
 
 exclude_patterns = [f"lectures/lecture{n}/**" for n in HIDDEN_LECTURES]
 
 # GP1 to GP4 are held back until they are posted. Remove an entry here
 # (and restore its toctree line in assignments/index.rst) to publish it.
-HIDDEN_GPS = range(1, 5)
+HIDDEN_GPS = []
 exclude_patterns += [f"assignments/gp{n}.rst" for n in HIDDEN_GPS]
 
 # The final demo page is held back with the GPs until its specification is
 # posted (Week 12). To publish it, delete this line and restore its toctree
 # line and its link in assignments/index.rst.
-HIDE_FINAL_DEMO = True
+HIDE_FINAL_DEMO = False
 if HIDE_FINAL_DEMO:
     exclude_patterns += ["assignments/final_demo.rst"]
 
 # The Course Skills Package page is held back until the package's v1.0.0 is
 # published with GP1 (2027-02-03). To publish it, delete this line and add
 # "Course Skills Package <skills>" to a toctree in ariac/ariac.rst.
-HIDE_SKILLS_PAGE = True
+HIDE_SKILLS_PAGE = False
 if HIDE_SKILLS_PAGE:
     exclude_patterns += ["ariac/skills.rst"]
 
