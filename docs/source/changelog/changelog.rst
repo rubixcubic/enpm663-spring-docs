@@ -6,10 +6,21 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.8: L13 Industry and Lab Examples, Provider-Neutral L8 Code (2026-10-12)
+.. dropdown:: v0.4.9: Syllabus PDF Rebuilt (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Syllabus
+
+   - ``syllabus.pdf`` is rebuilt from the current ``syllabus.md``. It now
+     has the "Agentic" lecture titles, the April 30 code freeze and the
+     5 to 6 minute final demo talk.
+
+
+.. dropdown:: v0.4.8: L13 Industry and Lab Examples, Provider-Neutral L8 Code (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lectures
 
