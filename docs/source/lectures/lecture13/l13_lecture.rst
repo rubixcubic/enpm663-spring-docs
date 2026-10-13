@@ -638,31 +638,84 @@ Why the Course Keeps Its Scope
 Agentic Manufacturing in Industry
 ---------------------------------
 
-This section is about agents that coordinate machines and robots on the
-factory floor.
+This section is about agents that coordinate robots: two lab examples and
+one industry example.
 
 
-Industry Examples (Placeholder)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lab Example 1: An LLM Reassigns Tasks After a Robot Fails
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. admonition:: Placeholder: industry examples
-   :class: warning
+`Lim and Kovalenko, Penn State <https://arxiv.org/abs/2505.22804>`__ (arXiv
+preprint, May 2025):
 
-   [Instructor to add: two or three industry examples of agents that
-   coordinate machines and robots on the factory floor, each with its public
-   source.]
+- Two arms (UFactory xArm6 and Lite6) work in two cells. The LLM is GPT-4o.
+- The LLM decides: when a robot fails, it writes a new task assignment.
+- A central controller (CCA in the paper) checks it: "If the response fails
+  validation, the CCA provides structured feedback and re-prompts the LLM
+  until a feasible configuration is obtained or the maximum retry limit is
+  reached."
+- Each robot's own controller runs the motion.
 
-   The course sources do not yet hold sourced industry examples, so this
-   part stays empty until they are added. If no examples are added, this
-   segment is shortened in class and its time goes to the cost discussion.
+**Measured by the authors (20 trials):** a valid reassignment in 20 of 20
+trials, 12 of them on the first try, and 19.36 s on average to adapt.
 
 
-What the Course Sources Do Say
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lab Example 2: LLM Agents Run a Modular Production Line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- The course design log: manufacturing-robotics companies increasingly use
-  LLMs for task reasoning while keeping motion planning and control
-  classical.
+`Xia, Jazdi, Zhang, Shah and Weyrich, University of Stuttgart
+<https://arxiv.org/abs/2409.18009>`__ (IEEE ETFA 2025): a manager agent turns
+an order into a production plan, and operator agents send function calls to
+the automation modules, which do the physical work.
+
+.. list-table:: GPT-4o on 100 test points (the paper's Table II)
+   :header-rows: 1
+   :widths: 40 30 30
+
+   * - GPT-4o
+     - Routine steps
+     - Unexpected events
+   * - As released
+     - 100%
+     - 41%
+   * - Fine-tuned on their data
+     - 100%
+     - 100%
+
+The authors write: "An accuracy of less than 100% means that the results are
+not fully reliable for directly controlling an automation system". They
+propose an assistant whose actions human supervisors approve.
+
+
+Industry Example: Amazon DeepFleet, at Production Scale
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`Amazon Science blog
+<https://www.amazon.science/blog/amazon-builds-first-foundation-model-for-multirobot-coordination>`__
+(August 11, 2025):
+
+- A foundation model trained on data from Amazon fulfillment and sortation
+  centers. It is a learned model, not an LLM agent.
+- Amazon reports it helps assign tasks and route robots around congestion,
+  "increasing the efficiency of our robot deployments by 10%".
+- Today it advises the existing fleet planner: Amazon is "initially using
+  them to predict congestion, with the longer-term goal of using them to
+  produce outputs like assignments of robots to specific retrieval tasks and
+  target locations".
+
+.. note::
+
+   Production scale today: a learned model advises a classical planner. The
+   two LLM examples are lab work, and both keep a check between the LLM and
+   the robots.
+
+
+What the Examples Show
+~~~~~~~~~~~~~~~~~~~~~~
+
+- Published work so far is pilots and research. In each case, the LLM or
+  model proposes, and a check, a planner or a person decides. Motion and
+  control stay classical.
 - The Gemini Robotics page says Gemini Robotics 2 "can coordinate multiple
   robots to work together in shared spaces."
 

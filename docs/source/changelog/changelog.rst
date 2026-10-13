@@ -6,10 +6,25 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.7: Final Demo Talk, Build Check and Online Backup (2026-10-12)
+.. dropdown:: v0.4.8: L13 Industry and Lab Examples, Provider-Neutral L8 Code (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lectures
+
+   - **L13:** the industry segment has three sourced examples: an LLM that
+     reassigns tasks after a robot fails (Penn State), LLM agents that run a
+     modular production line (Stuttgart, IEEE ETFA 2025), and Amazon's
+     DeepFleet. The notes now say that published work is pilots and research
+     so far, and that motion and control stay classical.
+   - **L8 code page:** the real-model section shows Anthropic and Gemini as
+     two examples; the course requires neither provider.
+
+
+.. dropdown:: v0.4.7: Final Demo Talk, Build Check and Online Backup (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Final demo
 

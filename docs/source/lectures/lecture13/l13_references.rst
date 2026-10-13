@@ -236,6 +236,43 @@ change often, so check a quote against its page before you rely on it.
          `scoring.py <https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_db/ariac_db/scoring.py>`_.
 
 
+.. dropdown:: Industry and Lab Examples
+   :class-container: sd-border-secondary
+   :open:
+
+   .. grid:: 1 1 2 2
+      :gutter: 2
+
+      .. grid-item-card:: An LLM reassigns tasks after a robot fails
+         :link: https://arxiv.org/abs/2505.22804
+         :class-card: sd-border-secondary
+
+         **Lim and Kovalenko, Penn State, arXiv 2505.22804 (2025)**
+
+         GPT-4o writes a new task assignment when a robot fails; a central
+         controller checks it and re-prompts. Two arms, 20 trials.
+
+      .. grid-item-card:: LLM agents run a modular production line
+         :link: https://arxiv.org/abs/2409.18009
+         :class-card: sd-border-secondary
+
+         **Xia, Jazdi, Zhang, Shah and Weyrich, IEEE ETFA 2025**
+
+         Manager and operator agents send function calls to automation
+         modules. Table II gives the accuracy on routine steps and on
+         unexpected events.
+
+      .. grid-item-card:: Amazon DeepFleet
+         :link: https://www.amazon.science/blog/amazon-builds-first-foundation-model-for-multirobot-coordination
+         :class-card: sd-border-secondary
+
+         **Amazon Science blog, August 11, 2025**
+
+         A foundation model for multirobot coordination that predicts
+         congestion for the existing fleet planner; the 10% efficiency
+         figure.
+
+
 .. dropdown:: Running Against the Real Model
    :class-container: sd-border-secondary
    :open:

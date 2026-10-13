@@ -261,54 +261,115 @@ back either ``{"tool": ..., "args": ...}`` or ``{"text": ...}``. Any object
 with that call signature can replace ``ScriptedModel``, and the loop, the
 guard and the stop conditions stay as they are.
 
-This section uses Anthropic's Python SDK, because ``TOOLS`` in
-``orchestrator.py`` already uses the three fields of an Anthropic tool
-definition: ``name``, ``description`` and ``input_schema``. The course lets
-you use another hosted API or a local open-weight model; then follow that
-provider's own SDK documentation. Everything below comes from Anthropic's
-documentation, read on 2026-10-12:
+.. important::
+
+   **The course has not chosen an LLM provider.** Any provider whose API
+   supports tool calling works, hosted or a local open-weight model. Google
+   calls the same feature "function calling". The two examples below use two
+   providers so you can compare them. The course requires neither one.
+
+The object that replaces ``ScriptedModel`` is an *adapter*: a class that
+translates between the loop's format and one provider's API. Each provider
+has its own message format for tools, so the adapter keeps the conversation
+in that format next to the loop's own ``messages`` list. For any provider,
+the adapter does three jobs:
+
+1. **Send the tools in the provider's format.** ``TOOLS`` describes
+   ``move-agv`` with three fields: ``name``, ``description`` and
+   ``input_schema`` (a JSON Schema for the arguments). If the provider uses
+   other field names, the adapter converts ``TOOLS``; ``orchestrator.py``
+   stays as it is.
+2. **Turn the model's reply into the loop's format.** A tool call becomes
+   ``{"tool": name, "args": arguments}``, and a plain answer becomes
+   ``{"text": ...}``.
+3. **Send each result back.** The loop appends the guard's error or the
+   tool's result as the last message. The adapter sends it to the provider
+   as the result of the tool call it answers, with the ID the provider gave
+   that call.
+
+The table compares the two examples. The versions are the ones tested for
+these notes; every other entry comes from the provider's documentation, read
+on 2026-10-12, and each example lists its sources.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 36 36
+   :class: compact-table
+
+   * - **Job**
+     - **Example 1: Anthropic**
+     - **Example 2: Google Gemini**
+   * - Python package (version tested)
+     - ``anthropic`` (1.13.0)
+     - ``google-genai`` (2.30.0)
+   * - Environment variable for the key
+     - ``ANTHROPIC_API_KEY``
+     - ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY``
+   * - Tool definition
+     - ``name``, ``description``, ``input_schema``: ``TOOLS`` as it is
+     - ``type``, ``name``, ``description``, ``parameters``: converted from
+       ``TOOLS``
+   * - The model's tool call
+     - a ``tool_use`` block with ``id``, ``name`` and ``input``
+     - a ``function_call`` step with ``id``, ``name`` and ``arguments``
+   * - The result sent back
+     - a ``tool_result`` block with ``tool_use_id``
+     - a ``function_result`` step with ``call_id``
+   * - Marking a result as an error
+     - ``is_error``
+     - ``is_error``
+   * - At most one tool call per reply
+     - ``disable_parallel_tool_use``
+     - no such setting found; the adapter answers any extra call with an
+       error
+
+.. warning::
+
+   A real model costs money on every call, and its answers vary. Run it with
+   a small ``MAX_STEPS`` first. Keep your API key in an environment variable
+   in your terminal, never in a file in your repository.
+
+Example 1: Anthropic's Claude API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``TOOLS`` in ``orchestrator.py`` already uses the three fields of an
+Anthropic tool definition, so this adapter passes it unchanged. Everything in
+this example comes from Anthropic's documentation, read on 2026-10-12:
 `tool use overview <https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview>`_,
 `handle tool calls <https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls>`_,
 `models overview <https://platform.claude.com/docs/en/about-claude/models/overview>`_
 and the `Python SDK README <https://github.com/anthropics/anthropic-sdk-python>`_.
 
-.. warning::
-
-   A real model costs money on every call, and its answers vary. Run it with
-   a small ``MAX_STEPS`` first, and never put your API key in a file you
-   commit.
-
 Step 1: Install the SDK and Set Your Key
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The SDK needs Python 3.10 or newer. Install it in the same virtual
-environment:
+environment (these notes were checked with version 1.13.0):
 
 .. code-block:: bash
 
    pip install anthropic
 
-The SDK README says that the client's ``api_key`` "defaults to using the
-``ANTHROPIC_API_KEY`` environment variable", so set that variable in the
-terminal that runs the script:
+The client reads its key from the ``ANTHROPIC_API_KEY`` environment
+variable. The README's example passes
+``api_key=os.environ.get("ANTHROPIC_API_KEY")`` with the comment "This is the
+default and can be omitted". Set the variable in the terminal that runs the
+script:
 
 .. code-block:: bash
 
    export ANTHROPIC_API_KEY="your key here"
 
 Step 2: Choose a Model
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 On 2026-10-12 the models overview page suggests starting with Claude Opus 5.5,
 whose API ID is ``claude-opus-5-5``. It also lists ``claude-sonnet-5-5`` and
 ``claude-haiku-5-5``, which cost less per token. Model IDs and prices change:
 read them from the models overview and pricing pages on the day you run.
 
-Step 3: Write a Model Class with the Same Call Signature
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The Anthropic API has its own message format for tools, so the class keeps
-the conversation in that format next to the loop's own ``messages`` list:
+Step 3: Write the Adapter
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - The model's tool call arrives as a ``tool_use`` block with an ``id``, a
   ``name`` and an ``input`` (the arguments). The response's ``stop_reason``
@@ -378,30 +439,245 @@ scripted model:
 
 .. note::
 
-   **How this was checked.** No API call was made for these notes. On
-   2026-10-12 the class was run with ``anthropic`` 1.13.0 installed and a
-   fake client in place of ``anthropic.Anthropic``; the fake client returned
-   ``tool_use`` and ``text`` blocks in the order of Run 1. The orchestrator
-   printed the same lines as Run 1, and the requests the class built had 1, 3
-   and 5 messages, with each result in a ``tool_result`` block that named the
-   matching ``tool_use_id``. A real model's replies, and so its output, will
-   differ.
+   **How this was checked.** No API call was made for these notes, and no
+   API key was used. On 2026-10-12 the class above was run with
+   ``anthropic`` 1.13.0 and Python 3.12.3, in two ways:
 
-What the Sketch Leaves Out
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+   - With a fake client in place of ``anthropic.Anthropic`` that returned
+     ``tool_use`` and ``text`` blocks in the order of Run 1. The orchestrator
+     printed the same lines as Run 1. The requests the class built had 1, 3
+     and 5 messages, and each result was in a ``tool_result`` block that
+     named the matching ``tool_use_id``.
+   - With the real ``anthropic.Anthropic`` client, whose network layer was
+     replaced by a local stand-in that answered without leaving the
+     computer. This checked that the SDK accepts the requests, including the
+     earlier replies stored in ``self.history``, and reads the replies.
 
-- **Other stop reasons.** The SDK's ``stop_reason`` can also be, for example,
-  ``"max_tokens"`` or ``"refusal"``. Check it before you read the content.
+   A real model's replies, and so its output, will differ.
+
+Example 2: Google's Gemini API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The final demo's embodied-reasoning step uses Gemini Robotics ER, a Google
+model, so this example uses Google's API. It uses the Interactions API, the
+one Google's function calling page uses. The Interactions page says: "As of
+June 2026, it is Generally Available and recommended for all new projects."
+Everything in this example comes from Google's documentation, read on
+2026-10-12:
+`function calling <https://ai.google.dev/gemini-api/docs/function-calling>`_,
+`Interactions API <https://ai.google.dev/gemini-api/docs/interactions-overview>`_,
+`Interactions API reference <https://ai.google.dev/api/interactions-api>`_,
+`models <https://ai.google.dev/gemini-api/docs/models>`_,
+`API keys <https://ai.google.dev/gemini-api/docs/api-key>`_,
+`structured output <https://ai.google.dev/gemini-api/docs/structured-output>`_
+and the Python SDK reference
+(`overview <https://googleapis.github.io/python-genai/>`_ and
+`genai module <https://googleapis.github.io/python-genai/genai.html>`_).
+
+Step 1: Install the SDK and Set Your Key
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The Interactions page says the Python SDK supports the Interactions API "from
+2.3.0 version onwards". The installed package (2.30.0) declares Python 3.10
+or newer. Install it in the same virtual environment:
+
+.. code-block:: bash
+
+   pip install google-genai
+
+The SDK reference says: "Set the GEMINI_API_KEY or GOOGLE_API_KEY. It will
+automatically be picked up by the client." If both are set,
+``GOOGLE_API_KEY`` wins, so set only one:
+
+.. code-block:: bash
+
+   export GEMINI_API_KEY="your key here"
+
+The first security rule on the API keys page is: "Never check API keys
+into source control systems like Git." The same page says the Gemini API rejects
+requests from unrestricted standard keys, and explains how to restrict one.
+
+Step 2: Choose a Model
+^^^^^^^^^^^^^^^^^^^^^^
+
+On 2026-10-12 the models page lists Gemini 3.8 Flash as a stable model, and
+the function calling page's examples use its ID, ``gemini-3.8-flash``. The
+Interactions page lists the other models that the Interactions API accepts.
+Model IDs and prices change: read them from the models and pricing pages on
+the day you run.
+
+Step 3: Convert ``TOOLS`` to Function Declarations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The function calling page defines a function with four fields: ``"type":
+"function"``, ``name``, ``description`` and ``parameters`` (a JSON Schema). So
+the adapter converts each tool in ``TOOLS``, without changing
+``orchestrator.py``:
+
+- ``input_schema`` becomes ``parameters``, and ``"type": "function"`` is
+  added.
+- The ``station`` property has an ``enum`` but no ``type``. The structured
+  output page lists ``enum`` under string values, so the converter adds
+  ``"type": "string"`` (the four station names are strings).
+- The name ``move-agv`` stays. The SDK reference's ``FunctionDeclaration``
+  says a name "Must be a-z, A-Z, 0-9, or contain underscores, dots, colons
+  and dashes, with a maximum length of 128."
+
+Step 4: Write the Adapter
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- The model's tool call arrives as a ``function_call`` step with an ``id``, a
+  ``name`` and ``arguments``.
+- The result goes back as a ``function_result`` step with the call's
+  ``name``, a ``call_id`` equal to the call's ``id``, and a ``result``. The
+  function calling page sends the result as one text block,
+  ``[{"type": "text", "text": json.dumps(result)}]``. The API reference
+  lists ``is_error`` as optional: "Whether the tool call resulted in an
+  error." The class sets it by the same rule as the Anthropic example.
+- By default the API stores every interaction on Google's servers (55 days
+  on the paid tier, 1 day on the free tier), and a later call can continue
+  from it with ``previous_interaction_id``. This adapter uses the
+  function calling page's stateless mode instead, ``store=False``: "you must
+  pass the full history of the conversation in the input field of each
+  subsequent request." The history holds the first ``user_input`` step, every
+  step the model returned "exactly as received", and each
+  ``function_result`` step. Like the Anthropic adapter, it resends the whole
+  conversation on every call.
+- The system prompt goes in ``system_instruction``.
+- The function calling page says the model can call "multiple functions in a
+  single turn (parallel function calling)". Its ``tool_choice`` modes are
+  ``auto`` (the default), ``any``, ``none`` and ``validated``, and none of
+  them limits a reply to one call. So the class gives the loop only the
+  first call, and answers any other call in the same reply with an error
+  result, so the model sees that those calls did not run.
+- When the reply has no function call, ``interaction.output_text`` holds the
+  model's text.
+
+.. code-block:: python
+
+   import copy
+   import json
+
+   from google import genai
+
+
+   def to_gemini(tools):
+       """TOOLS (name, description, input_schema) as Gemini functions."""
+       functions = []
+       for tool in tools:
+           schema = copy.deepcopy(tool["input_schema"])
+           for prop in schema["properties"].values():
+               if "enum" in prop and "type" not in prop:
+                   prop["type"] = "string"  # the station names are strings
+           functions.append({
+               "type": "function",
+               "name": tool["name"],
+               "description": tool["description"],
+               "parameters": schema,
+           })
+       return functions
+
+
+   def result_step(call, result):
+       """A function_result step that answers one function_call step."""
+       return {
+           "type": "function_result",
+           "name": call.name,
+           "call_id": call.id,
+           "result": [{"type": "text", "text": json.dumps(result)}],
+           "is_error": "error" in result,
+       }
+
+
+   class GeminiModel:
+       """Calls Gemini in place of ScriptedModel; same call signature."""
+
+       def __init__(self, model="gemini-3.8-flash"):
+           self.client = genai.Client()  # reads GEMINI_API_KEY
+           self.model = model
+           self.history = []  # the conversation as Interactions API steps
+           self.calls = []    # function_call steps of the last reply
+
+       def __call__(self, system, messages, tools):
+           latest = messages[-1]["content"]  # the goal, or the last result
+           if not self.calls:
+               text = latest if isinstance(latest, str) else json.dumps(latest)
+               self.history.append({
+                   "type": "user_input",
+                   "content": [{"type": "text", "text": text}],
+               })
+           else:
+               first, *others = self.calls
+               self.history.append(result_step(first, latest))
+               for call in others:  # the loop runs one call per reply
+                   self.history.append(result_step(
+                       call, {"error": "not run: one call per reply"}))
+           interaction = self.client.interactions.create(
+               model=self.model,
+               store=False,
+               system_instruction=system,
+               tools=to_gemini(tools),
+               input=self.history,
+           )
+           self.history += [step.model_dump() for step in interaction.steps]
+           self.calls = [step for step in interaction.steps
+                         if step.type == "function_call"]
+           if self.calls:
+               call = self.calls[0]
+               return {"tool": call.name, "args": call.arguments}
+           return {"text": interaction.output_text}
+
+Then, in the ``__main__`` block of a copy of ``orchestrator.py``, replace the
+scripted model:
+
+.. code-block:: python
+
+   model = GeminiModel()
+   print("stop:", run(model, example_factory(), shipped))
+
+.. note::
+
+   **How this was checked.** No API call was made for these notes, and no
+   API key was used. On 2026-10-12 the code above was run with
+   ``google-genai`` 2.30.0 and Python 3.12.3, in two ways:
+
+   - With a fake client in place of ``genai.Client`` that returned
+     ``function_call`` and ``model_output`` steps in the order of Run 1. The
+     orchestrator printed the same lines as Run 1. The requests had 1, 3 and
+     5 steps in ``input``, each result was a ``function_result`` step whose
+     ``call_id`` matched the call's ``id``, and every request had
+     ``store=False``.
+   - With the real ``genai.Client``, whose network layer was replaced by a
+     local stand-in that answered without leaving the computer. This checked
+     that the SDK accepts the request and reads the replies into steps. A
+     reply with two function calls got two ``function_result`` steps back:
+     the first with the guard's result, the second with the "not run" error.
+
+   A real model's replies, and so its output, will differ.
+
+What the Sketches Leave Out
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- **Other endings.** The Anthropic SDK's ``stop_reason`` can also be, for
+  example, ``"max_tokens"`` or ``"refusal"``. A Gemini interaction has a
+  ``status``, which the API reference lists as ``completed``,
+  ``requires_action``, ``failed``, ``incomplete`` and others. Check it before
+  you read the reply.
 - **The schema check before the guard.** ``guard`` reads
   ``call["args"]["agv"]`` directly, so a call with a missing field raises
-  ``KeyError``. Run ``validator.py``'s parse and schema steps on
-  ``block.input`` first. The overview says ``strict: true`` on a tool
-  definition makes Claude's tool calls "always match your schema exactly";
-  the semantic checks and the guard still stay (see
+  ``KeyError``. Run ``validator.py``'s parse and schema steps on the
+  arguments first. Both providers offer a stricter mode: Anthropic's
+  overview says ``strict: true`` on a tool definition makes Claude's tool
+  calls "always match your schema exactly", and Google's function calling
+  page describes the ``validated`` mode as "Model ensures function schema
+  adherence." The semantic checks and the guard still stay (see
   :ref:`l8-structured-output`).
-- **Cost and latency.** ``response.usage`` holds the call's token counts
-  (``input_tokens`` and ``output_tokens``). Time each call with
-  ``time.monotonic()`` before and after ``messages.create``. GP4 reports
-  both per trial.
-- **API errors.** A network error or a rate limit raises an exception from
-  the SDK; the loop must catch it and stop safely.
+- **Cost and latency.** Each response reports its token counts: Anthropic's
+  ``response.usage`` has ``input_tokens`` and ``output_tokens``, and a Gemini
+  interaction's ``usage`` has ``total_input_tokens`` and
+  ``total_output_tokens``. Time each call with ``time.monotonic()`` before
+  and after it. GP4 reports both per trial.
+- **API errors.** A failed call, for example a network error or a rate
+  limit, makes the SDK raise an exception; the loop must catch it and stop
+  safely. In the offline checks above, a stand-in reply with HTTP status 429
+  (rate limit) made each SDK raise a ``RateLimitError``.

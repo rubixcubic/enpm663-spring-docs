@@ -338,3 +338,39 @@ you build on it.
          **Anthropic, Models overview**
 
          Model IDs and prices on the day you read it.
+
+      .. grid-item-card:: Gemini function calling
+         :link: https://ai.google.dev/gemini-api/docs/function-calling?lang=python
+         :class-card: sd-border-secondary
+
+         **Google, Function calling with the Gemini API**
+
+         Function declarations (``name``, ``description``, ``parameters``),
+         the model's function calls and the function results sent back.
+
+      .. grid-item-card:: Gemini Interactions API
+         :link: https://ai.google.dev/api/interactions-api
+         :class-card: sd-border-secondary
+
+         **Google, Interactions API reference**
+
+         The API the Gemini example uses: ``system_instruction``,
+         ``function_result`` steps with ``call_id``, and ``store``.
+
+      .. grid-item-card:: Google GenAI SDK for Python
+         :link: https://googleapis.github.io/python-genai/
+         :class-card: sd-border-secondary
+
+         **googleapis/python-genai**
+
+         Install with ``pip install google-genai``; the client the Gemini
+         example builds on.
+
+      .. grid-item-card:: Gemini API keys
+         :link: https://ai.google.dev/gemini-api/docs/api-key
+         :class-card: sd-border-secondary
+
+         **Google, Using Gemini API keys**
+
+         The ``GEMINI_API_KEY`` environment variable, and "Never check API
+         keys into source control systems like Git."
