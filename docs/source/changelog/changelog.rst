@@ -6,10 +6,25 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.11: Skills Package Page Marked as a Preview (2026-10-12)
+.. dropdown:: v0.4.12: Final Demo Model and Evaluation Key (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Final demo
+
+   - **Model:** Gemini Robotics ER is the course example for the
+     embodied-reasoning step. Your team may use another vision-language
+     model if it reports the same comparison: precision and recall on the
+     same cells, latency and cost.
+   - **Evaluation key:** the instructor runs every team's image with one
+     course API key, passed as an environment variable at run time. Who pays
+     for model calls while you develop is still to be announced.
+
+
+.. dropdown:: v0.4.11: Skills Package Page Marked as a Preview (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: ARIAC Testbed
 

@@ -984,8 +984,8 @@ Practical Points from the Sources
 
 - An RGB camera costs $800 at 1080p or $500 at 720p. It counts toward the
   sensor cost bonus, which pays only under the $9600 budget.
-- Your API key is passed as an environment variable at run time, never
-  committed.
+- For the evaluation run, the instructor passes one course API key as an
+  environment variable at run time. No key is ever committed.
 
 In class, if model access is confirmed, the same code runs against the real
 model, and its real answer is shown, mistakes included.
@@ -1032,8 +1032,9 @@ config, a fresh database, Record set to True and no cheat selected.
 - It sits in the repository root. It installs the dependencies, builds the
   ROS workspace, sources it in ``.bashrc``, and sets ``TEAM_CONFIG`` and
   ``TEAM_COMMAND``.
-- API keys are passed as environment variables at run time and never
-  committed (course :doc:`AI setup page </ariac/ai_setup>`).
+- The instructor passes one course API key as an environment variable at
+  run time; no key is ever committed (course :doc:`AI setup page
+  </ariac/ai_setup>`).
 
 
 How the Run Is Scored (ARIAC Scoring Page)

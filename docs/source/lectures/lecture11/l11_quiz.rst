@@ -395,7 +395,7 @@ True or False (Questions 12 to 16)
 .. admonition:: Question 16
    :class: hint
 
-   True or false: the final demo's embodied-reasoning model was announced
+   True or false: who pays for model calls during development was announced
    with the specification in L11.
 
 .. dropdown:: Answer
@@ -403,10 +403,11 @@ True or False (Questions 12 to 16)
 
    **False**.
 
-   Which embodied-reasoning model you can use, and what it costs, is still
-   to be decided. The grading rubric is set (75 points for the run, 25 for
-   the class session), and so is the code freeze:
-   Friday, April 30, 2027, at 11:59 pm. The specification itself (what the system must do,
+   Who pays for model calls is still to be decided. The rest is set: the
+   grading rubric (75 points for the run, 25 for the class session), the
+   code freeze (Friday, April 30, 2027, at 11:59 pm), and the model (Gemini
+   Robotics ER as the course example, any VLM allowed, one course key for
+   the evaluation runs). The specification itself (what the system must do,
    and how the demo is run) was posted in L11.
 
 

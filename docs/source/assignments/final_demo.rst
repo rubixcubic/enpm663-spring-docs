@@ -87,6 +87,13 @@ recall on the same cells as your GP2 lidar detector: learned vision against
 classical lidar. Whether defects 0.84 to 2.49 mm deep (ARIAC's training
 cells, measured in L5) show in the camera image is part of the result.
 
+Gemini Robotics ER is the course example. Your team may use another hosted
+or local vision-language model instead, if it reports the same comparison:
+precision and recall per defect type on the same cells, latency and cost.
+The instructor runs every team's image with one course API key (see the run
+rules), so every team gets the same quota. Who pays for model calls while
+you develop is to be announced.
+
 Lectures L10 to L13 cover what the final demo adds: the motion layer under
 the skills package (L10), recovery (L11), evaluation with the ARIAC scoring
 formula (L12) and the embodied-reasoning model (L13).
@@ -203,8 +210,9 @@ Provided Resources
        and their ranges (not their values), the code-freeze tag name, and
        the grading procedure.
    * - An embodied-reasoning model
-     - Access to a hosted model, or instructions to get it. To be confirmed
-       before Week 12. See :doc:`/ariac/ai_setup`.
+     - Gemini Robotics ER is the course example; another VLM is allowed if
+       your team reports the same comparison. The evaluation runs use one
+       course key. See :doc:`/ariac/ai_setup`.
 
 
 Tasks
@@ -279,7 +287,9 @@ Tasks
    - Write the Dockerfile, and confirm that the system builds and runs from
      it on a machine other than the developer's.
    - The image reads API keys at run time. No key is in the repository or
-     in the image.
+     in the image. For the evaluation run, the instructor passes one course
+     key as an environment variable; your README names the variable your
+     model's SDK reads (``GEMINI_API_KEY`` for Gemini).
    - Before the code freeze, build the image from your tag and test it on a
      practice trial in the ARIAC App, with a new database and no cheat.
 

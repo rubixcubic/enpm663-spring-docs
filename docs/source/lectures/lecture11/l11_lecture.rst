@@ -114,8 +114,12 @@ wall-clock time.
 session, scaled to 20% of the course grade. The final demo page lists each
 criterion and how its points are computed.
 
-One thing is **to be announced**: which embodied-reasoning model you can use,
-and what it costs.
+**Set: the model.** Gemini Robotics ER is the course example; your team may
+use another vision-language model if it reports the same comparison. The
+instructor runs every image with one course API key.
+
+One thing is **to be announced**: who pays for model calls while you
+develop.
 
 
 What the Unseen Trial Means
