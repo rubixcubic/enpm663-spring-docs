@@ -126,13 +126,20 @@ The run rules
       on the same machine as every other team, and runs it on the unseen
       trial in the ARIAC App: a new database, recording on, and no testing
       cheat (the App's cheats start a run at a later stage).
-   3. The run goes until ``TIME_LIMIT`` or until your system ends the
+   3. The instructor builds every image on Saturday, May 1. If your image
+      does not build, the instructor emails your team, and you have 24 hours
+      to push a fix tag that changes only build files (the Dockerfile and
+      dependency lists), not code. Your team then loses the 10 points of
+      "Builds and runs from the Dockerfile"; the rest is graded normally. If
+      the fixed image still does not build, the run criteria (75 points)
+      score 0.
+   4. The run goes until ``TIME_LIMIT`` or until your system ends the
       competition. A crash of your code is part of the graded run, not a
       reason to restart.
-   4. If the run fails for a reason outside your code (the evaluation
+   5. If the run fails for a reason outside your code (the evaluation
       machine crashes, or a model provider has an outage), the instructor
       runs a backup trial with the same parameters.
-   5. The instructor sends each team its own run results and videos
+   6. The instructor sends each team its own run results and videos
       privately. Scores are never shown to the class.
 
 Your team never receives the demo trial. Your code learns the trial only
@@ -148,10 +155,16 @@ The Week 15 class
 ~~~~~~~~~~~~~~~~~
 
 Each team presents with its recorded run. The lesson plan gives each team a
-10-minute slot: 7 minutes of talk (5 minimum), 2 minutes of questions and 1
-minute of change-over. The presentation order is drawn at random and posted
+10-minute slot: 6 minutes of talk (5 minimum), 3 minutes of questions (one
+for each team member) and 1 minute of change-over. The presentation order is drawn at random and posted
 in Week 14. RO01 (online) teams are run on the same machine, and they
 present live in the class video meeting, in the posted order.
+
+Each RO01 team also uploads its talk as a 5 to 6 minute video to
+ELMS-Canvas by Tuesday, May 4, at 11:59 pm. If the team cannot connect in
+its slot, the instructor plays the video, and the team answers the questions
+in a video call with the instructor within two days. The video is not graded
+unless it is played.
 
 
 Learning Objectives
@@ -274,7 +287,7 @@ Tasks
    :icon: gear
    :class-container: sd-border-primary
 
-   **Goal:** a 5 to 7 minute talk that explains your system and your run.
+   **Goal:** a 5 to 6 minute talk that explains your system and your run.
 
    **Required content:**
 
@@ -298,7 +311,7 @@ Deliverables
    repository. Submit the link on Canvas before the demo.
 2. The code-freeze tag and the team configuration file, by the code-freeze
    deadline. The instructor runs the image on the unseen trial before class.
-3. A presentation (5 to 7 minutes): architecture, design decisions, failure
+3. A presentation (5 to 6 minutes): architecture, design decisions, failure
    modes met and how they were handled.
 4. The embodied-reasoning comparison table.
 5. The honor pledge, signed by every team member.
@@ -346,7 +359,8 @@ Grading Rubric
    * - Builds and runs from the Dockerfile
      - 10
      - Before the demo, the grader builds the image and starts the system
-       with the README commands on the grading machine.
+       with the README commands on the grading machine. An image that needs
+       a build-only fix (run rules, item 3) loses these 10 points.
    * - Task 1 on the unseen trial
      - 15
      - ARIAC run results. Points = 15 x (kits accepted / kits wanted),
@@ -378,7 +392,7 @@ Grading Rubric
        the points.
    * - Presentation
      - 15
-     - The grader times the talk (5 to 7 minutes) and checks the four
+     - The grader times the talk (5 to 6 minutes) and checks the four
        required parts: architecture, design decisions, failure modes met,
        how they were handled.
    * - Questions

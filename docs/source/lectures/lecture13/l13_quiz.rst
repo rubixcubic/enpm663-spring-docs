@@ -327,7 +327,7 @@ True or False (Questions 9 to 14)
 
    Before class, the instructor runs every team's Docker image on the unseen
    trial, one after another on one machine, and records each run. Class
-   time is for presentations with the recorded runs, 5 to 7 minutes per
+   time is for presentations with the recorded runs, 5 to 6 minutes per
    team.
 
 

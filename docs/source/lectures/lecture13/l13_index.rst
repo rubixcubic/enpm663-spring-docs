@@ -54,7 +54,7 @@ questions about the Week 15 final demo.
    that class, your team pushes its code-freeze tag. The instructor builds
    every team's Docker image from its tag and runs it on the same unseen
    trial, on one machine, and records each run. Class time is for
-   presentations with the recorded runs, 5 to 7 minutes per team. The full
+   presentations with the recorded runs, 5 to 6 minutes per team. The full
    rules are in the final demo specification posted in Week 12.
 
 
@@ -94,7 +94,7 @@ By the end of this lecture, you will be able to:
 Next Steps
 ----------
 
-- **Week 15 (Wednesday, May 5): final demo presentations.** 5 to 7 minutes
+- **Week 15 (Wednesday, May 5): final demo presentations.** 5 to 6 minutes
   per team: your architecture, your design decisions, the failure modes you
   met and how you handled them, with your recorded run.
 - **Before then:**

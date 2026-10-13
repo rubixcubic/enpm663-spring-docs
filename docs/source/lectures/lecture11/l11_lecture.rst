@@ -95,7 +95,7 @@ How the Demo Is Run and Graded
 
 **In class (Week 15, 05/05):**
 
-- Each team presents for 5 to 7 minutes with its recorded run:
+- Each team presents for 5 to 6 minutes with its recorded run:
   architecture, design decisions, failure modes met, and how the system
   handled them.
 - Peer review follows the demo.

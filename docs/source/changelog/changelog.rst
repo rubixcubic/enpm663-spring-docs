@@ -6,10 +6,30 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.6: Final Demo Rubric Set (2026-10-12)
+.. dropdown:: v0.4.7: Final Demo Talk, Build Check and Online Backup (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Final demo
+
+   - **Talk and questions:** each team talks for 5 to 6 minutes, then
+     answers 3 minutes of questions, one for each team member. The slot stays
+     10 minutes.
+   - **Build check:** the instructor builds every image on Saturday, May 1.
+     A team whose image does not build gets 24 hours for a fix that changes
+     only build files, and loses the 10 build points.
+   - **RO01 teams** upload their talk as a backup video by Tuesday, May 4.
+     It is played only if the team cannot connect.
+
+   .. rubric:: Site
+
+   - The browser-tab title shows the changelog version.
+
+
+.. dropdown:: v0.4.6: Final Demo Rubric Set (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Final demo
 

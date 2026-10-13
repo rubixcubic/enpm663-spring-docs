@@ -260,7 +260,7 @@ machine.
 
 **Deliverable:** Integrated codebase that runs from a Dockerfile (its code-freeze
 tag is what the instructor runs and grades), and a short presentation in class
-(5 to 7 minutes) with the recorded run, covering
+(5 to 6 minutes) with the recorded run, covering
 architecture, design decisions, failure modes encountered, and how they were
 handled.
 

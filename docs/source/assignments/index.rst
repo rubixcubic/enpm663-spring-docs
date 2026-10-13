@@ -178,7 +178,7 @@ Task 2 (module construction), and handles the ARIAC challenges:
 3. **Evaluation run:** before the Week 15 class, the instructor runs your
    Docker image, built from your code-freeze tag, on a trial no team has
    seen, on the same machine as every other team, and the run is scored.
-4. **Presentation (5 to 7 minutes):** architecture, design decisions, failure
+4. **Presentation (5 to 6 minutes):** architecture, design decisions, failure
    modes you met and how you handled them.
 5. **Peer evaluation:** individual contribution assessment.
 

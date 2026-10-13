@@ -4,7 +4,7 @@ from datetime import date
 project = "ENPM663 Spring 2027"
 author = "Z. Kootbally"
 copyright = f"{date.today().year}, {author}"
-release = "v1.0"
+release = "v0.4.7"
 
 extensions = [
     "myst_parser",

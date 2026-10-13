@@ -151,7 +151,7 @@ and the tree work follows L4.
 freeze, and the instructor runs every team's Docker image on the same unseen
 ARIAC trial, on one machine, before the Week 15 class. One machine means the
 same hardware for every run, so no team's score depends on its laptop. In
-class, each team presents its recorded run for 5 to 7 minutes.
+class, each team presents its recorded run for 5 to 6 minutes.
 
 **Teams and peer review.** Teams of three form in Week 2, when GP1 is posted,
 and post a one-page team charter on ELMS before L3. After each project you rate

@@ -955,7 +955,7 @@ The Procedure
 2. **The unseen trial:** no team ever receives it. Before class, the
    instructor runs every team's Docker image on it, one after another on one
    machine, and records each run.
-3. **Class time:** presentations with the recorded runs, 5 to 7 minutes per
+3. **Class time:** presentations with the recorded runs, 5 to 6 minutes per
    team, in an order drawn and posted before Week 15.
 4. **RO01 teams:** your image runs on the same machine as every other team's,
    so you need no connection during the run. You present live in the class
@@ -1033,7 +1033,7 @@ Your Questions
 Next Class
 ----------
 
-**Week 15 (Wednesday, May 5): final demo presentations.** 5 to 7 minutes per
+**Week 15 (Wednesday, May 5): final demo presentations.** 5 to 6 minutes per
 team: architecture, design decisions, failure modes met and how they were
 handled, with your recorded run.
 

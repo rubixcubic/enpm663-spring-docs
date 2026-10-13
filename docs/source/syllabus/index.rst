@@ -577,7 +577,7 @@ inspection conveyor, and is scored with precision and recall on the same
 cells as your GP2 lidar detector. The code freeze is Friday, April 30, 2027, at 11:59 pm. The trial used
 for grading is unseen: before the Week 15 class, the instructor runs every team's Docker image on
 it, on one machine, and each team presents with its recorded run.
-Each team presents for 5 to 7 minutes: architecture, design decisions,
+Each team presents for 5 to 6 minutes: architecture, design decisions,
 failure modes met and how they were handled. Your solution runs from a
 Dockerfile, as ARIAC requires.
 
