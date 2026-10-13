@@ -6,10 +6,21 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.10: All Pages Published, Pre-Reads Written (2026-10-12)
+.. dropdown:: v0.4.11: Skills Package Page Marked as a Preview (2026-10-12)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: ARIAC Testbed
+
+   - The Course Skills Package page says it describes the first version
+     (v0.1.0, the inspection robot skills), and that the repository opens to
+     students with GP1 on February 3, 2027, as version 1.0.0.
+
+
+.. dropdown:: v0.4.10: All Pages Published, Pre-Reads Written (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Published
 

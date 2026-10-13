@@ -21,6 +21,16 @@ The package moves the robot arms and nothing else. You call ARIAC's factory
 services yourself: the cell feeder, inspection reports, AGV moves and kit
 submissions.
 
+.. warning::
+
+   **Preview.** This page describes the first version of the package
+   (v0.1.0): the skills for the two inspection robots. The repository
+   becomes available to students with GP1 on February 3, 2027, as version
+   1.0.0. The install commands and some details may change by then, and the
+   assembly robot and gantry welder skills for the final demo are added
+   later. The :doc:`changelog </changelog/changelog>` announces each
+   change.
+
 .. note::
 
    This page describes the skills for the two inspection robots, which GP1
