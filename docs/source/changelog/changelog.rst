@@ -6,10 +6,23 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.12: Final Demo Model and Evaluation Key (2026-10-12)
+.. dropdown:: v0.4.13: Accessible Syllabus PDF (2026-10-13)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Syllabus
+
+   - ``syllabus.pdf`` is now a tagged PDF: a screen reader gets its
+     headings, tables, links, language and title, as accessibility checkers
+     such as Ally expect. It is built with ``tools/build_syllabus_pdf.sh``.
+   - The old ``syllabus_spring2027_enpm663.pdf``, a June draft with the
+     earlier course title, is removed. Nothing linked to it.
+
+
+.. dropdown:: v0.4.12: Final Demo Model and Evaluation Key (2026-10-12)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Final demo
 
