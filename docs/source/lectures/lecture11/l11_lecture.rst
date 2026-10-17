@@ -115,7 +115,8 @@ session, scaled to 20% of the course grade. The final demo page lists each
 criterion and how its points are computed.
 
 **Set: the model.** Gemini Robotics ER is the course example; your team may
-use another vision-language model if it reports the same comparison. The
+use another vision-language model that runs on the course key (a Google
+model) or locally, if it reports the same comparison. The
 instructor runs every image with one course API key.
 
 One thing is **to be announced**: who pays for model calls while you

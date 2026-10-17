@@ -6,10 +6,30 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.13: Accessible Syllabus PDF (2026-10-13)
+.. dropdown:: v0.4.14: Model Rule, Peer Score Formula, Demo Questions (2026-10-17)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Final demo
+
+   - **Model:** another vision-language model is allowed only if it runs on
+     the course key (a Google model) or locally, because the evaluation runs
+     use one course key. Updated on the final demo page and in L11.
+
+   .. rubric:: Syllabus
+
+   - **Peer score:** score = 80 + 10 x (mean - 3), so a mean rating of 1
+     gives 60, 3 gives 80 and 5 gives 100.
+   - **Final demo:** each 5 to 6 minute presentation is followed by 3
+     minutes of questions, one for each team member.
+   - Lectures include instructor demonstrations. Shorter wording in a few
+     places; no other policy changes.
+
+
+.. dropdown:: v0.4.13: Accessible Syllabus PDF (2026-10-13)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Syllabus
 

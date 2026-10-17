@@ -213,7 +213,7 @@ diagnostic quiz in Week 1.
 Team Formation
 --------------
 
-- All project work is team-based. There are no individual assignments.
+- All project work is team-based.
 - **Team size: 3 students.** Teams of 2 are allowed only with instructor
   approval, for example when the class size does not divide evenly or for
   online students. Teams of 4 or more are not permitted.
@@ -300,8 +300,8 @@ How the score is computed
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - For each project, your peer score is the mean of your teammates' ratings
-  over the five dimensions, put on a 0 to 100 scale on which a mean of 3.0
-  is 80.
+  over the five dimensions, put on a 0 to 100 scale: score = 80 + 10 ×
+  (mean − 3), so a mean of 1 gives 60, 3 gives 80 and 5 gives 100.
 - Your five project peer scores are averaged with equal weight, and the
   average is worth 15% of the course grade.
 - The instructor reviews outliers before applying them. If one teammate
@@ -578,7 +578,8 @@ cells as your GP2 lidar detector. The code freeze is Friday, April 30, 2027, at 
 for grading is unseen: before the Week 15 class, the instructor runs every team's Docker image on
 it, on one machine, and each team presents with its recorded run.
 Each team presents for 5 to 6 minutes: architecture, design decisions,
-failure modes met and how they were handled. Your solution runs from a
+failure modes met and how they were handled, followed by 3 minutes of
+questions, one for each team member. Your solution runs from a
 Dockerfile, as ARIAC requires.
 
 .. note::

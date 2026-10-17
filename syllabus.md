@@ -27,7 +27,7 @@ The course is built on the Agile Robotics for Industrial Automation Competition
 (ARIAC) 2025 (https://pages.nist.gov/ARIAC_docs/en/latest/), a NIST simulation
 of an EV battery factory in which robots inspect battery cells, build kits and
 assemble modules. Students start from a classical ROS 2 stack (behavior trees,
-perception, PDDL planning) and then add AI where it earns its place: LLM agents
+perception, PDDL planning) and then add AI: LLM agents
 that plan with tool calls and structured output, vision-language models (VLMs)
 that describe what the cameras see, and replanning when the factory does not
 behave as planned. Motion planning and grasping stay classical (MoveIt 2). The
@@ -40,7 +40,7 @@ provides a refresher on the ROS 2 topics most directly used in the course
 (QoS, executors, actions, TF2). A significant amount of Python
 programming is required.
 
-All project work is team-based. There are no individual assignments. See the
+All project work is team-based. See the
 [Team Formation](#team-formation) and [Peer-Review Contribution](#peer-review-contribution-15-of-grade)
 sections for details.
 
@@ -87,7 +87,7 @@ After successfully completing this course you will be able to:
   install; the final demo runs from a Dockerfile)
 - **AI access:** Either a paid LLM API account (e.g., Anthropic Claude, OpenAI, Google
   Gemini) or local open-weight models (e.g., recent Llama or Qwen releases). Group
-  projects accept either; cost guidance will be provided per project.
+  projects: cost guidance will be provided per project.
 
 ---
 
@@ -100,8 +100,7 @@ with:
 - Writing publishers, subscribers, services, and action clients and servers in Python.
 - Using launch files, parameters, and basic command-line tools (`ros2 topic`,
   `ros2 node`, etc.).
-- Reading C++ ROS 2 code (writing C++ is not a prerequisite, but reading it is
-  expected).
+- Reading C++ ROS 2 code (writing C++ is not a prerequisite).
 
 A diagnostic quiz in Week 1 helps students and the instructor calibrate on ROS 2
 background. The quiz is ungraded.
@@ -110,14 +109,13 @@ background. The quiz is ungraded.
 
 ## Course Structure
 
-- The class meets once a week for a lecture. Lectures are exposition; there are
-  no in-class exercises. Before each class, consolidate the previous lectures,
-  since each week builds on the one before. Early in the course, expect roughly
+- The class meets once a week for a lecture. Lectures are exposition with instructor
+  demonstrations; there are no in-class exercises. Before each class, review the previous lectures. Early in the course, expect roughly
   4 hours per week on group project work. As the course progresses, projects may
   require 6 to 8 hours per week per student.
 - Quizzes are given in class (unless you are registered in the online section).
   Absent students cannot take quizzes.
-- Class attendance and active participation are not graded but are strongly
+- Class attendance and active participation are not graded but are
   encouraged.
 - Late submissions are penalized 10% of the project's grade per calendar day
   late, up to 3 days; submissions more than 3 days late receive no credit.
@@ -139,7 +137,7 @@ background. The quiz is ungraded.
 ## Team Formation
 
 - All project work is team-based: four group projects (GP1 to GP4) and the final
-  demo. There are no individual assignments.
+  demo.
 - **Team size: 3 students.** Teams of 2 are allowed only with instructor approval
   (e.g., when cohort numbers do not divide evenly or for remote students). Teams of 4
   or more are not permitted; integration projects of this scope typically generate
@@ -163,7 +161,7 @@ background. The quiz is ungraded.
   Docker image. Detailed instructions and submission
   guidelines are provided for each project. See the [Course Outline](#course-outline)
   for the schedule.
-- **Quizzes.** Quizzes assess your understanding of course material. They are
+- **Quizzes.** Quizzes are
   given at the beginning of class, either on Canvas or on paper, and typically
   last 10 to 20 minutes. All quizzes are closed-notes.
 - **Peer-Review Contribution.** After each group project and after the final demo,
@@ -262,7 +260,7 @@ machine.
 tag is what the instructor runs and grades), and a short presentation in class
 (5 to 6 minutes) with the recorded run, covering
 architecture, design decisions, failure modes encountered, and how they were
-handled.
+handled, followed by 3 minutes of questions, one for each team member.
 
 ---
 
@@ -345,7 +343,8 @@ Teammates are not told the flag was raised.
 ### How the score is computed
 
 - For each PT, a student's peer score is the mean of their teammates' ratings across
-  all five dimensions, normalized to a 0 to 100 scale (a mean of 3.0 maps to 80; the
+  all five dimensions, normalized to a 0 to 100 scale (score = 80 + 10 × (mean − 3): a mean of 1
+  gives 60, 3 gives 80 and 5 gives 100; the
   scale rewards above-expectations contribution while protecting against single-
   teammate penalties).
 - The project-level peer scores are averaged across all five (GP1 to GP4 and the

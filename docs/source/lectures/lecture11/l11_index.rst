@@ -64,7 +64,8 @@ examples.
      course site. The demo is in Week 15 (05/05) and is 20% of the course
      grade. The code freeze is Friday, April 30, 2027, at 11:59 pm, and the
      grading rubric is on the final demo page. Gemini Robotics ER is the
-     course example for the embodied-reasoning step, and any VLM is allowed.
+     course example for the embodied-reasoning step; another VLM is allowed if it
+     runs on the course key (a Google model) or locally.
      Who pays for model calls is to be announced.
 
 

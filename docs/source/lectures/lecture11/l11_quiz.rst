@@ -406,7 +406,8 @@ True or False (Questions 12 to 16)
    Who pays for model calls is still to be decided. The rest is set: the
    grading rubric (75 points for the run, 25 for the class session), the
    code freeze (Friday, April 30, 2027, at 11:59 pm), and the model (Gemini
-   Robotics ER as the course example, any VLM allowed, one course key for
+   Robotics ER as the course example, another VLM allowed on the course key
+   (a Google model) or locally, one course key for
    the evaluation runs). The specification itself (what the system must do,
    and how the demo is run) was posted in L11.
 

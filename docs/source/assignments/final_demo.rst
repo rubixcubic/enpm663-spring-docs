@@ -87,8 +87,9 @@ recall on the same cells as your GP2 lidar detector: learned vision against
 classical lidar. Whether defects 0.84 to 2.49 mm deep (ARIAC's training
 cells, measured in L5) show in the camera image is part of the result.
 
-Gemini Robotics ER is the course example. Your team may use another hosted
-or local vision-language model instead, if it reports the same comparison:
+Gemini Robotics ER is the course example. Your team may use another
+vision-language model instead, a Google model that runs on the course key or
+a local model, if it reports the same comparison:
 precision and recall per defect type on the same cells, latency and cost.
 The instructor runs every team's image with one course API key (see the run
 rules), so every team gets the same quota. Who pays for model calls while
@@ -211,8 +212,8 @@ Provided Resources
        the grading procedure.
    * - An embodied-reasoning model
      - Gemini Robotics ER is the course example; another VLM is allowed if
-       your team reports the same comparison. The evaluation runs use one
-       course key. See :doc:`/ariac/ai_setup`.
+       it runs on the course key (a Google model) or locally, and your team
+       reports the same comparison. The evaluation runs use one course key. See :doc:`/ariac/ai_setup`.
 
 
 Tasks
