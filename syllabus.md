@@ -21,7 +21,9 @@ factory cell does next and classical robotics carries it out. Physical AI means
 AI systems that perceive, reason and act in the physical world. An agent is a
 program that runs a loop around a large language model (LLM): it observes the
 state of the world, asks the model what to do, calls a tool (here, a robot
-skill), checks the result, and repeats.
+skill), checks the result, and repeats. The course's title term, agentic
+physical AI, means a robot system in which an AI agent decides what the robots
+do next, and robot skills carry out each decision in the physical world.
 
 The course is built on the Agile Robotics for Industrial Automation Competition
 (ARIAC) 2025 (https://pages.nist.gov/ARIAC_docs/en/latest/), a NIST simulation

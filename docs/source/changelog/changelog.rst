@@ -6,10 +6,32 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.14: Model Rule, Peer Score Formula, Demo Questions (2026-10-17)
+.. dropdown:: v0.4.15: Agentic Physical AI Defined (2026-10-17)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lecture 1
+
+   - **Definition:** the course's title term, agentic physical AI, is defined
+     on the lecture page and in the overview: a robot system in which an AI
+     agent decides what the robots do next, and robot skills carry out each
+     decision in the physical world. The learning objective uses the new
+     wording.
+
+   .. rubric:: Glossary
+
+   - New entry: **Agentic physical AI** (L1, L13).
+
+   .. rubric:: Syllabus
+
+   - The Course Description has the same sentence, on the home page, in
+     ``syllabus.md`` and in ``syllabus.pdf``.
+
+
+.. dropdown:: v0.4.14: Model Rule, Peer Score Formula, Demo Questions (2026-10-17)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Final demo
 

@@ -257,6 +257,13 @@ A
       Act, observe again, compare what you see with the expected effect, then
       decide: retry, wait or replan. :doc:`L9 </lectures/lecture9/l9_index>`
 
+   Agentic physical AI
+      In this course, a robot system in which an AI agent decides what the
+      robots do next, and robot skills carry out each decision in the physical
+      world. Here, that world is the ARIAC factory, simulated in Gazebo.
+      :doc:`L1 </lectures/lecture1/l1_index>` · :doc:`L13
+      </lectures/lecture13/l13_index>`
+
    AGV
       Automated Guided Vehicle. ARIAC 2025 has three (agv1 to agv3). Each
       carries a tray with four slots between the inspection, assembly,

@@ -9,7 +9,10 @@ factory cell does next and classical robotics carries it out. **Physical
 AI** means AI systems that perceive, reason and act in the physical world.
 An **agent** is a program that runs a loop around a language model: it
 observes the state of the world, asks the model what to do, calls a tool
-(here, a robot skill), checks the result, and repeats.
+(here, a robot skill), checks the result, and repeats. The course's title
+term, **agentic physical AI**, means a robot system in which an AI agent
+decides what the robots do next, and robot skills carry out each decision in
+the physical world.
 
 The course is built on the **ARIAC 2025** testbed from NIST, a simulated
 EV battery factory in which robots inspect battery cells, build kits and

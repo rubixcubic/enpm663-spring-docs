@@ -207,6 +207,14 @@ This course works on the "orchestrate" part of the NVIDIA definition: an AI
 component decides what happens next, and classical robot skills do the
 motion. L8 and L9 cover agents in depth.
 
+.. admonition:: Definition: agentic physical AI
+   :class: note
+
+   The course's title term, **agentic physical AI**, means a robot system in
+   which an AI agent decides what the robots do next, and robot skills carry
+   out each decision in the physical world: here, the ARIAC factory,
+   simulated in Gazebo.
+
 
 What Your Team Builds, Part by Part
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -16,7 +16,10 @@ understand, reason, and perform or orchestrate complex actions in the physical
 world." An **agent** is a program that runs a loop around a large language
 model (LLM): it observes the world, asks the model what to do, calls a tool,
 checks the result and repeats. In this course the agent decides what a factory
-cell does next, and classical robot skills carry out each decision.
+cell does next, and classical robot skills carry out each decision. The
+course's title term, **agentic physical AI**, means a robot system in which an
+AI agent decides what the robots do next, and robot skills carry out each
+decision in the physical world: here, the ARIAC factory, simulated in Gazebo.
 
 The second block introduces the testbed you use all semester: **ARIAC 2025**,
 NIST's simulated EV battery factory. You see its two tasks (inspection and kit
@@ -51,8 +54,8 @@ By the end of this lecture, you will be able to:
 
 - Describe the course structure: GP1 to GP4, the final demo, the grading
   weights, the quizzes and the AI policy.
-- Explain what physical AI and an LLM agent are, and which layer of a robot
-  system this course builds with AI.
+- Explain what agentic physical AI means in this course, and which layer of a
+  robot system it puts AI in.
 - Describe the ARIAC 2025 factory: its two tasks, its robots, sensors and
   challenges, and what a run's score rewards.
 - Compute a kit voltage window from a cell type's nominal voltage and the kit
