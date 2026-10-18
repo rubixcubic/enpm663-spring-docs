@@ -3,16 +3,18 @@ Course Skills Package
 ====================================================
 
 ..
-   Hidden until v1.0.0 is published with GP1 (2027-02-03); see HIDE_SKILLS_PAGE
-   in conf.py. Written 2026-10-12 from the package's v0.1.0 README (the two
-   inspection robots). Before publishing:
+   Published since 2026-10-12 (HIDE_SKILLS_PAGE is False in conf.py). Written
+   2026-10-12 from the package's v0.1.0 README; checked against v0.2.0
+   (6fa0563) on 2026-10-18. Before v1.0.0 (GP1, 2027-02-03):
    - add the assembly robot and gantry welder skills (milestone 2);
    - recheck "A gripper error reports what the fingers hold" against the fixed
      holding check;
    - check the install commands against the published release repo.
 
-ARIAC 2025 gives each robot a joint trajectory action and a gripper action,
-but no pick or place skills. The course skills package adds them. Each skill
+ARIAC 2025 gives its robots low-level controls only: a joint trajectory
+action for each robot, and a gripper action, vacuum tool services or a weld
+service (the table in :ref:`l1-robot-interfaces`). None of them is a pick or
+place skill. The course skills package adds them. Each skill
 is a ROS 2 action: your behavior tree (GP1 to GP3) or your LLM agent (GP4)
 sends a goal, and the skill plans the motion with MoveIt 2, moves the arm,
 runs the gripper and reports the result. You never write motion code.
@@ -23,8 +25,8 @@ submissions.
 
 .. warning::
 
-   **Preview.** This page describes the first version of the package
-   (v0.1.0): the skills for the two inspection robots. The repository
+   **Version 0.2.0.** This page describes version 0.2.0 of the package:
+   the skills for the two inspection robots. The repository
    becomes available to students with GP1 on February 3, 2027, as version
    1.0.0. The install commands and some details may change by then, and the
    assembly robot and gantry welder skills for the final demo are added
@@ -274,7 +276,9 @@ Behaviors Your Team Must Know
    - the beam header is older than ``max_trigger_age`` (8.0 s in
      ``skills.yaml``, set for a beam at x = 0.6 m and a belt at 0.1 m/s), or
      its stamp is in the future;
-   - the belt is stopped;
+   - the belt is stopped and the beam is not at the catch point (within
+     ``stopped_tolerance``, 0.005 m). The beam only saw the cell cross, so
+     the skill cannot know where a stopped cell is;
    - the cell would reach the catch point before the arm can get there. The
      arm needs up to ``side_lead_time`` (3.925 s of simulation time) from any
      starting pose.

@@ -11,6 +11,7 @@ import detector as D
 
 NOISE = 0.0002          # m, chosen for this example
 rng = np.random.default_rng(5)
+thresholds = []
 for name, lidars in (("two lidars", S.two_lidars()),
                      ("four lidars", S.four_lidars())):
     worst = []
@@ -19,7 +20,9 @@ for name, lidars in (("two lidars", S.two_lidars()),
         d = D.detect(pts, times, S.SPEED, threshold=1.0)["d"]
         worst.append(np.abs(d).max() * 1000)
     threshold = np.ceil(max(worst) * 10) / 10
+    thresholds.append(threshold)
     print(f"{name}: 20 good cells, {len(d)} points per cell")
     print(f"  largest |d| per cell: {min(worst):.2f} to "
           f"{max(worst):.2f} mm, threshold {threshold:.1f} mm")
-print("used for both layouts: 0.9 mm, the larger of the two")
+print(f"used for both layouts: {max(thresholds):.1f} mm, the larger of "
+      f"the two")

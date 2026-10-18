@@ -109,9 +109,9 @@ Multiple Choice (Questions 1 to 12)
 
    **B**.
 
-   The 1986 paper says that not all sensors need to feed a central
-   representation. The stronger claim, **A**, that a robot can work with no
-   explicit world model, comes later, in the 1991 paper.
+   The 1986 paper says: "Not all sensors need to feed into a central
+   representation" (p. 17). The stronger claim, **A**, that a robot can work
+   with no explicit world model, comes later, in the 1991 paper.
 
 
 .. admonition:: Question 4
@@ -387,8 +387,8 @@ True or False (Questions 13 to 17)
    :class: hint
 
    **True or false:** in the class run, the three layers took longer than
-   react only (107 s against 74 s) because the planner sets aside cells that
-   do not fit the kit.
+   react only (107 s against 74 s) mostly because the planner sets aside
+   cells that do not fit the kit.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -396,8 +396,10 @@ True or False (Questions 13 to 17)
    **True.**
 
    Cells 2 and 5 were in range but did not fit, so the planner sent them to
-   AGV 2 and tested more cells. React only shipped the first four in-range
-   cells, faster, and its kit was rejected at 14.60 V.
+   AGV 2 and tested six cells, not four. One cell takes about 14 s (cell 1 is
+   logged at 8.0 s and cell 2 at 22.0 s), so the two extra cells are about
+   2 × 14 = 28 s of the 107 − 74 = 33 s. React only shipped the first four
+   in-range cells, faster, and its kit was rejected at 14.60 V.
 
 
 .. admonition:: Question 16
@@ -427,8 +429,8 @@ True or False (Questions 13 to 17)
 
    **False.**
 
-   Without a report, the inspection door pushes the cell into the inspection
-   bin and nothing reaches the robots. GP1 has no defect detection and runs on
+   Without a report, the inspection door stays closed, the cell drops into
+   the inspection bin, and nothing reaches the robots. GP1 has no defect detection and runs on
    a trial with no defective cells, so your tree submits a report for every
    cell, and every report says passed.
 

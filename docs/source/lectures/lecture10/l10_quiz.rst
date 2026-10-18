@@ -241,50 +241,54 @@ Multiple Choice (Questions 1 to 10)
 .. admonition:: Question 9
    :class: hint
 
-   The belt runs at 0.1 m/s the whole time. The arm starts 1.0 s after the
-   break beam fires and takes 1.5 s to reach the grasp. Where does the arm
-   meet the cell?
+   The beam is at x = 0.60 m and the catch point at x = 1.40 m, as in class,
+   but the belt runs at 0.05 m/s. The cell crosses the beam at t = 0 s. When
+   does ``pick_from_conveyor`` close the fingers? (``close_delay`` is
+   -0.15 s.)
 
-   A. 0.10 m past the beam, at 1.0 s
+   A. At 7.85 s
 
-   B. 0.15 m past the beam, at 1.5 s
+   B. At 8.0 s
 
-   C. 0.25 m past the beam, at 2.5 s
+   C. At 15.85 s
 
-   D. 0.35 m past the beam, at 3.5 s
+   D. At 16.0 s
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **C**.
 
-   1. When the arm starts: 0.1 × 1.0 = 0.10 m.
-   2. During the reach: 0.1 × 1.5 = 0.15 m more.
-   3. Meeting point: 0.10 + 0.15 = 0.25 m, at 1.0 + 1.5 = 2.5 s.
+   1. From the beam to the catch point: 1.40 - 0.60 = 0.80 m.
+   2. At 0.05 m/s: 0.80 / 0.05 = 16.0 s. The cell arrives at 16.0 s.
+   3. The fingers close 0.15 s earlier: 16.0 - 0.15 = 15.85 s.
 
-   **D** is run A from class, where the arm started after 2.0 s.
+   **A** is the class answer at 0.1 m/s. At the slower belt, a goal sent more
+   than 8.0 s after the beam is still refused by ``max_trigger_age``; the
+   comment on that limit in ``skills.yaml`` says to raise it for a slower
+   belt.
 
 
 .. admonition:: Question 10
    :class: hint
 
-   The place skill looks up ``agv1_slot2_frame`` with TF2, and the lookup
-   fails. Which failure result is the skills package planned to return?
+   ``place_in_slot`` looks up ``agv1_slot2_frame`` with TF2, and the lookup
+   fails. Which code does the skill return?
 
-   A. Precondition failed
+   A. ``PRECONDITION_FAILED``
 
-   B. Place not found
+   B. ``PLACE_NOT_FOUND``
 
-   C. No path found
+   C. ``PLANNING_FAILED``
 
-   D. Execution failed
+   D. ``EXECUTION_FAILED``
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **B**.
 
-   A failed TF2 lookup becomes "place not found", not a crash. Under the L9
+   A failed TF2 lookup becomes ``PLACE_NOT_FOUND``, not a crash. Under the L9
    rule, it means the world is not what the plan assumed, so the caller
    replans.
 
@@ -353,9 +357,12 @@ True or False (Questions 11 to 16)
 
    **False.**
 
-   A skill never re-picks or re-places by itself. After a failure it is
-   planned to lift to a safe height, leave every shared zone, and report what
-   it holds. Retry and replan decisions belong to your tree and your agent.
+   A skill never re-picks or re-places by itself. After a failure, if the arm
+   moved, it lifts straight up; if it held the tester area, it then parks and
+   releases the lock. It reports what it holds. Its only retries are the
+   planner fallback and the re-execution after a controller timeout, which
+   ``attempts`` counts; neither repeats a grasp. Retry and replan decisions
+   belong to your tree and your agent.
 
 
 .. admonition:: Question 15
@@ -370,8 +377,8 @@ True or False (Questions 11 to 16)
    **True.**
 
    MoveIt 2 plans each robot as if it were alone: inspection robot 1's planning
-   scene does not contain inspection robot 2. The skills package is planned to
-   use zone locks for the known conflicts, and they are coarse.
+   scene does not contain inspection robot 2. The skills package uses a zone
+   lock for the known conflict, the tester area, and zone locks are coarse.
 
 
 .. admonition:: Question 16
@@ -430,17 +437,22 @@ Short Answer (Questions 17 to 20)
 .. admonition:: Question 19
    :class: hint
 
-   In run C, the belt stops 1.0 s after the beam fires, and the arm meets the
-   cell at 3.5 s. Why is "current speed × elapsed time" wrong here, and what
-   does the script do instead?
+   In run C, the goal is sent at 2.0 s, and the belt stops at 6.0 s while the
+   arm waits for a cell the skill expects at 8.0 s. Why does the skill end
+   ``PRECONDITION_FAILED`` instead of catching the cell where it stopped, and
+   what should your code do next?
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   The current speed is 0, so it gives 0 × 3.5 = 0 m, but the cell moved
-   0.1 × 1.0 = 0.10 m before the belt stopped, and stays there. The script
-   adds up speed × time piece by piece over the speed history that the status
-   topic reports, and gets 0.10 m.
+   The beam saw the cell only as it crossed, at x = 0.60 m. Once the belt
+   stops, the predicted arrival no longer holds, and the skill has nothing
+   that says where the cell stopped. (The script knows: 0.60 + 0.1 × 6.0 =
+   1.20 m, 0.20 m short of the fingers.) A stopped cell does not ride into the
+   fingers, so the skill does not close, retreats, and reports that it holds
+   nothing. Your code waits until the conveyor status is no longer
+   ``MALFUNCTIONING``, then sends a new goal with the header of a cell that
+   crosses the beam after the restart, never an old header.
 
 
 .. admonition:: Question 20
@@ -457,6 +469,7 @@ Short Answer (Questions 17 to 20)
    A skill that retried quietly would hide ARIAC's challenges from your code,
    and your recovery logic would never be tested. So a tool description
    should state each skill's preconditions (what the robot must hold, where
-   the AGV must be) and each failure result it can return. An agent that
-   reads "precondition failed: AGV not at the inspection station" can move the
-   AGV and try again; one that reads only "failed" cannot.
+   the AGV must be) and each failure code it can return, with the message
+   that explains it. An agent that reads ``PRECONDITION_FAILED`` with the
+   message "AGV not at the inspection station" can move the AGV and try
+   again; one that reads only "failed" cannot.

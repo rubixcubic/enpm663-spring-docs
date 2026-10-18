@@ -111,8 +111,8 @@ Multiple Choice (Questions 1 to 8)
 .. admonition:: Question 4
    :class: hint
 
-   In a two-system VLA mapped onto the course's three layers, which layer
-   has no counterpart?
+   Map SmolVLA onto the course's three layers. Which layer has no
+   counterpart?
 
    A. Deliberative
 
@@ -127,10 +127,14 @@ Multiple Choice (Questions 1 to 8)
 
    **B**.
 
-   The slow model (an ER model or VLM) plays the deliberative role and the
-   learned policy the reactive one. The policy acts on the slow model's
-   output directly, so nothing plays the behavior tree's role of checking
-   each step and stopping cleanly on failure.
+   The VLM plays the deliberative role and the action expert the reactive
+   one. The VLM passes its features straight to the action expert, so
+   nothing plays the behavior tree's role of checking each step and stopping
+   cleanly on failure. Not every two-system design is like this: the Gemini
+   API robotics page lists "progress understanding and success detection"
+   and "agentic orchestration of robots" for Gemini Robotics ER 2 (read
+   2026-10-18), so there the ER model can judge whether a step succeeded,
+   with a learned model's judgment rather than a coded check.
 
 
 .. admonition:: Question 5
@@ -341,7 +345,7 @@ Short Answer (Questions 15 to 18)
    :class: hint
 
    Name the three differences between your architecture and a two-system
-   VLA.
+   VLA such as SmolVLA.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -351,8 +355,9 @@ Short Answer (Questions 15 to 18)
    2. **What crosses the interface:** a named tool call checked against a
       JSON schema, which a person can read, against learned features, which
       a person cannot.
-   3. **Whether anything checks each step:** your behavior tree does; a
-      two-system VLA has no executive layer.
+   3. **What checks each step:** your behavior tree checks each skill result
+      in code; in SmolVLA nothing does. (In Gemini Robotics, the ER model
+      can judge progress and success, a learned model's judgment.)
 
 
 .. admonition:: Question 16

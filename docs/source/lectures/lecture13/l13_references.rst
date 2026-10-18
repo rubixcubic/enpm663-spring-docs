@@ -4,8 +4,9 @@ References
 
 These are the sources the L13 slides cite or take their facts from, in the
 order of the slides, grouped by topic. The last group holds the Gemini API
-pages the :doc:`code page <l13_code>` uses for running the demonstration
-against the real model. Every link was checked on 2026-10-12. The model pages
+pages the two recorded runs and the :doc:`code page <l13_code>` use for
+running the demonstration against the real model. Every link was checked on
+2026-10-12; the last group was read again on 2026-10-18. The model pages
 change often, so check a quote against its page before you rely on it.
 
 
@@ -153,7 +154,7 @@ change often, so check a quote against its page before you rely on it.
          **Google:** ``python-genai`` repository
 
          The ``google-genai`` package that ``er_demo.py`` uses
-         (version 2.29.0 for the outputs in the notes).
+         (version 2.31.0 for the outputs in the notes).
 
       .. grid-item-card:: HTTPX transports
          :link: https://www.python-httpx.org/advanced/transports/
@@ -236,7 +237,7 @@ change often, so check a quote against its page before you rely on it.
          `scoring.py <https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_db/ariac_db/scoring.py>`_.
 
 
-.. dropdown:: Industry and Lab Examples
+.. dropdown:: Agentic Manufacturing in Industry
    :class-container: sd-border-secondary
    :open:
 
@@ -258,9 +259,10 @@ change often, so check a quote against its page before you rely on it.
 
          **Xia, Jazdi, Zhang, Shah and Weyrich, IEEE ETFA 2025**
 
-         Manager and operator agents send function calls to automation
-         modules. Table II gives the accuracy on routine steps and on
-         unexpected events.
+         Manager and operator agents send function calls that go straight
+         to the automation modules. Table II gives the accuracy on routine
+         steps and on unexpected events; human approval is the authors'
+         proposal.
 
       .. grid-item-card:: Amazon DeepFleet
          :link: https://www.amazon.science/blog/amazon-builds-first-foundation-model-for-multirobot-coordination
@@ -268,9 +270,8 @@ change often, so check a quote against its page before you rely on it.
 
          **Amazon Science blog, August 11, 2025**
 
-         A foundation model for multirobot coordination that predicts
-         congestion for the existing fleet planner; the 10% efficiency
-         figure.
+         A foundation model for multirobot coordination, used first to
+         predict congestion; the 10% efficiency figure.
 
 
 .. dropdown:: Running Against the Real Model
@@ -304,4 +305,33 @@ change often, so check a quote against its page before you rely on it.
 
          **Google:** Gemini API docs, "Pricing"
 
-         The free and paid tiers of ``gemini-robotics-er-2-preview``.
+         The free and paid tiers of ``gemini-robotics-er-2-preview``, their
+         prices, and whether Google uses the content to improve its
+         products.
+
+      .. grid-item-card:: Interactions API reference
+         :link: https://ai.google.dev/api/interactions-api
+         :class-card: sd-border-secondary
+
+         **Google:** Gemini API reference, "Gemini Interactions API"
+
+         The ``response_format`` and ``store`` fields of Run 2, and the
+         ``usage`` fields the token counts come from.
+
+      .. grid-item-card:: Structured output
+         :link: https://ai.google.dev/gemini-api/docs/structured-output
+         :class-card: sd-border-secondary
+
+         **Google:** Gemini API docs, "Structured outputs"
+
+         How ``response_format`` takes a JSON schema, the supported schema
+         keywords, and the advice to validate every answer.
+
+      .. grid-item-card:: Interactions overview
+         :link: https://ai.google.dev/gemini-api/docs/interactions-overview
+         :class-card: sd-border-secondary
+
+         **Google:** Gemini API docs, "Interactions API"
+
+         Storage by default (``store=true``), and how long each tier keeps
+         an interaction.

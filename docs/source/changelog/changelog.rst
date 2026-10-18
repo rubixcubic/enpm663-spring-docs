@@ -6,10 +6,164 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.16: L8 and L9 Run a Real Gemini Agent on ARIAC (2026-10-17)
+.. dropdown:: v0.4.17: Lecture Pages Corrected After Independent Checks (2026-10-18)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lecture 1
+
+   - **Robot interfaces:** a new table, "What ARIAC Gives Each Robot". Only
+     the inspection robots and assembly robot 1 have a gripper action;
+     assembly robot 2 uses vacuum tool services, and the gantry welder a
+     weld service. Quiz Q2 follows.
+   - **Cancel:** the action demo cancels because it runs on a multi-threaded
+     executor. On a single-threaded executor the goal ends SUCCEEDED.
+   - **API keys:** your team uses its own free-tier Gemini key while it
+     develops; the course key runs only the graded GP4 and final demo
+     evaluations.
+   - The meaning of each word in "agentic physical AI", and why the QoS demo
+     shows 19 of 20.
+
+   .. rubric:: Lecture 2
+
+   - The react-only rule says which rules fire in one pass.
+   - Helix is named as the two-system VLA, and the page says why the course
+     keeps the modular stack.
+   - The recovery row, the Brooks and Universal Robots quotes with their
+     sources, and the Next Class wording are corrected.
+   - Larger text in the figures.
+
+   .. rubric:: Lecture 3
+
+   - **Expanded:** definitions at first use (JSON, JSON record, PDDL fact,
+     4D/RCS node), the JSON world-model record, four figures and worked
+     examples.
+   - **Fourth cell:** five readings per average, as in L4, and GP1 Task 4's
+     rule decides cell c4 (it is recycled). The kit check is cited from
+     ``validate_kit()``.
+   - Inspection results: your team submits ``InspectionReport.msg``; ARIAC
+     sends none. Seven exercises.
+
+   .. rubric:: Lecture 4
+
+   - **Pattern 3** checks the kit before every place, as GP1 does, with the
+     three-cell window 10.45 V to 11.15 V.
+   - **Chance:** a new section works out whether a 3.75 V reading can be
+     trusted (``kit_spread.py``).
+   - Larger figure text; the repeat-sets output is measured again (3 to 6
+     of 10).
+
+   .. rubric:: Lecture 5
+
+   - **Update rates:** ARIAC accepts lidar at 10 or 20 Hz, cameras at 30 Hz,
+     and break beam and distance sensors at 10 or 30 Hz. The GP2 page says
+     the same.
+   - The L1 result is 50 of 50. The two missed dents are 0.82 and 0.91 mm
+     deep, with the reason each is missed.
+   - Three slides moved to the exercises: Exercise 2 Part 6 (what a cheaper
+     lidar gives up) and a new Exercise 6 (what the four-lidar layout costs).
+   - **Inspection door:** without a report, the door stays closed and the cell
+     drops into the inspection bin. The L2 quiz says the same.
+   - Larger figure text.
+
+   .. rubric:: Lecture 6
+
+   - **Translator:** Fast Downward drops only the actions a relaxed test
+     rules out, so some that can never apply stay (232 of 256 in the
+     example).
+   - **Look-ahead kit:** a 14.50 V kit is in range by the averages, but
+     ARIAC would reject it about 1 time in 7 to 1 in 11
+     (``kit_margin.py``).
+   - Kit examples follow GP1's check. "Cost" in L6 means plan length; in GP4
+     it means tokens or dollars. LM-cut and LAMA are defined.
+   - Larger figure text; the objects and the timeline are split in two.
+
+   .. rubric:: Lecture 7
+
+   - **Common bugs:** a misspelled blackboard key stops the tick with an
+     error, or the reader gets an old value.
+   - ``check-voltage`` and queued cells are marked as new in L7.
+   - GP3's Timeout, ``SyncActionNode`` (it must never return RUNNING), the
+     0.52 s arithmetic, the limit margin and a GP1 window note.
+   - Ten slides moved to this page, among them the factory function, the
+     PDDL-to-ROS mapping and the BehaviorTree.CPP comparison. The slides point
+     to each one.
+   - Larger figure text.
+
+   .. rubric:: Lecture 10
+
+   - **Robot interfaces:** the L1 table, so not every robot has a gripper.
+   - **Conveyor pick:** the page now teaches what ``pick_from_conveyor``
+     does in v0.2.0: a fixed side catch, its refusals, and the stop on a
+     belt change. New demo runs A to D and a new Exercise 5.
+   - **Pilz:** a course measurement replaces a ROS 1 test. Execution
+     retries, and one zone lock (the tester area).
+   - Larger figure text.
+
+   .. rubric:: Lecture 11
+
+   - **LLM output checks** use L8's ten tools and its check order: tool,
+     schema, guard.
+   - The recovery rule has L9's three cases (retry, wait, replan), and the
+     seven skill results from L10 each get a response.
+   - Runs C and D follow the skills' one-goal-per-arm and cancel rules.
+     Local and global recovery are defined before first use.
+   - Larger figure text.
+
+   .. rubric:: Lecture 12
+
+   - **Standard error:** the spread of one success rate. Two sets of runs
+     differ by about 1.41 times it.
+   - **How many runs a claim needs:** two new sections, Comparing Two
+     Systems (126 runs per system for a 0.10 gap) and A 20-Run Batch
+     (``batch_bar.py``, whose simulation of 1,000,000 batches matches the
+     exact numbers).
+   - GP4's required columns, the price of a false negative (GP1's check kit
+     quality call), the inspection door and the angle test are corrected.
+   - Larger figure text.
+
+   .. rubric:: Lecture 13
+
+   - **Final demo:** the code freeze is Friday, April 30; new sections give
+     the dates, deliverables and grading.
+   - Xia et al. and DeepFleet now say what their sources say, and the
+     two-system claim is scoped to SmolVLA (Gemini Robotics can judge
+     progress and success).
+   - Bonuses are maxima that the run scales down. Larger figure text.
+   - **Embodied-reasoning demo:** two runs recorded with
+     ``gemini-robotics-er-2-preview`` on 12 ARIAC camera images. In Run 1 the
+     schema check rejects every answer (each is inside a code fence), and the
+     free tier's 5 requests per minute stops the run at call 9. Run 2 asks for
+     structured output and scores all 12 cells. The scripted run stays as
+     the offline mode. Four slides moved to this page.
+
+   .. rubric:: Glossary
+
+   - New entries: **JSON**, **JSON record**, **Fact (PDDL)**, **Node
+     (4D/RCS)**, **Class, relation and instance (ontology)**.
+   - Updated: **Fast Downward**, **Executor (plan)**, **Inspection report**,
+     **4D/RCS**, **Parameterized grasp**, **Local recovery**, **Global
+     recovery**, **Standard error** and **Inspection door**.
+
+   .. rubric:: Projects and syllabus
+
+   - **API keys:** the syllabus, GP4 and the final demo say who pays: your
+     team's own free-tier Gemini key while it develops, the course key for
+     the graded GP4 and final demo evaluations.
+   - **GP3 Task 6:** the trigger is "a queued cell fails inspection".
+   - **Models:** GP4 and the final demo accept Gemini or a local open-weight
+     model. The AI Access page is rewritten for Gemini: how to create a free
+     key, where to keep it, and the free tier's limits.
+   - **Final demo Task 4:** a tip on choosing the runs per test configuration
+     from L12's "How Many Runs a Claim Needs".
+   - **Course Skills Package:** the page describes v0.2.0, lists the robots'
+     real controls, and says when a stopped belt refuses a catch.
+
+
+.. dropdown:: v0.4.16: L8 and L9 Run a Real Gemini Agent on ARIAC (2026-10-17)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lecture 8
 

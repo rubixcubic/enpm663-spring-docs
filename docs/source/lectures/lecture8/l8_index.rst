@@ -105,7 +105,8 @@ Next Steps
 
 - **Before next class:**
 
-  - Set up LLM access: a hosted API account or a local open-weight model.
+  - Set up LLM access: a free-tier Gemini API key or a local open-weight
+    model.
   - Run the offline L8 scripts (see :doc:`l8_code`): ``validator.py`` and
     ``token_growth.py`` print the tables of the notes, and
     ``python3 orchestrator.py --fake --runs 2`` runs the loop without ARIAC.

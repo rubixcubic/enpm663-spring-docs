@@ -159,7 +159,7 @@ Course Resources
 - ARIAC 2025
 - MoveIt 2, ``py_trees_ros``, OpenCV, and a PDDL planner (Unified Planning
   Framework or Fast Downward)
-- An LLM and VLM: a hosted API or local open-weight models
+- An LLM and VLM: Gemini (a free-tier API key) or local open-weight models
 - Visual Studio Code or preferred IDE
 - Git and GitHub for version control
 

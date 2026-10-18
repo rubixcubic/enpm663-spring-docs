@@ -39,8 +39,18 @@ Every link was checked on 2026-10-12.
 
          **ARIAC source:** ``ariac_setup/ariac_setup/structures.py``
 
-         ``Lidar.grade``: grade A only at exactly 20 Hz, otherwise by samples
-         alone; exactly 200 samples is grade B; more than 400 is refused.
+         ``Lidar.grade``: grade A at 20 Hz; at 10 Hz by samples alone, and
+         exactly 200 samples is grade B; more than 400 is refused.
+
+      .. grid-item-card:: Allowed update rates
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_setup/ariac_setup/yaml_validation.py
+         :class-card: sd-border-secondary
+
+         **ARIAC source:** ``ariac_setup/ariac_setup/yaml_validation.py``
+
+         ``UserConfigValidator._validate_sensors``: lidar 10 or 20 Hz, camera
+         30 Hz, break beam and distance 10 or 30 Hz. ARIAC does not start
+         with any other rate.
 
       .. grid-item-card:: Cell spawn point and height
          :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_plugins/include/ariac_plugins/cell_feed_plugin.hpp
@@ -92,7 +102,17 @@ Every link was checked on 2026-10-12.
 
          **ARIAC source:** ``ariac_db/ariac_db/scoring.py``
 
-         The sensor cost bonus and the over-budget penalty.
+         The sensor cost bonus and the over-budget penalty, and every bonus
+         set to 0 when the run is aborted.
+
+      .. grid-item-card:: When a run counts as aborted
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_plugins/src/competition_manager_plugin.cpp
+         :class-card: sd-border-secondary
+
+         **ARIAC source:** ``ariac_plugins/src/competition_manager_plugin.cpp``
+
+         ``orders_complete()``: a run is aborted unless the team submitted
+         every kit, module and high-priority order.
 
 
 .. dropdown:: Point Clouds in ROS 2
@@ -110,6 +130,14 @@ Every link was checked on 2026-10-12.
 
          ``PointCloud2`` on ``/{lidar_name}/scan`` with frame
          ``{lidar_name}_frame``, and its QoS.
+
+      .. grid-item-card:: The lidar's static transform
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_plugins/src/tf_publisher_plugin.cpp
+         :class-card: sd-border-secondary
+
+         **ARIAC source:** ``ariac_plugins/src/tf_publisher_plugin.cpp``
+
+         The static transform from ``world`` to ``{lidar_name}_frame``.
 
       .. grid-item-card:: PointCloud2
          :link: https://docs.ros.org/en/jazzy/p/sensor_msgs/msg/PointCloud2.html

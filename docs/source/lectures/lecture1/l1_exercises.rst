@@ -318,7 +318,7 @@ predict the result first, write the prediction down, then run the script.
 
       **Question 5.** The group. Case 4 uses a multi-threaded executor and
       still gets 9 reads, about as few as the single-threaded run in class
-      (11). Case 2 gets 13 with three groups. A status callback stays fast
+      (11). Case 2 gets 13 with two groups in use. A status callback stays fast
       only if no slow callback shares its mutually exclusive group. In GP1,
       put the callbacks that read status topics in their own group.
 

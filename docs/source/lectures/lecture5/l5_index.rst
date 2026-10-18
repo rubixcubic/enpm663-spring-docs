@@ -91,8 +91,9 @@ Next Steps
 - **Before next class:**
 
   - Read the PDDL Primer pre-read on the course site.
-  - Install the Unified Planning Framework with Fast Downward:
-    ``pip install unified-planning up-fast-downward``.
+  - Install the Unified Planning Framework with Fast Downward in a virtual
+    environment: ``python3 -m venv ~/venvs/planning``, then
+    ``~/venvs/planning/bin/pip install unified-planning up-fast-downward``.
   - Run the L5 scripts (see :doc:`l5_code`) and compare your outputs with the
     notes.
   - Work through the :doc:`L5 exercises <l5_exercises>` and the

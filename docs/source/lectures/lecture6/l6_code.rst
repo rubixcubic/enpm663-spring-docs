@@ -2,11 +2,12 @@
 Code
 ====================================================
 
-L6 has two PDDL domains, three PDDL problems, seven Python scripts and one
+L6 has two PDDL domains, three PDDL problems, eight Python scripts and one
 shell script that runs them all. None of them uses ROS 2 or the ARIAC
 simulation: the planner works on PDDL files, and the factory state is a
 Python dictionary with values chosen for the examples. The outputs below come
-from running ``run_all.sh`` on 2026-10-12:
+from running ``run_all.sh`` on 2026-10-12, except ``select_cells.txt`` and
+``kit_margin.txt``, which come from the same commands on 2026-10-18:
 
 .. literalinclude:: outputs/versions.txt
    :language: text
@@ -44,8 +45,8 @@ from running ``run_all.sh`` on 2026-10-12:
       cd lecture6/code
 
    Every command on this page runs from ``code/``, with the venv active.
-   ``select_cells.py`` needs nothing but Python, so it also runs with
-   ``/usr/bin/python3``.
+   ``select_cells.py`` and ``kit_margin.py`` need nothing but Python, so they
+   also run with ``/usr/bin/python3``.
 
 
 .. list-table::
@@ -83,6 +84,10 @@ from running ``run_all.sh`` on 2026-10-12:
      - Demo 6: the kit voltage window and the selection step, without and
        with look-ahead.
      - :ref:`l6-selection`
+   * - :download:`kit_margin.py <code/kit_margin.py>`
+     - Demo 8: how far the look-ahead kit sits from ARIAC's limits, and how
+       often ARIAC's check would reject it.
+     - :ref:`l6-against-chance`
    * - :download:`numeric_try.py <code/numeric_try.py>`
      - Demo 7: give Fast Downward the kit window as numeric PDDL.
      - :ref:`l6-strains`
@@ -280,10 +285,30 @@ Fast Downward stops at ``:numeric-fluents``.
    :caption: outputs/numeric_try.txt
 
 
+Demo 8: ``kit_margin.py``
+-------------------------
+
+The look-ahead kit of Demo 6 against chance: its margins in standard
+deviations of the averaged readings, and the share of simulated kits that
+ARIAC's check rejects. It needs no package and takes about 3 s.
+
+.. code-block:: bash
+
+   python kit_margin.py
+
+.. literalinclude:: code/kit_margin.py
+   :language: python
+   :caption: kit_margin.py
+
+.. literalinclude:: outputs/kit_margin.txt
+   :language: text
+   :caption: outputs/kit_margin.txt
+
+
 Run everything: ``run_all.sh``
 ------------------------------
 
-``run_all.sh`` runs the seven demos in order, then runs Fast Downward from
+``run_all.sh`` runs the eight demos, then runs Fast Downward from
 the command line (A* with LM-cut) on the small and the large problem. Give it
 the venv folder in ``VENV``:
 

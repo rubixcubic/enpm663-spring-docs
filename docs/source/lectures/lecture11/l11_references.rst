@@ -14,7 +14,7 @@ exercises use but no slide cites.
    :open:
 
    The sources behind "What Your System Must Do" and the run-time
-   arithmetic on "What Is Still to Be Decided".
+   arithmetic on "What Is Set".
 
    .. grid:: 1 1 2 2
       :gutter: 2
@@ -25,8 +25,10 @@ exercises use but no slide cites.
 
          **Google: Gemini Robotics ER overview**
 
-         The example of a hosted embodied-reasoning model. Which model you
-         can use in the final demo, and what it costs, is to be announced.
+         The example of a hosted embodied-reasoning model. The final demo
+         page says which other models your team may use. The course key runs
+         the graded runs only; your team uses its own free-tier key while
+         you develop.
 
       .. grid-item-card:: ARIAC configuration files
          :link: https://pages.nist.gov/ARIAC_docs/en/latest/pages/config_files.html
@@ -97,33 +99,36 @@ exercises use but no slide cites.
          prints.
 
 
-.. dropdown:: Checking LLM Output: JSON Schema
+.. dropdown:: Checking LLM Output: the L8 Checks and the Course Skills
    :class-container: sd-border-secondary
    :open:
 
-   Layer 2 of the checks, and ``Draft7Validator`` in
-   ``llm_output_checker.py``.
+   Check 2 of L8's ``check_call()`` (``Draft202012Validator`` in
+   ``lecture8/code/orchestrator.py``), and the skill rules behind the failure
+   results table and Runs C and D.
 
    .. grid:: 1 1 2 2
       :gutter: 2
 
-      .. grid-item-card:: JSON Schema draft 7
-         :link: https://json-schema.org/draft-07
+      .. grid-item-card:: jsonschema
+         :link: https://python-jsonschema.readthedocs.io/en/stable/validate/
          :class-card: sd-border-secondary
 
-         **JSON Schema: Draft 7**
+         **python-jsonschema documentation: Schema Validation**
 
-         The schema version the checker validates against: ``required``,
-         ``enum``, ``minimum`` and ``maximum``.
+         The Python package the demonstration ran with (4.10.3):
+         ``Draft202012Validator`` and ``iter_errors()``, as in L8.
 
-      .. grid-item-card:: jsonschema 4.10.3
-         :link: https://python-jsonschema.readthedocs.io/en/v4.10.3/
+      .. grid-item-card:: Course Skills Package
+         :link: /ariac/skills
+         :link-type: doc
          :class-card: sd-border-secondary
 
-         **python-jsonschema 4.10.3 documentation**
+         **The course skills package page**
 
-         The Python package the demonstration ran with: ``Draft7Validator``
-         and ``iter_errors()``.
+         The result codes in ``SkillResult.msg``, "One goal per arm" and
+         "Cancel stops the arm", from the README of v0.2.0, the version
+         you get.
 
 
 .. dropdown:: ARIAC 2025 Documentation
@@ -288,11 +293,3 @@ exercises use but no slide cites.
          The tick-based wait in Exercise 3. The same page documents
          ``behaviours.Running``, the ``hold_cell`` last resort.
 
-      .. grid-item-card:: JSON Schema conditionals
-         :link: https://json-schema.org/understanding-json-schema/reference/conditionals
-         :class-card: sd-border-secondary
-
-         **Understanding JSON Schema: Conditional subschemas**
-
-         ``if`` and ``then``, which Exercise 4 uses to require a slot for
-         every ``place_cell``.

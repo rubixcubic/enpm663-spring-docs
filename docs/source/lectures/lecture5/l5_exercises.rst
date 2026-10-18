@@ -11,11 +11,13 @@ Exercises
    work, which is the five in-class quizzes, the four group projects and
    the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
-Five take-home exercises on the L5 slides and scripts. Exercises 1 and 3 are
-on paper: lidar point spacing and point count, and the confusion matrix with
-precision and recall. Exercises 2 and 4 change the scripts: a grade C lidar
+Six take-home exercises on the L5 slides and scripts. Exercises 1, 3 and 6
+are on paper: lidar point spacing and point count, the confusion matrix with
+precision and recall, and what the four-lidar layout costs against the
+two-lidar layout. Exercises 2 and 4 change the scripts: a grade C lidar
 layout in ``point_count.py``, and lower thresholds in
-``precision_recall.py``. Exercise 5 works the voltage-averaging probability on
+``precision_recall.py``; Exercise 2 also works the two-sensor-setup budget
+trade-off on paper. Exercise 5 works the voltage-averaging probability on
 paper and checks it with ``voltage_average.py``. For every script exercise,
 **predict the output first, write it down, then run the script.**
 
@@ -23,7 +25,8 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
 
    The scripts are on the :doc:`code page <l5_code>`. Work on a copy, so the
    original still gives the output in the notes. Every output below was
-   measured on 2026-10-12 with Python 3.12.3 and NumPy 1.26.4. All point
+   measured on 2026-10-12 (Exercise 4 run A rerun on 2026-10-18) with Python
+   3.12.3 and NumPy 1.26.4. All point
    clouds and voltage readings in these scripts are **synthetic**: made in
    NumPy, not by ARIAC. The scripts use fixed random seeds, so your outputs
    should match the ones below.
@@ -176,6 +179,9 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
       Run it and compare with parts 2 and 3.
    5. How many points does the sensor cost bonus gain if the team swaps its
       two grade A lidars for these two grade C lidars?
+   6. Each good cell wrongly sent to the inspection bin costs 50 points
+      (``GOOD_CELL_IN_INSPECTION_BIN``). How many wrongly rejected good
+      cells would it take to lose more than the gain from part 5?
 
    .. dropdown:: Solution
       :color: success
@@ -225,6 +231,13 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
       points). Whether the trade pays off depends on what your detector
       misses with a fifth of the points, which only your own measurement can
       say.
+
+      **Part 6.** 104.2 / 50 = 2.08, so three wrongly rejected good cells
+      (3 × 50 = 150 points) already cost more than the 104.2-point gain, and
+      two (2 × 50 = 100 points) nearly do. A grade C lidar has a fifth of
+      the points of grade A (part 4), so the cheaper layout is worth it only
+      if your own measurement shows it does not cost you two or more good
+      cells, out of however many your team inspects.
 
 
 .. dropdown:: Exercise 3. Confusion Matrix, Precision and Recall
@@ -338,7 +351,7 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
 
    .. literalinclude:: outputs/precision_recall.txt
       :language: text
-      :lines: 13-20
+      :lines: 16-22
 
    On 20 good cells with four lidars, ``calibrate.py`` found the largest
    :math:`|d|` per cell from 0.63 to 0.81 mm. The detector flags points with
@@ -363,8 +376,8 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
 
    **Parts**
 
-   1. Before running: in run A, do you expect the two missed dents (0.8 and
-      0.9 mm deep) to be caught? Do you expect false alarms, given that some
+   1. Before running: in run A, do you expect the two missed dents (0.82 and
+      0.91 mm deep) to be caught? Do you expect false alarms, given that some
       good cells have a point with :math:`|d|` up to 0.81 mm?
    2. Run A and run B. Write down TP, FP, FN, TN, precision, recall and the
       classified count for each.
@@ -378,13 +391,13 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
    .. dropdown:: Solution
       :color: success
 
-      **Part 1.** A dent whose deepest point is 0.8 or 0.9 mm has several
+      **Part 1.** A dent whose deepest point is 0.82 or 0.91 mm has several
       points with :math:`|d|` above 0.7 mm near its center, so both dents
       should be caught. A good cell's largest :math:`|d|` can pass 0.7 mm, so
       a few false alarms are possible.
 
-      **Part 2.** The new last lines (the 0.9 mm line and the two ``missed``
-      lines are replaced):
+      **Part 2.** The new last lines (they replace the 0.9 mm line and the
+      ``missed`` table; with no miss, the script prints no table):
 
       Run A, 0.7 mm:
 
@@ -545,3 +558,78 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
       each fraction by about 0.001 to 0.002. Part 2 of the output shows the
       same stream as the lecture, 0.01 V lower, because the noise draws come
       from the same seed.
+
+
+.. dropdown:: Exercise 6. What the Four-Lidar Layout Costs
+   :icon: number
+   :class-container: sd-border-primary
+   :class-title: sd-font-weight-bold
+
+   **Goal**
+
+   Weigh the four-lidar layout's sensor cost and inspection speed against
+   the two-lidar layout's, in ARIAC points, from the lecture's own outputs.
+
+   .. raw:: html
+
+      <hr>
+
+   **Specification**
+
+   From ``point_count.py``, a whole pass at 0.1 m/s and 20 Hz:
+
+   .. literalinclude:: outputs/point_count.txt
+      :language: text
+      :lines: 7-8
+
+   From ``precision_recall.py``, set 1 (200 cells, 56 defective, depth 2 to
+   3 mm) at the 0.9 mm threshold:
+
+   .. literalinclude:: outputs/precision_recall.txt
+      :language: text
+      :lines: 2,5-6,13-15
+
+   The sensor cost bonus is 1000 × (1 − cost / 9600) points. The inspection
+   speed bonus is 500 × (1 − t / 4) points, where :math:`t` is the time the
+   cell is last seen (in seconds after spawn), and the classification bonus
+   is 500 points shared equally across the set's defective cells.
+
+   .. raw:: html
+
+      <hr>
+
+   **Parts**
+
+   1. Two more grade A lidars cost 2 × $1500 = $3000. How many sensor cost
+      bonus points does that give up?
+   2. With two lidars the cell is last seen at t = 1.25 s; with four, at
+      t = 2.55 s. How many inspection speed bonus points does that give up?
+   3. Add parts 1 and 2: how many points does the four-lidar layout give up
+      in total?
+   4. With two lidars, 51 of 56 defective cells in set 1 are classified;
+      with four, all 56 are. How many classification bonus points does that
+      gain?
+   5. Is the four-lidar layout worth it on set 1 alone (parts 3 and 4)? What
+      would change the answer, and where does that number come from?
+
+   .. dropdown:: Solution
+      :color: success
+
+      **Part 1.** 1000 × 3000 / 9600 = 312.5 points given up.
+
+      **Part 2.** 500 × (1 − 1.25 / 4) = 343.75 points with two lidars;
+      500 × (1 − 2.55 / 4) = 181.25 points with four. 343.75 − 181.25 =
+      162.5 points given up.
+
+      **Part 3.** 312.5 + 162.5 = 475 points given up.
+
+      **Part 4.** 500 × (56 − 51) / 56 = 500 × 5 / 56 = 44.6 points gained.
+
+      **Part 5.** No: 475 points given up against 44.6 gained from
+      classification alone, so the four-lidar layout loses 475 − 44.6 =
+      430.4 points on set 1. It would change if the cells the two-lidar
+      layout missed (the ones within 0.26 rad of :math:`\theta` = 0 or
+      :math:`\pm\pi`, grazing the side lidars) went on to fail a kit: one
+      failed kit is about 1667 points (``scoring_weights.yaml``), which is
+      more than the 475 points given up. That number is not measured here;
+      it depends on where the defect sits in the kit your team builds.

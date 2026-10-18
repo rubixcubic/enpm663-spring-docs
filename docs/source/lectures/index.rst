@@ -45,7 +45,7 @@ self-check quiz. Dates are in the :ref:`course schedule <course-schedule>`.
        models; multi-robot coordination
    * - :doc:`L3 <lecture3/l3_index>`
      - Knowledge Representation for Agentic Robotics
-     - Frames, ontologies; a world model per layer and errors that move up
+     - Frames, ontologies; a world model per layer and status that moves up
        (from 4D/RCS); one kit state in three views for a PDDL planner, an LLM agent and an executor
    * - :doc:`L4 <lecture4/l4_index>`
      - Behavior Trees for Task Execution

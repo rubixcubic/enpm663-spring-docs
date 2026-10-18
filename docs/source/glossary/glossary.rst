@@ -316,15 +316,17 @@ L1: Course Overview and ROS 2 Refresher
 
    Inspection door
       The ARIAC gate that lets a cell pass only after a passing inspection
-      report for it was submitted. Otherwise it pushes the cell into the
-      inspection bin. :doc:`L1 </lectures/lecture1/l1_index>` · :doc:`GP1
-      </assignments/gp1>`
+      report for it was submitted. Otherwise the door stays closed and the
+      cell drops into the inspection bin. :doc:`L1
+      </lectures/lecture1/l1_index>` · :doc:`GP1 </assignments/gp1>`
 
    Inspection report
       The report your system submits for each cell in ARIAC 2025 Task 1:
-      whether the cell passed, with an optional defect type and location.
-      :doc:`L1 </lectures/lecture1/l1_index>` · :doc:`L5
-      </lectures/lecture5/l5_index>`
+      whether the cell passed, with an optional defect type and location. Your
+      team decides it from lidar (GP2) and submits it as an
+      InspectionReport.msg with SubmitInspectionReport.srv; ARIAC never sends
+      an inspection result. :doc:`L1 </lectures/lecture1/l1_index>` · :doc:`L3
+      </lectures/lecture3/l3_index>` · :doc:`L5 </lectures/lecture5/l5_index>`
 
    Kit
       In ARIAC 2025, four battery cells on an AGV tray. Each cell must be in
@@ -496,16 +498,23 @@ L3: Knowledge Representation for Agentic Robotics
 
    4D/RCS
       NIST's reference model architecture for unmanned vehicle systems (NISTIR
-      6910). Each level plans over its own time span and keeps its own world
-      model. The course takes two ideas from it: a world model at each layer,
-      and errors handled where they are seen while status moves up. :doc:`L3
-      </lectures/lecture3/l3_index>`
+      6910). It is a hybrid architecture, with deliberative and reactive
+      capabilities (NISTIR 6910, p. 16). Each level plans over its own time
+      span and keeps its own world model. The course takes two ideas from it:
+      a world model at each layer, and errors handled where they are seen
+      while status moves up. :doc:`L3 </lectures/lecture3/l3_index>`
 
    Blackboard
       The key-value store that behavior tree nodes read and write, so nodes
       can share state without being wired to each other. In py_trees each
       behavior registers the keys it may read or write. :doc:`L3
       </lectures/lecture3/l3_index>` · :doc:`L4 </lectures/lecture4/l4_index>`
+
+   Class, relation and instance (ontology)
+      The three parts of an ontology. A class is a kind of thing (Cell, AGV,
+      Slot); a relation links classes, such as inSlot(Cell, AGV, Slot); an
+      instance is one thing of a class that exists now, such as agv1. :doc:`L3
+      </lectures/lecture3/l3_index>`
 
    CORA
       The core ontology for robotics and automation, IEEE 1872-2015. :doc:`L3
@@ -514,6 +523,17 @@ L3: Knowledge Representation for Agentic Robotics
    Default
       A starting filler for a frame's slot that new information can replace.
       :doc:`L3 </lectures/lecture3/l3_index>`
+
+   Executor (plan)
+      The code that runs a plan's actions. In L3 it is your behavior tree and
+      the skills it calls (GP1 on); in L7 it builds a behavior tree from the
+      plan and ticks it. Not a ROS 2 executor. :doc:`L3
+      </lectures/lecture3/l3_index>` · :doc:`L7 </lectures/lecture7/l7_index>`
+
+   Fact (PDDL)
+      A predicate and its objects, such as (in-slot c1 agv1 s1). A fact that
+      is not listed is false. :doc:`L3 </lectures/lecture3/l3_index>` ·
+      :doc:`L6 </lectures/lecture6/l6_index>`
 
    Filler
       What a frame's slot holds: a value or a link to another frame. :doc:`L3
@@ -528,6 +548,16 @@ L3: Knowledge Representation for Agentic Robotics
       A more specific frame takes the slots of a more general one. :doc:`L3
       </lectures/lecture3/l3_index>`
 
+   JSON
+      JavaScript Object Notation, a text format for data: objects in braces
+      with named fields, lists in brackets, numbers, strings, true, false and
+      null. :doc:`L3 </lectures/lecture3/l3_index>` · :doc:`L8
+      </lectures/lecture8/l8_index>`
+
+   JSON record
+      One JSON object that holds a whole state, such as a kit. :doc:`L3
+      </lectures/lecture3/l3_index>` · :doc:`GP4 </assignments/gp4>`
+
    JSON Schema
       A JSON document that describes the fields and values another JSON
       document may have. A validator checks a record against it and lists
@@ -537,6 +567,11 @@ L3: Knowledge Representation for Agentic Robotics
    Knowledge representation
       How a system writes down what it knows about the world, the task and
       itself, in a form programs can read and check. :doc:`L3
+      </lectures/lecture3/l3_index>`
+
+   Node (4D/RCS)
+      One unit of the 4D/RCS hierarchy, at one level, with its own world
+      model. In this course, read it as one layer. :doc:`L3
       </lectures/lecture3/l3_index>`
 
    Observed, inferred and unknown facts
@@ -563,7 +598,7 @@ L3: Knowledge Representation for Agentic Robotics
 
 .. raw:: html
 
-   <p class="glossary-also">Also used here: <a href="#term-Kit" target="_blank" rel="noopener">Kit</a> (L1), <a href="#term-World-model" target="_blank" rel="noopener">World model</a> (L2).</p>
+   <p class="glossary-also">Also used here: <a href="#term-Inspection-report" target="_blank" rel="noopener">Inspection report</a> (L1), <a href="#term-Kit" target="_blank" rel="noopener">Kit</a> (L1), <a href="#term-World-model" target="_blank" rel="noopener">World model</a> (L2).</p>
 
 
 .. _g-l4:
@@ -777,8 +812,9 @@ L6: Task-Level Planning with PDDL
 
    Fast Downward
       The classical planner used in L6 and GP3. Its translator grounds the
-      PDDL, keeping only the ground actions that can ever apply, then its
-      search finds a plan. :doc:`L6 </lectures/lecture6/l6_index>` · :doc:`GP3
+      PDDL and drops the ground actions that a relaxed test (delete effects
+      ignored) rules out, so some that can never apply stay. Then its search
+      finds a plan. :doc:`L6 </lectures/lecture6/l6_index>` · :doc:`GP3
       </assignments/gp3>`
 
    Heuristic
@@ -841,6 +877,10 @@ L6: Task-Level Planning with PDDL
       planners and validators through one interface. :doc:`L6
       </lectures/lecture6/l6_index>`
 
+.. raw:: html
+
+   <p class="glossary-also">Also used here: <a href="#term-Fact-PDDL" target="_blank" rel="noopener">Fact (PDDL)</a> (L3).</p>
+
 
 .. _g-l7:
 
@@ -858,10 +898,6 @@ L7: Plan Execution Patterns with Behavior Trees
       A function that takes one plan action's arguments and returns the
       behavior tree subtree for that step. :doc:`L7
       </lectures/lecture7/l7_index>`
-
-   Executor (plan)
-      The code that runs a plan: it builds a behavior tree from the plan and
-      ticks it. :doc:`L7 </lectures/lecture7/l7_index>`
 
    Groot2
       The editor and monitor for BehaviorTree.CPP trees. :doc:`L7
@@ -917,7 +953,7 @@ L7: Plan Execution Patterns with Behavior Trees
 
 .. raw:: html
 
-   <p class="glossary-also">Also used here: <a href="#term-Behavior-tree" target="_blank" rel="noopener">Behavior tree</a> (L4), <a href="#term-Decorator" target="_blank" rel="noopener">Decorator</a> (L4), <a href="#term-Retry-decorator" target="_blank" rel="noopener">Retry decorator</a> (L4), <a href="#term-Timeout-decorator" target="_blank" rel="noopener">Timeout decorator</a> (L4).</p>
+   <p class="glossary-also">Also used here: <a href="#term-Behavior-tree" target="_blank" rel="noopener">Behavior tree</a> (L4), <a href="#term-Decorator" target="_blank" rel="noopener">Decorator</a> (L4), <a href="#term-Executor-plan" target="_blank" rel="noopener">Executor (plan)</a> (L3), <a href="#term-Retry-decorator" target="_blank" rel="noopener">Retry decorator</a> (L4), <a href="#term-Timeout-decorator" target="_blank" rel="noopener">Timeout decorator</a> (L4).</p>
 
 
 .. _g-l8:
@@ -1031,7 +1067,7 @@ L8: LLM Agents I: Agent Loops, Tool Use, and Structured Output
 
 .. raw:: html
 
-   <p class="glossary-also">Also used here: <a href="#term-Agent" target="_blank" rel="noopener">Agent</a> (L1), <a href="#term-API-key" target="_blank" rel="noopener">API key</a> (Pre-read), <a href="#term-Context-window" target="_blank" rel="noopener">Context window</a> (Pre-read), <a href="#term-JSON-Schema" target="_blank" rel="noopener">JSON Schema</a> (L3), <a href="#term-Stateless-API" target="_blank" rel="noopener">Stateless API</a> (Pre-read), <a href="#term-Tool" target="_blank" rel="noopener">Tool</a> (L1), <a href="#term-Transport-MCP" target="_blank" rel="noopener">Transport (MCP)</a> (Pre-read), <a href="#term-Validator" target="_blank" rel="noopener">Validator</a> (L3).</p>
+   <p class="glossary-also">Also used here: <a href="#term-Agent" target="_blank" rel="noopener">Agent</a> (L1), <a href="#term-API-key" target="_blank" rel="noopener">API key</a> (Pre-read), <a href="#term-Context-window" target="_blank" rel="noopener">Context window</a> (Pre-read), <a href="#term-JSON" target="_blank" rel="noopener">JSON</a> (L3), <a href="#term-JSON-Schema" target="_blank" rel="noopener">JSON Schema</a> (L3), <a href="#term-Stateless-API" target="_blank" rel="noopener">Stateless API</a> (Pre-read), <a href="#term-Tool" target="_blank" rel="noopener">Tool</a> (L1), <a href="#term-Transport-MCP" target="_blank" rel="noopener">Transport (MCP)</a> (Pre-read), <a href="#term-Validator" target="_blank" rel="noopener">Validator</a> (L3).</p>
 
 
 .. _g-l9:
@@ -1117,8 +1153,9 @@ L10: Frames, Transforms, and Motion Planning
       right, y down (REP 103). :doc:`L10 </lectures/lecture10/l10_index>`
 
    Parameterized grasp
-      A gripper target computed as the part's frame plus a fixed offset for
-      that part type. :doc:`L10 </lectures/lecture10/l10_index>`
+      A gripper target computed as the part's frame plus a fixed offset. The
+      course skills package sets one offset per place in skills.yaml.
+      :doc:`L10 </lectures/lecture10/l10_index>`
 
    Pilz industrial motion planner
       A MoveIt planner for the standard industrial motions PTP (point to point
@@ -1199,7 +1236,7 @@ L11: Recovery, Robustness, and Failure Handling for Agentic Systems
       device is down. :doc:`L11 </lectures/lecture11/l11_index>`
 
    Global recovery
-      Recovery by the planner or the LLM agent, which makes a new plan or
+      Recovery that changes the plan: the planner or the LLM agent replans or
       takes a new goal. :doc:`L11 </lectures/lecture11/l11_index>`
 
    Hang
@@ -1208,8 +1245,8 @@ L11: Recovery, Robustness, and Failure Handling for Agentic Systems
       </lectures/lecture11/l11_index>`
 
    Local recovery
-      Recovery in the skill and the behavior tree (retry, timeout, another
-      branch) that leaves the plan unchanged. :doc:`L11
+      Recovery that keeps the plan: the skill or the behavior tree retries a
+      step or waits (retry, wait, timeout, another branch). :doc:`L11
       </lectures/lecture11/l11_index>`
 
    Plan failure
@@ -1289,8 +1326,10 @@ L12: Evaluation and Measurement Science for Agentic Systems
       after one re-prompt. :doc:`L12 </lectures/lecture12/l12_index>`
 
    Standard error
-      About how far chance moves a measured success rate between sets of n
-      runs: sqrt(p(1 - p) / n). :doc:`L12 </lectures/lecture12/l12_index>`
+      The spread of one measured success rate: about how far p = k / n lands
+      from the true rate, sqrt(p(1 - p) / n). Two independent sets of n runs
+      differ by about sqrt(2) times this. :doc:`L12
+      </lectures/lecture12/l12_index>`
 
    Success rate
       k / n, the share of n runs on which the system completes the trial.
@@ -1372,7 +1411,7 @@ GP4: LLM Agent with VLM Grounding
 
 .. raw:: html
 
-   <p class="glossary-also">Also used here: <a href="#term-JSON-Schema" target="_blank" rel="noopener">JSON Schema</a> (L3).</p>
+   <p class="glossary-also">Also used here: <a href="#term-JSON-record" target="_blank" rel="noopener">JSON record</a> (L3), <a href="#term-JSON-Schema" target="_blank" rel="noopener">JSON Schema</a> (L3).</p>
 
 
 .. _g-final-demo:

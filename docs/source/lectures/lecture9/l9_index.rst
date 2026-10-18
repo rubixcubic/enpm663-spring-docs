@@ -114,8 +114,8 @@ Next Steps
   - Fill in the GP3 peer-review form on ELMS-Canvas (GP3 was due today).
   - Read the GP4 specification, and agree on who owns the agent, the VLM
     module and the comparison.
-  - Set up LLM and VLM access (a hosted API key or a local model with
-    Ollama) with the :doc:`AI Access </ariac/ai_setup>` page.
+  - Set up LLM and VLM access (a free-tier Gemini API key or a local model
+    with Ollama) with the :doc:`AI Access </ariac/ai_setup>` page.
   - Rerun the scripted VLM check: on your copy, ``python3 vlm_check.py`` in
     ``lecture9/code`` (see :doc:`l9_code`), and compare its output with the
     notes. The Gemini runs need ARIAC and an API key.

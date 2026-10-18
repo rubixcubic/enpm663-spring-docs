@@ -13,6 +13,7 @@ run() {
 run score_runs.txt     score_calculator.py
 run success_spread.txt success_spread.py
 run perception.txt     perception_metrics.py
+run batch_bar.txt      batch_bar.py
 env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/python3 -c \
   'import sys, numpy, yaml; v = sys.version.split()[0]
 print("Python", v);

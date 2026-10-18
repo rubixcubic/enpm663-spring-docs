@@ -68,6 +68,9 @@ in two files:
 - a **domain**: types, predicates and actions;
 - a **problem**: objects, initial state and goal.
 
+A **predicate** is a kind of fact: ``tester-free`` becomes the fact "tester1
+is free" once it names tester1.
+
 Source: R. E. Fikes and N. J. Nilsson, STRIPS: A New Approach to the
 Application of Theorem Proving to Problem Solving, *Artificial Intelligence*
 2:189 to 208, 1971.
@@ -83,10 +86,10 @@ The Planning Loop
          effects), and a dashed box labeled problem.pddl holds gray boxes
          Initial state (facts true now) and Goal (facts that must hold).
          Arrows from all three lead to a white box Planner (search plus
-         heuristic), whose arrow leads to a gray box Plan (step 1, step 2, up
-         to step n). An arrow goes down from the plan to a white box Executor
-         (runs one step at a time), then left to a white box Factory (ARIAC).
-         An arrow from the factory returns along the bottom to problem.pddl.
+         heuristic), whose arrow leads to a gray box Plan (steps in order).
+         An arrow goes down from the plan to a white box Executor (runs one
+         step at a time), then left to a white box Factory (ARIAC). An arrow
+         from the factory returns along the bottom to problem.pddl.
    :width: 100%
    :align: center
 
@@ -108,11 +111,11 @@ Three Assumptions, and Where ARIAC Breaks Each One
      - **Where the ARIAC factory breaks it**
    * - **Full observation:** the planner knows every fact at the start
      - A cell's defects and voltage are unknown until the lidar scan and the
-       tester measure them.
+       tester measure them. A malfunctioning tester gives no valid reading at
+       all (it publishes −1 V with status ``MALFUNCTIONING``).
    * - **Deterministic actions:** an action always has its listed effects
      - In Task 2, a vacuum grasp by assembly_robot_2 can fail (vacuum tool
-       malfunction). In Task 1, a malfunctioning tester gives no valid
-       reading (it publishes −1 V with status ``MALFUNCTIONING``).
+       malfunction).
    * - **A static world:** only the robots change it
      - New cells keep arriving, the conveyor can stop, and a high-priority
        order can arrive at any time.
@@ -179,8 +182,8 @@ The Domain Header: Requirements, Types and Constants
 The Predicates: Facts That Can Be True or False
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A **predicate** is a named fact with parameters. Given objects for its
-parameters, it is true or false in each state.
+A predicate has parameters. Given objects for its parameters, it is true
+or false in each state.
 
 .. literalinclude:: code/domain.pddl
    :language: lisp
@@ -216,26 +219,57 @@ Changing Facts and Fixed Facts
 The Objects and Their Predicates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+   :class: compact-table
+
+   * - **Objects (type)**
+     - **Predicates about them**
+   * - c1, c2, c3, c4 (``cell``)
+     - ``at-door``, ``voltage-ok``, ``voltage-bad``, ``recycled``
+   * - inspection_robot_1 (``robot``)
+     - ``picks-conveyor``, ``hand-free``, ``holding``
+   * - inspection_robot_2 (``robot``)
+     - ``loads-agv``, ``hand-free``, ``holding``
+   * - tester1, tester2 (``tester``)
+     - ``tester-free``, ``on-tester``, ``serves``
+   * - agv1 (``agv``)
+     - ``agv-at``, ``kit-checked``, ``submitted``
+   * - s1, s2, s3, s4 (``slot``)
+     - ``in-slot``, ``slot-free``
+   * - inspection, shipping (``station``)
+     - ``agv-at``
+
+- A predicate with two or more parameters links objects.
+  ``(holding ?r ?c)`` links a robot and a cell; the table lists it once,
+  under the robot.
+- The recycling bin is not an object: ``(recycled ?c)`` says a cell is in it.
+
+.. _l6-objects-actions:
+
+The Objects and the Eight Actions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. image:: /_static/images/l6/task1_objects.svg
-   :alt: A diagram of the PDDL objects for Task 1, each a red box with its
-         type above it and, in gray below it, the predicates that describe
-         it. From left to right: cells c1 to c4 (at-door); inspection robot 1
-         (picks-conveyor, hand-free, holding); tester1 and tester2
-         (tester-free, on-tester, serves); inspection robot 2 (loads-agv,
-         hand-free, holding); and a dashed gray recycling bin, which is not
-         an object (recycled). Below, agv1 with four slots s1 to s4 (agv-at,
-         in-slot, slot-free, kit-checked, submitted), between the station
-         shipping on the left and the station inspection on the right. Arrows
-         with tags: 1 from the cells to inspection robot 1, 2 from it to both
-         testers, 3 from both testers to inspection robot 2, 4 from it down
-         to agv1, 5 from it to the recycling bin. Tag 6 sits left of agv1, an
-         arrow with tag 7 goes from agv1 to shipping, and tag 8 sits left of
+   :alt: A diagram of the PDDL objects for Task 1 and the eight actions
+         between them. Each object is a red box with its type above it. Top
+         row, left to right: the cells c1 c2 c3 c4; inspection robot 1;
+         tester1 above tester2; inspection robot 2. Below inspection robot 2,
+         on the right, a dashed gray box, the recycling bin, which is not an
+         object. Bottom row, left to right: the station shipping; agv1, whose
+         tray holds four slots s1 to s4; and the station inspection, joined to
+         agv1 by a short line. Arrows with numbered tags: 1 from the cells to
+         inspection robot 1; 2 from it to each tester; 3 from each tester to
+         inspection robot 2; 4 from it down to agv1; 5 from it down to the
+         recycling bin. Tag 6 sits at agv1's top left corner, an arrow with
+         tag 7 goes from agv1 left to shipping, and tag 8 sits left of
          shipping.
    :width: 100%
    :align: center
 
-- Red: a PDDL object, its type above it. Gray: the predicates about it.
-  Dashed: not an object.
+- Red: a PDDL object, its type above it. Dashed: the recycling bin, not an
+  object.
 - The tags are the eight actions:
 
   1. ``pick-from-conveyor``
@@ -364,7 +398,8 @@ show the mistake. The full script is on the :doc:`code page <l6_code>`.
 
 .. warning::
 
-   The planner uses every shortcut the domain allows, and a validator would
+   The planner uses every shortcut the domain allows, and a validator given
+   the same broken domain would
    accept both plans. Read the first plan of every new domain against the
    Task 1 steps.
 
@@ -491,8 +526,10 @@ through the Unified Planning Framework.
 Installing the Planner in a Virtual Environment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A **virtual environment** (venv) is a folder with its own Python packages,
-kept apart from the system Python.
+A **virtual environment** (venv) is a folder with its own Python and
+packages, kept apart from the system Python. The **Unified Planning
+Framework (UPF)** is a Python library that reads PDDL, runs planners and
+checks plans; up-fast-downward adds Fast Downward to it.
 
 .. code-block:: console
 
@@ -518,11 +555,34 @@ Fast Downward: Translate, Then Search
 
 **Fast Downward** is a classical planner. It runs in two stages:
 
-1. The **translator** grounds the PDDL: it writes out every action with
-   concrete objects in place of its parameters (a **ground action**), keeping
-   those that can ever apply.
-2. The **search** looks for a plan over those ground actions and writes it to
-   a file, ``sas_plan`` by default.
+1. The **translator** grounds the PDDL: it writes out actions with concrete
+   objects in place of their parameters. Each result is a **ground action**,
+   such as ``check-kit agv1 c1 c2 c3 c4``.
+2. It drops only the ground actions that a quick **relaxed** test rules out.
+   The test ignores every delete effect, so a fact, once true, stays true.
+   The help text of the translator's ``--relaxed`` option says the same:
+   "output relaxed task (no delete effects)".
+3. The **search** looks for a plan over the ground actions that are left and
+   writes it to a file, ``sas_plan`` by default.
+
+Fast Downward's documentation (`Problem transformations performed by the
+planner <https://www.fast-downward.org/latest/for-developers/problem-transformations/>`_)
+states the rule: "The translator can prune facts and actions that are not
+relaxed reachable from the initial state or that are not relevant to the
+goal in the sense that they never contribute to an irreducible plan."
+
+So the ground actions that are left are not all usable. With delete effects
+ignored, c1 stays held after it is placed, so it can fill every slot:
+``check-kit agv1 c1 c1 c1 c1`` passes the test and stays, though it can
+never apply. In the small problem, 232 of the 256 ``check-kit`` ground
+actions repeat a cell like this (:ref:`l6-many-objects`). The test does drop
+what it can rule out: ``place-in-slot`` keeps 16 of its 2 × 4 × 1 × 4 = 32
+combinations, because only inspection_robot_2 has ``loads-agv``, and
+``recycle`` keeps none of its 2 × 4 = 8, because no cell has
+``voltage-bad``.
+
+Running Fast Downward from the Command Line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Optimal (A* with the LM-cut heuristic) and satisficing (LAMA, first
 plan):**
@@ -532,6 +592,14 @@ plan):**
    fast-downward.py domain.pddl problem.pddl --search "astar(lmcut())"
    fast-downward.py --alias lama-first domain.pddl problem.pddl
 
+- **LM-cut** (landmark cut, Helmert and Domshlak, 2009) is a heuristic that
+  Fast Downward's documentation lists as admissible, so A* with it returns a
+  shortest plan.
+- **LAMA** is a satisficing planner built on **landmarks**: facts every plan
+  must make true. The ``lama-first`` alias runs greedy search with two
+  heuristics (FF, the length of a plan found with delete effects ignored,
+  and a count of landmarks not yet reached) and stops at the first plan.
+
 ``fast-downward.py`` is in the up-fast-downward package folder, under
 ``downward/``. ``run_all.sh`` finds it and runs the first command on two
 problems (:ref:`l6-many-objects`).
@@ -539,9 +607,8 @@ problems (:ref:`l6-many-objects`).
 Planning from Python with the Unified Planning Framework
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The **Unified Planning Framework (UPF)** is a Python library that reads PDDL
-files (or builds problems in Python code) and calls planners such as Fast
-Downward through one interface.
+UPF reads PDDL files (or builds problems in Python code) and calls planners
+such as Fast Downward through one interface.
 
 .. literalinclude:: code/plan_kit.py
    :language: python
@@ -574,23 +641,34 @@ four ``in-slot`` facts and ``(submitted agv1)``.
 
 .. _l6-timeline:
 
-All 19 Steps, One Row per Robot
+The 19 Steps, One Row per Robot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: /_static/images/l6/plan_timeline.svg
-   :alt: A chart of the 19-step plan for the four-cell problem. Three rows,
-         tagged 1 for inspection robot 1, 2 for inspection robot 2 and 3 for
-         agv1. The x axis is the plan step, 1 to 19, an order and not a time.
-         Each step is one box in the row of the robot or AGV that acts.
-         inspection robot 1 picks and places c1 (tester 1) and c2 (tester 2)
-         in steps 1 to 4, picks c3 in step 5, places it on tester 1 in step
-         8, picks c4 in step 9 and places it on tester 1 in step 12.
-         inspection robot 2 picks c1 from tester 1 and places it in slot s1
-         in steps 6 and 7, does the same for c3 (s3) in steps 10 and 11 and
-         c4 (s4) in steps 13 and 14, then picks c2 from tester 2 and places
-         it in s2 in steps 15 and 16. agv1 checks the kit in step 17, moves
-         to shipping in step 18 and submits in step 19. Only one box appears
-         in each column.
+**Steps 1 to 10:**
+
+.. image:: /_static/images/l6/plan_timeline_1.svg
+   :alt: A chart of steps 1 to 10 of the 19-step plan for the four-cell
+         problem. Three rows, tagged 1 for inspection robot 1, 2 for
+         inspection robot 2 and 3 for agv1. The x axis is the plan step, an
+         order and not a time, and the y axis, labeled who acts, holds the
+         rows; each step is one box in the row of the robot that acts. Row 1:
+         pick c1 (step 1), place c1 on t1 (2), pick c2 (3), place c2 on t2
+         (4), pick c3 (5), place c3 on t1 (8), pick c4 (9). Row 2: pick c1
+         from t1 (6), place c1 in s1 (7), pick c3 from t1 (10). Row 3 is
+         empty. Only one box appears in each column.
+   :width: 100%
+   :align: center
+
+**Steps 11 to 19:**
+
+.. image:: /_static/images/l6/plan_timeline_2.svg
+   :alt: A chart of steps 11 to 19 of the 19-step plan for the four-cell
+         problem, with the same three rows and axis as the chart of steps 1 to
+         10. Row 1, inspection robot 1: place c4 on t1 (step 12). Row 2,
+         inspection robot 2: place c3 in s3 (11), pick c4 from t1 (13), place
+         c4 in s4 (14), pick c2 from t2 (15), place c2 in s2 (16). Row 3,
+         agv1: check (17), move to shipping (18, its box reads move ship),
+         submit (19). Only one box appears in each column.
    :width: 100%
    :align: center
 
@@ -599,9 +677,9 @@ All 19 Steps, One Row per Robot
 - Each line of the plan is a **ground action**, an action name with its
   arguments. In L7, each one becomes a behavior tree subtree.
 - One step per column: a classical plan is a single sequence, even when the
-  two robots could work at the same time (steps 5 and 6). In GP3, the
-  executor may run steps for different robots together when they touch
-  different objects.
+  two robots could work at the same time (steps 5 and 6).
+- inspection_robot_2 fills slots s3, s4 and then s2; agv1 acts only in the
+  last three steps.
 - c2 waits on tester2 from step 4 to step 15. The model has no time, so it
   sees no cost in that.
 
@@ -621,8 +699,9 @@ Satisficing Against Optimal, on a Small and a Large Problem
    and 38 steps.
 3. On the large problem, the optimal planner took 14.78 s and the satisficing
    one 0.56 s: 14.78 / 0.56 = 26.4 times longer, for no shorter plan.
-4. Times are wall-clock seconds for one run on the course machine; they vary
-   from run to run.
+4. Times are wall-clock seconds for one run on the course machine. They
+   vary: in six more runs (2026-10-18, on a PC under other load), the
+   optimal planner took 22.5 to 25.2 times as long as the satisficing one.
 
 .. important::
 
@@ -649,7 +728,7 @@ What a Validator Checks
   for PDDL (`github.com/KCL-Planning/VAL
   <https://github.com/KCL-Planning/VAL>`_).
 
-**Why check a plan the planner made?** A plan file can be edited by hand, or
+**Plans from other sources need checking.** A plan file can be edited by hand, or
 come from another program. In GP4, plans come from an LLM agent, and code
 must check them before any robot moves (L8).
 
@@ -661,8 +740,10 @@ Validating the Plan and an Edited Copy
    :lines: 14-29
    :caption: lecture6/code/validate_plan.py (lines 14 to 29)
 
-The edit swaps steps 6 and 7 of ``outputs/plan.txt`` (list items 5 and 6,
-counting from 0), so inspection_robot_2 places c1 before it picks it.
+Lines 11 and 12 (not shown) make ``reader``, a PDDL reader, and read
+``domain.pddl`` and ``problem.pddl`` into ``problem``. The edit swaps steps 6
+and 7 of ``outputs/plan.txt`` (list items 5 and 6, counting from 0), so
+inspection_robot_2 places c1 before it picks it.
 
 The Validator Rejects the Edited Plan
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -692,12 +773,13 @@ Valid in the Model Is Not the Same as Working in the Factory
   ``(tester-free tester2)`` can be true in the problem and useless in the
   factory.
 
-**Plan quality measures for GP3 and GP4:**
+**Plan quality measures:**
 
-- Validity, plan length, plan cost (here, cost 1 for every action, so cost
-  equals length), and planning time.
-- GP4 compares its LLM agent with this planner on the same trials, with
-  these four measures.
+- Validity, plan length, plan cost and planning time. In L6 every action
+  costs 1, so a plan's cost is its length.
+- GP4 compares its LLM agent with this planner on the same trials by
+  validity, plan length, cost and latency. In GP4, "cost" means the tokens
+  or dollars the model uses, not plan cost.
 
 
 .. _l6-strains:
@@ -727,6 +809,9 @@ The Kit Rule, and a Kit That Cannot Be Finished
    the kit.
 4. Cells lock to the tray, so the kit is lost: the AGV goes to the recycling
    station (Step 1e), where the tray is cleared.
+5. This tray needs a team with no check. GP1's check, before every place,
+   refuses the third cell: three cells must total 14.25 − 3.8 = 10.45 V to
+   14.55 − 3.4 = 11.15 V, and 11.25 V is above 11.15 V.
 
 Every Cell Placed Narrows the Window for the Rest
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -739,12 +824,14 @@ Every Cell Placed Narrows the Window for the Rest
 3. Each of them is at least 3.4 V, so neither can be above
    7.05 − 3.4 = 3.65 V.
 4. A cell at 3.70 V is in range on its own, yet it would make the kit
-   impossible to finish.
+   impossible to finish. GP1's check refuses it: 7.5 + 3.70 = 11.20 V, above
+   11.15 V.
 
 .. important::
 
    The choice of a cell must look ahead to the cells still to come, before
-   the cell is placed. That is arithmetic on sums of voltages.
+   the cell is placed: GP1's check before every place. That is arithmetic on
+   sums of voltages.
 
 Classical PDDL Has No Numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -754,8 +841,11 @@ Classical PDDL Has No Numbers
 - PDDL 2.1 adds **numeric fluents**: values such as a kit's total voltage
   that actions can increase.
 - Fast Downward does not plan with them. Its PDDL support page says it
-  supports "PDDL 2.2 level 1 plus the :action-costs requirement from PDDL
-  3.1", and that "all aspects of numerical planning" are unsupported.
+  "aims to support PDDL 2.2 level 1 plus the :action-costs requirement from
+  PDDL 3.1", and lists "All aspects of numerical planning" as unsupported,
+  with one exception: "some numerical features are part of the
+  :action-costs requirement of PDDL 3.1, and these are supported by the
+  planner."
 
 .. literalinclude:: code/kit_numeric.pddl
    :language: lisp
@@ -814,7 +904,8 @@ Placing Cells as They Arrive, Without Look-Ahead
 2. Cells c1 to c6 arrive measured, one at a time (voltages chosen for this
    example).
 3. Without look-ahead, every in-range cell goes on agv1. After c3, the tray
-   holds 3.75 + 3.78 + 3.72 = 11.25 V, and the kit is lost.
+   holds 3.75 + 3.78 + 3.72 = 11.25 V, and the kit is lost. GP1's check
+   would have refused c3 (11.25 V is above 11.15 V); this run has no check.
 
 Placing Cells as They Arrive, With Look-Ahead
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -824,14 +915,54 @@ Placing Cells as They Arrive, With Look-Ahead
    :lines: 8-19
    :caption: Output: lecture6/outputs/select_cells.txt (lines 8 to 19)
 
-1. c3 would leave 3.00 V to 3.30 V for the last cell, so it goes to agv2 for
-   the next kit. c4 (3.86 V) is out of range: recycling.
-2. c5 and c6 complete agv1: 3.75 + 3.78 + 3.45 + 3.52 = 14.50 V, inside
-   14.25 V to 14.55 V. The goal lines go to the problem generator.
-3. ARIAC checks each cell's true voltage; your team knows only an average of
-   noisy readings (for 10 readings, a standard deviation of
-   0.05 / :math:`\sqrt{10}` = 0.016 V, L5). Leave a margin at the window's
-   edges.
+1. The look-ahead is GP1's check. c3 would bring three cells to 11.25 V,
+   above 11.15 V, leaving 3.00 V to 3.30 V for the last cell, so it goes to
+   agv2 for the next kit. c4 (3.86 V) is out of range: recycling.
+2. c5 and c6 fill agv1: 3.75 + 3.78 + 3.45 + 3.52 = 14.50 V, inside
+   14.25 V to 14.55 V by the averages. The goal lines go to the problem
+   generator.
+3. ARIAC checks the true voltages; your team knows only averages of noisy
+   readings. The next section asks how safe 14.50 V is.
+
+.. _l6-against-chance:
+
+The Look-Ahead Kit Against Chance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``kit_margin.py`` measures how far the look-ahead kit sits from ARIAC's
+limits, in standard deviations (sd) of the team's averages, and how often
+ARIAC's check would reject it.
+
+.. literalinclude:: outputs/kit_margin.txt
+   :language: text
+   :caption: Output: lecture6/outputs/kit_margin.txt (from kit_margin.py)
+
+1. ARIAC's voltage tester adds normal noise with an sd of 0.05 V to each
+   reading (``noise_std_dev`` in ``ariac_gz/models/voltage_tester/model.sdf``).
+   An average of 10 readings has an sd of 0.05 / :math:`\sqrt{10}` =
+   0.016 V (L5). The kit total is a sum of four such averages; for
+   independent errors the variances add, so its sd is
+   :math:`\sqrt{4}` × 0.016 = 2 × 0.016 = 0.032 V.
+2. c2 sits only 0.02 V, or 1.3 sd, below 3.8 V, and the total only 0.05 V, or
+   1.6 sd, below 14.55 V. c1 and c5 are 3.2 sd from their limits.
+3. ARIAC's kit check uses the true voltages: each cell within 0.2 V of 3.6 V
+   and the total within 0.15 V of 14.4 V
+   (``agv_tray_interface_plugin.cpp``, ``check_kit_quality``).
+4. **Model 1:** each true voltage is its average plus a normal error with an
+   sd of 0.016 V, independent from cell to cell. The script draws one
+   million such kits and applies ARIAC's check: 13.9 % fail, about 1 in 7.
+5. **Model 2** also uses how ARIAC makes the cells: its cell feed draws each
+   true voltage around 3.6 V with an sd of 0.1 V
+   (``voltage_std_dev`` in
+   ``ariac_plugins/include/ariac_plugins/cell_feed_plugin.hpp``). That
+   pulls a high reading's likely true voltage back toward 3.6 V, so fewer
+   kits fail: 9.3 %.
+
+.. important::
+
+   So 14.50 V is in range by the averages, not a safe kit: ARIAC would
+   reject it about 1 time in 7 to 1 time in 11. Keep each cell and the
+   total a few sd inside the limits.
 
 .. _l6-many-objects:
 
@@ -845,17 +976,21 @@ Many Objects: Ground Actions Multiply
 1. Small is ``problem.pddl``. ``check-kit`` has four cell parameters. With 4
    cells there are 4 × 4 × 4 × 4 = 256 ways to fill them: 256 of the 311
    ground actions.
-2. Large has 8 cells and 2 AGVs: 2 × 8 × 8 × 8 × 8 = 8192 of the 8334.
-3. Doubling the cells and the AGVs took A* with LM-cut from 124 to 2346
+2. A cell fills at most one slot: no action takes a cell off a tray or picks
+   it up again. So only 4 × 3 × 2 × 1 = 24 of the 256 can ever apply. The
+   translator's relaxed test keeps the other 232, which repeat a cell, such
+   as ``check-kit agv1 c1 c1 c1 c1``.
+3. Large has 8 cells and 2 AGVs: 2 × 8 × 8 × 8 × 8 = 8192 of the 8334.
+4. Doubling the cells and the AGVs took A* with LM-cut from 124 to 2346
    expanded states (``outputs/fd_summary.txt``). The full
    ``fd_summary.txt`` is on the :doc:`code page <l6_code>`, under "Run
    everything".
 
 .. important::
 
-   Keep only the cells that matter for the current kit in the problem, and
-   keep the number of parameters per action small. For example, a per-slot
-   fact ``(filled ?a ?s)`` would let ``check-kit`` take only the AGV.
+   Keep only the cells that matter for the current kit, and few parameters
+   per action: a per-slot fact ``(filled ?a ?s)`` would let ``check-kit``
+   take only the AGV.
 
 
 .. _l6-gp3:
@@ -870,23 +1005,20 @@ The GP3 Pipeline: Numbers in Python, Order in PDDL
 
 .. image:: /_static/images/l6/gp3_pipeline.svg
    :alt: A block diagram of the GP3 pipeline in two rows. Top row, left to
-         right: a gray box Factory state (topics, records); a white box
-         Selection (which cell, which slot) with tag 1; a white box Generator
-         (writes problem.pddl) with tag 2; a white box Planner (Fast
-         Downward) with tag 3, which also takes an arrow from a gray box
-         Domain (fixed file) on its right. An arrow goes down from the
-         planner to a gray box Plan (ordered steps). Bottom row, right to
-         left: Plan, a white box Plan-to-BT (one subtree a step) with tag 4,
-         a white box Behavior tree (calls the skills), and a white box
-         Factory (ARIAC). An arrow goes up from the factory to Factory state,
-         closing the loop.
+         right: a gray box Factory state; a white box Selection with tag 1; a
+         white box Generator with tag 2; a white box Planner with tag 3, which
+         also takes an arrow from a gray box Domain on its right. An arrow
+         goes down from the planner to a gray box Plan. Bottom row, right to
+         left: Plan, a white box Plan-to-BT with tag 4, a white box Behavior
+         tree, and a white box Factory. An arrow goes up from the factory to
+         Factory state, closing the loop.
    :width: 100%
    :align: center
 
-1. Selection (Python, the voltage window).
-2. Problem generation.
-3. Planner.
-4. Plan-to-BT (L7).
+1. Selection: which cell goes in which slot (Python, the voltage window).
+2. Generator: writes ``problem.pddl`` from the factory state.
+3. Planner: Fast Downward, with the fixed domain file.
+4. Plan-to-BT: one subtree a step (L7); the behavior tree calls the skills.
 
 Gray: files and data; white: programs and the factory. Numbers stay in
 ordinary code; PDDL orders the actions.
@@ -916,6 +1048,7 @@ Next Class
 
 **Before next class**
 
-- Install the planner in a virtual environment, run the L6 scripts with
-  ``run_all.sh``, and compare your outputs with the notes
+- Install the planner in a virtual environment, run the L6 scripts from
+  ``lecture6/code/`` with ``VENV=~/venvs/planning bash run_all.sh``, and
+  compare your outputs with the notes
   (:doc:`code page <l6_code>`).

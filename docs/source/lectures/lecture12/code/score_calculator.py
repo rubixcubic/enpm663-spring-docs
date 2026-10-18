@@ -31,8 +31,9 @@ SENSORS = [
 
 
 def base(run):
-    kits = W["W1"] * run["kits_done"] / run["kits_wanted"]
-    mods = 0.0
+    kits = mods = 0.0  # a trial with no kits or no modules adds 0 for them
+    if run["kits_wanted"] > 0:
+        kits = W["W1"] * run["kits_done"] / run["kits_wanted"]
     if run["modules_wanted"] > 0:
         mods = W["W2"] * run["modules_done"] / run["modules_wanted"]
     return kits + mods

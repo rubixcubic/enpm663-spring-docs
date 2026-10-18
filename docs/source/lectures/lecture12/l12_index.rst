@@ -22,12 +22,18 @@ and collisions. **End to end:** kits and modules completed, times, and the
 ARIAC run score.
 
 The middle of the lecture asks how many runs a claim needs. A success rate
-measured over a few runs moves by chance, by about its **standard error**. A
-worked example (GP3 completes 17 of 20 runs, GP4 15 of 20) shows that a gap
-of 0.10 is smaller than one standard error, so those runs do not show that
-GP4 is worse. A simulation shows how far chance moves a success rate for 5
-to 100 runs. A **controlled comparison** then changes one variable and holds
-the rest, so a difference has only one cause.
+measured over a few runs moves by chance. Its **standard error** is the
+spread of one estimate: about how far one measured rate lands from the true
+rate. Two independent sets of runs differ from each other by about √2 times
+that: at 20 runs and a true rate of 0.80, 0.089 for one set and 0.126 for a
+difference. A worked example (GP3 completes 17 of 20 runs, GP4 15 of 20)
+shows that a gap of 0.10 is smaller than one standard error of the
+difference, so those runs do not show that GP4 is worse. A simulation shows
+how far chance moves a success rate for 5 to 100 runs. Two cases then put a
+number on it: 126 runs per system to resolve a 0.10 gap, and what a 20-run
+batch with a bar of 19 of 20 can and cannot show. A **controlled
+comparison** then changes one variable and holds the rest, so a difference
+has only one cause.
 
 The last part reads the **ARIAC 2025 scoring formula** term by term, with the
 real weights from the ARIAC source, and works two runs of the same trial. A
@@ -61,8 +67,8 @@ By the end of this lecture, you will be able to:
   latency per decision).
 - Compute precision and recall for defect detection from a confusion count,
   and explain which error costs more in ARIAC.
-- Define execution-level metrics: action success rate, recovery rate, task
-  completion and challenge handling.
+- Define execution-level metrics: action success rate, recovery rate and
+  challenge handling.
 - Design a controlled comparison that changes one variable, and estimate
   whether a difference in success rate is larger than chance.
 - Compute an ARIAC 2025 run score from the scoring formula and the published

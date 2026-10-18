@@ -183,6 +183,27 @@ script.
 
    **Part B. Write the builder**
 
+   Every builder in ``executor.py`` follows the same shape, through a
+   ``subtree()`` helper (:ref:`the place-in-slot builder <l7-place-in-slot-builder>`
+   shows the full code):
+
+   .. code-block:: python
+
+      def subtree(label, needs, act, verify, add, delete):
+          """One plan step: guard, act, verify, update."""
+          return py_trees.composites.Sequence(label, memory=True, children=[
+              Guard("guard", needs), act, verify,
+              Update("update", add, delete)])
+
+   A builder calls it with its own precondition, action and verify leaves, and
+   effects, for example:
+
+   .. code-block:: python
+
+      return subtree(label, needs, Act("act", f, "skill_name", goal),
+                      Verify("verify", check_fn, "message"),
+                      add=[...], delete=[...])
+
    2. In your copy of ``executor.py``, give ``MockFactory`` a list
       ``self.submitted = []`` and a skill ``submit_kit(self, agv)`` that
       succeeds only when the AGV is at shipping (``station_id`` 3) and then
@@ -426,13 +447,17 @@ script.
 
    **Goal**
 
-   Trigger a replan from the event that GP3 must show, a cell that fails
+   Trigger a replan from another of the GP3 triggers, a cell that fails
    inspection, instead of a voltage out of range.
 
    In Demo 5, ``c3`` was queued for ``tester1`` and turned out to measure
-   3.86 V. Now ``c3`` fails inspection: the inspection door pushes it into the
-   inspection bin, so it never reaches a tester. Your team's inspection
-   report tells your executor, which removes ``c3`` from its record.
+   3.86 V. A queued cell is new in L7: it has not been inspected or measured
+   yet, so a plan can count on it before its inspection. (In the L6 domain
+   alone a cell that fails inspection never gets ``at-door``, so no plan
+   names it.) Now ``c3`` fails inspection: the inspection door pushes it
+   into the inspection bin, so it never reaches a tester. Your team's
+   inspection report tells your executor, which removes ``c3`` from its
+   record.
 
    .. raw:: html
 
@@ -633,9 +658,11 @@ script.
 
       The stale fact ``(queued c3 tester1)`` makes the planner
       count on ``c3`` again and again, and every plan fails at the same
-      guard. Only the replan limit stops the loop, after four replans. With
-      the record updated, the executor stopped after two replans and with
-      the right reason. The new problem is only as good as the blackboard it
+      guard. Only the replan limit stops the loop. Plans 2, 3 and 4 come from
+      three replans; when plan 4 fails, the fourth replan is refused (the
+      line ``replans 4 of 3``). With the record updated, the executor stopped
+      at its second replan, which found no plan, and with the right
+      reason. The new problem is only as good as the blackboard it
       comes from.
 
 
@@ -856,7 +883,9 @@ script.
       and ``/inspection_conveyor/status`` reports it.
    2. ``tester2`` starts publishing voltage −1 with ``MALFUNCTIONING`` while
       ``c4`` sits on it.
-   3. In Task 2, a grasp of ``assembly_robot_2``'s vacuum tool fails once.
+   3. In Task 2, a grasp of ``assembly_robot_2``'s vacuum tool fails once. The
+      plugin clears the failure only after every suction cup has lost contact
+      (``vacuum_tool_plugin.cpp``).
    4. Three cells at 3.75 V are on the tray, and the fourth slot is free.
    5. A high-priority order ID arrives on ``/high_priority_orders`` while
       inspection robot 2 carries a cell to the tray.
@@ -900,7 +929,9 @@ script.
       cell. The AGV goes to recycling and the kit starts over. No leaf of
       the running step fails: a check of the cells on the tray against the
       kit window, a branch that watches the blackboard next to the plan,
-      detects it.
+      detects it. A tree with GP1's check before every place (L4) never
+      reaches this state: three cells must total 10.45 V to 11.15 V, so it
+      refuses the third 3.75 V cell, and the plan needs another cell.
 
       **Question 5. Replan.** A new goal arrives, so the remaining steps of
       the current plan are no longer the right ones. The current plan stops

@@ -166,8 +166,9 @@ The week-by-week schedule is in the :ref:`course-schedule`.
 
 **Software.** Ubuntu 24.04 LTS (native or a virtual machine), ROS 2 Jazzy
 Jalisco, Gazebo Harmonic, ARIAC 2025 (Docker or native), MoveIt 2,
-``py_trees_ros`` and a PDDL planner, a paid LLM API account or local
-open-weight models (from GP4 on), and Visual Studio Code. The
+``py_trees_ros`` and a PDDL planner, and Visual Studio Code. From GP4 on, your
+team uses its own free-tier Gemini API key while it develops; the course
+Gemini key runs only the graded GP4 and final demo evaluations. The
 :doc:`ARIAC Testbed </ariac/ariac>` pages walk through every install. GP1
 needs a working install by Week 2.
 
@@ -207,6 +208,11 @@ This course works on the "orchestrate" part of the NVIDIA definition: an AI
 component decides what happens next, and classical robot skills do the
 motion. L8 and L9 cover agents in depth.
 
+.. _l1-agentic-physical-ai:
+
+Agentic Physical AI: What It Means in This Course
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. admonition:: Definition: agentic physical AI
    :class: note
 
@@ -214,6 +220,23 @@ motion. L8 and L9 cover agents in depth.
    which an AI agent decides what the robots do next, and robot skills carry
    out each decision in the physical world: here, the ARIAC factory,
    simulated in Gazebo.
+
+**The three words.**
+
+1. **Agentic:** the agent runs the loop from the agent definition above
+   (observe, ask the model, call a skill, check the result, repeat). It picks
+   the next step from what it observes, not from a fixed script.
+2. **Physical:** the decisions move robots. A wrong call can drop a cell on
+   the floor or make a robot hit a tray, and the ARIAC score charges a penalty
+   for each.
+3. **AI:** learned models make the decisions (the LLM agent, from GP4 on),
+   describe what the cameras see (a vision-language model, or VLM, in GP4),
+   and judge cell defects in one perception step (in the final demo, a hosted
+   **embodied-reasoning model**: a VLM trained to answer spatial questions
+   about a scene). Motion stays classical.
+
+In NVIDIA's words from the definition above, the agent **orchestrates**: it
+decides, and classical skills carry out the actions.
 
 
 What Your Team Builds, Part by Part
@@ -236,9 +259,10 @@ What Your Team Builds, Part by Part
      - The **course skills package**: Python ROS 2 actions built on MoveIt 2,
        given to your team with GP1.
 
-ARIAC itself gives each robot only a joint trajectory action and a gripper
-action, with no pick or place skills. That gap is why the course provides the
-skills package: you never write motion code.
+ARIAC gives its robots low-level controls only (listed in
+:ref:`l1-robot-interfaces`): joint motion, and a gripper, vacuum tools or a
+weld service. None of them is a pick or place skill. That gap is why the
+course provides the skills package: you never write motion code.
 
 
 What the Course Does Not Do, and Why
@@ -249,7 +273,7 @@ requirement. Motion planning and grasping stay classical (MoveIt 2).
 
 **The learned side still appears.** L13 surveys vision-language-action
 models, robot foundation models and world models. In the final demo, a hosted
-**embodied-reasoning model** judges cell defects from camera images, and your
+embodied-reasoning model judges cell defects from camera images, and your
 team compares it with its GP2 lidar detector.
 
 **Why keep AI at the decision layer.** An agent's decisions leave a trace a
@@ -310,6 +334,9 @@ Task 1: Inspection and Kit Building
 
    The Task 1 area. Credit: NIST,
    `ARIAC 2025 documentation <https://pages.nist.gov/ARIAC_docs/en/latest/pages/scenario.html>`__.
+   Inspection Bin 1, beside the inspection door, is the **inspection bin**;
+   Inspection Bin 2, at the end of the conveyor, is the **inspection conveyor
+   bin**. These are their names in the ARIAC world file.
 
 Task 1 has five steps, 1a to 1e.
 
@@ -358,8 +385,8 @@ cells must fall in. Here it is for a Li-Ion kit, in numbered steps.
    14.4 − 0.15 = 14.25 V and 14.4 + 0.15 = 14.55 V.
 3. Each cell on its own may be anywhere from 3.4 V to 3.8 V (3.6 V plus or
    minus 0.2 V).
-4. Four cells all at 3.8 V total 4 × 3.8 = 15.2 V, which is 0.8 V above
-   14.4 V and far outside the window.
+4. If all four cells were at 3.8 V, they would total 4 × 3.8 = 15.2 V, which
+   is 0.8 V above 14.4 V and far outside the window.
 
 .. admonition:: Four good cells can still make a bad kit
    :class: important
@@ -382,13 +409,51 @@ Task 2: Module Construction (Final Demo)
    The Task 2 area. Credit: NIST,
    `ARIAC 2025 documentation <https://pages.nist.gov/ARIAC_docs/en/latest/pages/scenario.html>`__.
 
-Task 2 appears only in the final demo.
+Task 2 appears only in the final demo. Its steps:
 
-- Assembly robot 1 places four cells in a bottom shell.
-- Assembly robot 2 changes to a vacuum tool and places the top shell. The top
-  shell spawns at a random pose, so your team must find it with a sensor.
-- The gantry welder makes four top welds; assembly robot 2 flips the module;
-  the welder makes two bottom welds.
+1. Assembly robot 1 places four cells in a bottom shell.
+2. Assembly robot 2 changes to a vacuum tool and places the top shell. The top
+   shell spawns at a random pose, so your team must find it with a sensor.
+3. The gantry welder makes four top welds.
+4. Assembly robot 2 flips the module.
+5. The welder makes two bottom welds.
+
+
+.. _l1-robot-interfaces:
+
+What ARIAC Gives Each Robot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 24 32 44
+   :class: compact-table
+
+   * - **Robot**
+     - **Motion**
+     - **Grasping or tool**
+   * - Inspection robots 1 and 2
+     - A joint trajectory action
+     - A gripper action (Robotiq 2F-85)
+   * - Assembly robot 1
+     - A joint trajectory action
+     - A gripper action (Robotiq 2F-85)
+   * - Assembly robot 2
+     - A joint trajectory action
+     - No gripper. Services to attach and detach a vacuum tool
+       (``attach_tool``, ``detach_tool``), and the tool's ``grasp`` and
+       ``release`` services
+   * - Gantry welder
+     - A joint trajectory action (three slide joints)
+     - No gripper. A ``weld`` service
+
+The table comes from each robot's controller file in
+``ariac_description/config`` and from the tool changer, vacuum tool and
+welder plugins in ``ariac_plugins``.
+
+A joint trajectory action moves the joints through a list of joint positions
+that you send. Nothing here plans a path to a cell or picks it up, so the
+course skills package adds the pick and place skills.
 
 
 Sensors Your Team Buys
@@ -408,7 +473,7 @@ Sensors Your Team Buys
    * - RGB camera
      - $800 (1080p), $500 (720p)
    * - Lidar
-     - $1500, $1250 or $1000
+     - $1500 (20 Hz); otherwise $1250 (200 samples or more), $1000 (fewer)
 
 - Your team places its sensors in its configuration file.
 - Lidar may only sit in three bounding boxes around the inspection conveyor.
@@ -608,6 +673,9 @@ the sensor data profile.
 .. literalinclude:: outputs/qos_match.txt
    :language: text
 
+The 20th message is not lost: it arrives after the loop ends (Exercise 2 shows
+it).
+
 .. important::
 
    Run 1 has no error: the node runs and receives nothing. A tree waiting for
@@ -658,6 +726,11 @@ Each run lasts 5 s. At 10 Hz, the status timer should fire 5 × 10 = 50 times.
 .. literalinclude:: outputs/executor_single.txt
    :language: text
 
+Why 11: the status timer reads 9 times before the slow callback first runs,
+at about 1.05 s. After that, the slow timer is due again each time it ends, so
+the status timer gets only 2 more turns, at about 2.05 s and 4.05 s:
+9 + 2 = 11 (timed in 3 runs).
+
 **Multi-threaded executor, two groups.**
 
 .. literalinclude:: outputs/executor_multi.txt
@@ -699,7 +772,7 @@ after each step.
 
 .. literalinclude:: code/action_gripper.py
    :language: python
-   :lines: 42-57
+   :lines: 40-55
    :caption: lecture1/code/action_gripper.py (excerpt)
 
 The client sends two goals to 0.000 m. It lets the first run to the end and
@@ -719,8 +792,9 @@ asks to cancel the second after 0.5 s.
    position in the result.
 
 The server takes the cancel request while the goal runs because it uses a
-multi-threaded executor and a reentrant callback group: the executor
-demonstration, applied.
+multi-threaded executor: ``execute`` holds one thread, and another thread takes
+the cancel. On a single-threaded executor the cancel waits for the goal to end,
+and the goal ends ``SUCCEEDED`` at 0.0000 m (measured, 5 of 5 runs).
 
 
 .. _l1-tf2:
@@ -759,8 +833,9 @@ base.
 
 1. Height: z = 0.35 + 0.032 = 0.382 m. The turn is about z, so it does not
    change the height.
-2. A turn of −1.57 rad is close to a quarter turn clockwise. It maps a point
-   (a, b) in the tray frame to about (b, −a) in the AGV frame.
+2. A turn of −1.57 rad is close to a quarter turn clockwise, seen from
+   above. It maps a point (a, b) in the tray frame to about (b, −a) in the
+   AGV frame.
 3. Slot 1 is at (a, b) = (−0.065, 0.05), so it lands at about (0.05, 0.065).
 4. The script prints x = 0.0499 instead of 0.05 because 1.57 rad is slightly
    less than a quarter turn (π / 2 = 1.5708 rad).

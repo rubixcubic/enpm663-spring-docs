@@ -15,7 +15,7 @@ Six take-home exercises built on the L11 slides and on the four
 demonstrations. Exercise 1 is arithmetic: the voltage window, the kit window
 and the evaluation time. Exercise 2 predicts tick traces of the recovery
 tree on paper. Exercises 3, 4 and 5 change the scripts: a backoff wait in
-the tree, new replies for the LLM checker, and new limits for the voltage
+the tree, new calls for the L8 checks, and new limits for the voltage
 tester watcher. Exercise 6 places new failures in the taxonomy and chooses
 local or global recovery.
 
@@ -140,7 +140,7 @@ local or global recovery.
       Through which child does ``place_cell`` succeed?
    2. Run C again (script ``[3]``, tester 1 breaks before tick 2), but with
       selector memory **off**. Does the selector go back to tester 1 on
-      tick 3, as it did in Run D? Explain the difference from Run D.
+      ticks 3 and 4, as it did in Run D? Explain the difference from Run D.
    3. Change ``place_on_tester_2``'s script to ``["fail"]`` and run Run B's
       script (three failures) for 6 ticks. What does the tree return, and
       what is the robot doing? Which layer must notice?
@@ -154,8 +154,8 @@ local or global recovery.
       run("E2b: Run C with memory off", [3], flip_at=2, memory=False)
 
    For part 3, use a second copy: in ``build()``, change
-   ``StubSkill("place_on_tester_2", [2])`` to
-   ``StubSkill("place_on_tester_2", ["fail"])``, and run
+   ``StubSkill("place_on_tester_2", [2], robot)`` to
+   ``StubSkill("place_on_tester_2", ["fail"], robot)``, and run
    ``run("Both testers fail", ["fail"] * 3, ticks=6)``.
 
    .. dropdown:: Solution
@@ -194,20 +194,26 @@ local or global recovery.
          tick 2
                  tester 1 status is now MALFUNCTIONING
                  tester_1_ok: condition false, stops its branch
-                 place_on_tester_1: stopped by its parent
-                 place_on_tester_2: attempt 1 starts
+                 place_on_tester_1: stopped, cancel sent
+                 place_on_tester_2: attempt 1 waits for robot 1
          tick 3
-                 tester_1_ok: condition false, stops its branch
+                 place_on_tester_1: CANCELED, robot 1 parked
+                 tester_1_ok: condition false, its branch does not start
+                 place_on_tester_2: attempt 1 starts
+         tick 4
+                 tester_1_ok: condition false, its branch does not start
                  place_on_tester_2: attempt 1 SUCCEEDED
                  place_cell: SUCCESS through place_on_tester_2
 
       With memory off, the selector does start from its first child on
-      tick 3: the guard is ticked again. But its condition is still false,
-      so the guard returns ``FAILURE`` at once, and the selector moves on to
-      tester 2, which keeps running and succeeds. Tester 2 is not stopped.
+      ticks 3 and 4: the guard is ticked again. But its condition is still
+      false, so the guard returns ``FAILURE`` at once, its branch does not
+      start, and the selector moves on to tester 2. On tick 3 the cancel's
+      ``CANCELED`` result is back, so tester 2 sends its goal, and it
+      succeeds on tick 4. Tester 2 is not stopped.
 
       In Run D the first child does not fail on tick 4. Retry's count had
-      reset, so its new failure was only 1 of 3 and Retry returned
+      reset, and its new attempt waits for robot 1, so Retry returned
       ``RUNNING``. A ``RUNNING`` first child wins the selector, and the
       selector stops tester 2. Memory off is harmful when an earlier child
       can return ``RUNNING`` again; it does no harm when that child keeps
@@ -273,7 +279,7 @@ local or global recovery.
 
       .. code-block:: python
 
-         place_t1 = StubSkill("place_on_tester_1", script_t1)
+         place_t1 = StubSkill("place_on_tester_1", script_t1, robot)
          wait = py_trees.behaviours.TickCounter(
              "wait_2_ticks", duration=2, completion_status=Status.SUCCESS)
          attempt = py_trees.composites.Sequence(
@@ -281,7 +287,7 @@ local or global recovery.
          retry = LoggedRetry(
              "retry_3", attempt, num_failures=3)
 
-      Also change the default ``ticks=5`` of ``run()`` to ``ticks=12``. Run
+      Also change the default ``ticks=6`` of ``run()`` to ``ticks=12``. Run
       the script. On which tick does each attempt start in Run B, and on
       which tick does ``place_cell`` succeed? Compare with Run B in the
       notes.
@@ -342,18 +348,20 @@ local or global recovery.
       is still in its wait (``TickCounter`` runs for ticks 1 and 2), so the
       place has not started. The guard stops the wait, not the place, and
       ``StubSkill.terminate()`` prints only when a running place is
-      stopped.
+      stopped. No goal was sent, so there is no cancel, and tester 2 starts
+      in the same tick.
 
 
-.. dropdown:: Exercise 4. Find the Gaps in the LLM Checker
+.. dropdown:: Exercise 4. Find the Gaps in the Checks
    :icon: number
    :class-container: sd-border-primary
    :class-title: sd-font-weight-bold
 
    **Goal**
 
-   Predict which layer stops each reply, then find two replies the
-   checker does not handle, and fix them with the schema.
+   Predict which check of ``check_call()`` refuses each call, then find
+   calls that pass all three checks and are still wrong, and close one gap
+   with an extra guard.
 
    .. raw:: html
 
@@ -361,85 +369,103 @@ local or global recovery.
 
    **Parts**
 
-   Use ``check()`` and ``reply()`` from ``llm_output_checker.py``. In a new
-   file next to it, ``from llm_output_checker import check, reply`` and
-   print ``check()`` for each reply.
+   ``llm_output_checker.py`` imports L8's code from ``lecture8/code``, so
+   keep the two folders side by side, as in the course repository. In a new
+   file next to ``llm_output_checker.py``, check calls in the demonstration's
+   state (robot 1 holds a cell; robot 2 holds a cell that read 3.55 V; agv1
+   slot 1 is occupied; tester 1 is ``MALFUNCTIONING``):
 
-   1. Predict the layer and the message for each reply, then run them:
+   .. code-block:: python
 
-      - E: the text ``Sure! Here is the plan: {"actions": []}``
-      - F: ``reply(("place_cell", {"cell": "c7", "agv": 3, "slot": 1}))``
-      - G: ``reply(("place_cell", {"cell": "c7", "agv": 1, "slot": 1}))``
-      - H: ``reply(("test_voltage", {"cell": "c9", "slot": 5}))``, which
-        has three mistakes.
+      from llm_output_checker import DECLS, check_call, make_state, which_check
 
-   2. Run ``check(reply(("place_cell", {"cell": "c7", "agv": 2})))``. What
-      happens, and why?
-   3. Run ``check(reply())``, a plan with no actions. What happens? Is that
-      what you want?
-   4. Fix parts 2 and 3 in the schema, so both replies stop at layer 2.
-      Then run the original script and check that its output did not
-      change.
+      tools, rec = make_state()
+      snap = tools.snapshot()
+
+
+      def show(label, name, args):
+          error = check_call(name, args, DECLS, snap, rec)
+          print(label, "accepted" if error is None
+                else f"refused at check {which_check(error)}: {error}")
+
+   1. Predict the check and the message for each call, then run them:
+
+      - G: ``show("G", "robot2_place_in_slot", {"agv": 1})``
+      - H: ``show("H", "robot2_place_in_slot", {"agv": "1", "slot": 2})``
+      - I: ``show("I", "robot1_pick_from_conveyor", {})``
+      - J: ``show("J", "robot2_drop_in_recycling", {})``
+
+   2. Run ``show("K", "robot2_place_in_slot", {"agv": 2, "slot": 1})``.
+      The demonstration's goal is "Put the cell robot 2 holds into agv1
+      slot 2." What happens, and which part of L8's ``run()`` would notice?
+   3. Set ``rec.holding["robot2"] = "NOTHING"``, a record that is out of
+      date, and run
+      ``show("L", "robot2_pick_from_tester", {"tester": 1})``. What happens,
+      and what would the skill do with this call?
+   4. Write an extra guard, a function with the same arguments as
+      ``guard()``, that refuses to drop a held cell whose reading is inside
+      the 3.4 V to 3.8 V window. Check J and the good call A with
+      ``check_call()`` and then your guard. L8's ``run()`` takes such a
+      function as ``extra_guard``; L9's policy check is one.
 
    .. dropdown:: Solution
       :color: success
 
-      **1.** With the reply's letter printed in front of each result, the
-      runs printed:
+      **1.** The runs printed:
 
       .. code-block:: text
 
-         E (1, 'not JSON: Expecting value')
-         F (5, 'agv 3 is not at INSPECTION')
-         G (5, 'agv 1 slot 1 is not free')
-         H (2, 'actions.0.args.slot: 5 is greater than the maximum of 4')
+         G refused at check 2: schema: 'slot' is a required property
+         H refused at check 2: schema: '1' is not of type 'integer'
+         I refused at check 3 (guard): robot 1 holds CELL, needs NOTHING
+         J accepted
 
-      - E: the reply starts with prose, so ``json.loads()`` fails at once.
-      - F: AGV 3 is at ``SHIPPING`` in ``WORLD``. Every earlier layer
-        passes.
-      - G: AGV 1's free slots are 3 and 4, so slot 1 is taken.
-      - H: the made-up tool (layer 3) and the made-up cell (layer 4) are
-        never reached. Slot 5 fails layer 2 first, and a reply stops at the
-        first layer it fails. Re-prompting with only that message fixes one
-        of three mistakes.
+      - G: ``robot2_place_in_slot`` requires both ``agv`` and ``slot``.
+      - H: ``"1"`` is a string, and the schema asks for an integer.
+      - I: the record says robot 1 already holds a cell, and a pick needs
+        ``NOTHING``.
+      - J: the call is well formed and robot 2 holds a cell, so all three
+        checks pass. But that cell read 3.55 V, inside the window: the call
+        throws a good cell away. No check refuses it.
 
-      **2.** The checker crashes. The last lines of the traceback:
+      **2.** ``K accepted``: agv2 is at ``INSPECTION`` and its slot 1 is
+      free, so every check passes. The call is safe, but it does not serve
+      the goal, which names agv1. None of the three checks reads the goal.
+      ``run()`` checks the goal in code only when the model says it is done
+      (``goal_check``), and the step limit stops a run that never gets there.
 
-      .. code-block:: text
+      **3.** ``L accepted``. The record now says robot 2 holds nothing, and
+      the guard allows a pick from a ``MALFUNCTIONING`` tester. Robot 2 still
+      holds the cell, and ``pick_from_tester`` needs the robot to hold
+      nothing (skills README), so the skill would end with a failure result
+      instead. This is the warning in the notes: a record that is out of
+      date passes calls that will fail.
 
-             agv, slot = args["agv"], args["slot"]
-                                      ~~~~^^^^^^^^
-         KeyError: 'slot'
-
-      The schema does not require ``slot``, so layers 2, 3 and 4 pass. Layer
-      5 then reads ``args["slot"]`` for any place with an ``agv``. A checker
-      that crashes on an unexpected reply takes the executor down with it,
-      which is worse than a rejection.
-
-      **3.** ``check(reply())`` prints ``None``: the empty plan is
-      accepted. Every layer loops over ``plan["actions"]``, and an empty
-      list has nothing to fail. The executor would receive a plan that does
-      nothing, and the agent would believe the step is handled.
-
-      **4.** JSON Schema draft 7 has ``if`` and ``then`` (a conditional) and
-      ``minItems``. Add to ``ACTION``:
+      **4.** One answer:
 
       .. code-block:: python
 
-         "if": {"properties": {"tool": {"const": "place_cell"}}},
-         "then": {"properties": {"args": {
-             "required": ["cell", "agv", "slot"]}}},
+         from orchestrator import CELL_MAX, CELL_MIN
 
-      and add ``"minItems": 1`` to the ``actions`` array in ``SCHEMA``. The
-      empty plan and the place with no slot then printed:
+
+         def keep_good_cells(name, args, snap, rec):
+             """Refuse to recycle a held cell whose reading is inside the window."""
+             volts = rec.held_volts
+             if (name == "robot2_drop_in_recycling" and volts is not None
+                     and CELL_MIN <= volts <= CELL_MAX):
+                 return f"the held cell read {volts:.2f} V, inside {CELL_MIN} to {CELL_MAX} V"
+             return None
+
+      Checking J and A with ``check_call()`` and then ``keep_good_cells()``
+      printed:
 
       .. code-block:: text
 
-         (2, 'actions: [] is too short')
-         (2, "actions.0.args: 'slot' is a required property")
+         robot2_drop_in_recycling refused: the held cell read 3.55 V, inside 3.4 to 3.8 V
+         robot2_place_in_slot accepted
 
-      The original script's output was the same as before, line for line:
-      replies A to D and both policy runs do not touch the new rules.
+      The original script's output did not change: its six replies and two
+      policy runs never call ``robot2_drop_in_recycling``.
 
 
 .. dropdown:: Exercise 5. Change the Watcher's Limits
@@ -551,14 +577,15 @@ local or global recovery.
 
    **Parts**
 
-   For each case, give the failure type, the signal, and whether the
-   recovery is local or global, with the reason from the rule. Use the ARIAC
+   For each case, give the failure type, the signal, the response (retry,
+   wait or replan), and whether the recovery is local or global, with the
+   reason from the rule. Use the ARIAC
    docs' example files: a feed rate of 0.1 cells per second, and the trial
    file's second voltage tester malfunction (``START_TIME`` 300,
    ``DURATION`` 25, ``TESTER`` 2) and conveyor malfunction (``START_TIME``
    120, ``DURATION`` 30).
 
-   1. Tester 2 goes down for 25 s. How many cells arrive during the outage?
+   1. Tester 2 goes down for 25 s while tester 1 works.
    2. The conveyor stops for 30 s. If the cell feed keeps spawning cells, as
       the ARIAC code suggests, how many could appear on the stopped belt?
    3. The vacuum tool malfunction has ``TOOL`` 2 and ``GRASP_OCCURRENCE`` 5.
@@ -566,31 +593,31 @@ local or global recovery.
       Retry with 3 failures directly around the grasp skill. Does it work?
    4. After the feed switches to NiMH for a high-priority order, a cell on
       tester 1 reads 3.6 V.
-   5. The LLM agent's reply names cell ``c9`` twice in a row, after one
-      re-prompt.
+   5. The LLM agent asks for ``robot2_place_in_slot`` with slot 5, the
+      refusal goes back to it, and its next call asks for slot 5 again.
 
    .. dropdown:: Solution
       :color: success
 
       **1.** Sensor failure; the signal is status ``MALFUNCTIONING`` with
-      voltage -1, or silence past the time limit. :math:`25 / 10 = 2.5`, so
-      two or three cells arrive during the outage. **Global**, as in
-      Example B: the plan assumed two working testers, and that assumption
-      is false for the whole outage. Replan to use tester 1 only, and again
-      when tester 2 returns.
+      voltage -1, or silence past the time limit. **Replan, which is
+      global**, as in Example B: the plan assumed two working testers, that
+      assumption is false for the whole outage, and tester 1 can do the job.
+      Replan to use tester 1 only, and again when tester 2 returns.
 
       **2.** Sensor failure of the conveyor, with the signal on
       ``/inspection_conveyor/status`` (status ``MALFUNCTIONING``, speed 0).
       At one cell every 10 s, :math:`30 / 10 = 3`, so up to three cells
       could spawn during the stop. This is not checked in simulation, so do
-      not count on either zero or three. **Local**: the plan still holds
-      once the belt moves. Pause the work that needs the belt, watch the
-      status, and resume.
+      not count on either zero or three. **Wait, which is local**: no other
+      conveyor can do the job, so the plan stays. Pause the work that needs
+      the belt, watch the status, and resume.
 
       **3.** Action failure; the signal is the grasp service returning
       ``success`` false with "Vacuum gripper is malfunctioning", and the
-      skill returning a grasp failure. The recovery is **local** (the shell
-      and the tool are where they were, and the failure is temporary). But
+      skill returning a grasp failure. The recovery is **retry, which is
+      local** (the shell and the tool are where they were, and the failure is
+      temporary). But
       a Retry directly around the grasp does not work: ``vacuum_tool_plugin.cpp``
       clears the malfunction only after every suction pad has lost contact
       with the shell, so a retry in place fails again, three times, and then
@@ -600,13 +627,16 @@ local or global recovery.
       **4.** World drift: the world changed (a Li-Ion cell already on the
       conveyor arrived after the switch), and no single action failed. The
       signal is a fresh observation, 3.6 V, that differs from the expected
-      state, a NiMH cell near 1.2 V. **Global**: the planner or agent
+      state, a NiMH cell near 1.2 V. **Replan, which is global**: the
+      planner or agent
       decides where this cell goes, for example to a Li-Ion kit on another
       AGV, because the current plan assumed every new cell is NiMH. The
       lecture names this case as world drift inside the high-priority order
       challenge.
 
-      **5.** Plan failure, caught by layer 4 (objects) of the checks. The
-      policy has re-prompted once already, so it stops asking: hold the
-      cell, and keep the classical plan, as in policy run 2 of the
-      demonstration. The plan does not reach a robot.
+      **5.** Plan failure, caught by check 2 (schema) of ``check_call()``:
+      slot 5 is greater than the maximum of 4. Two refused calls in a row
+      end L8's ``run()`` (``MAX_INVALID = 2``), so the policy stops asking
+      and falls back: robot 2 keeps the cell, and the GP3 plan takes the
+      step, as in policy run 2 of the demonstration. The call does not reach
+      a robot.

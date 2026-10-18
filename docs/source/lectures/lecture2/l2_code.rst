@@ -54,7 +54,8 @@ names are in the script's comments.
   (``voltage_tester/model.sdf``); a new reading every 0.1 s; an empty tester
   reads about 0 V.
 - A malfunctioning tester reports −1 V with the status ``MALFUNCTIONING``
-  (``voltage_tester_plugin.cpp``).
+  (``voltage_tester_plugin.cpp``). ARIAC's challenge page says a
+  malfunctioning tester stops publishing; the toy follows the code.
 
 Everything else is chosen for this example: the step times, the grasp failure
 rate and the number of cells. The step times, in seconds of the toy's clock,

@@ -95,8 +95,8 @@ Multiple Choice (Questions 1 to 8)
 
    A. Nothing; it continues to the voltage tester
 
-   B. It gets a failing inspection report, the inspection door pushes it into
-      the inspection bin, and the run loses 50 points
+   B. It gets a failing inspection report, the inspection door stays closed,
+      the cell drops into the inspection bin, and the run loses 50 points
 
    C. The kit it goes into is refused at shipping
 
@@ -109,7 +109,8 @@ Multiple Choice (Questions 1 to 8)
 
    That is a false positive. The penalty is ``GOOD_CELL_IN_INSPECTION_BIN``,
    50 points per cell in ``scoring_weights.yaml``. **C** is what a false
-   negative can cause: a defective cell that passes and goes into a kit.
+   negative can cause when the kit is submitted without the check kit quality
+   call: a defective cell that passes and goes into a kit.
 
 
 .. admonition:: Question 4
@@ -132,7 +133,8 @@ Multiple Choice (Questions 1 to 8)
    **C**.
 
    Both plans are valid, so validity cannot separate them. In Plan A each
-   cell waits for the one before it to leave tester 1, so Plan A takes longer.
+   cell waits for the one before it to leave tester 1, so Plan A takes longer
+   when the voltage tester, not the robots, is the slowest step.
    That is why the lecture says to report cost or time along with validity.
    **B** and **D** are measures for LLM replies, not for these two plans.
 
@@ -251,10 +253,10 @@ True or False (Questions 9 to 14)
 
    **False.**
 
-   A good score next to poor lower-level metrics means the trial did not
-   test the weak part. The lecture's example: a trial with few defective
-   cells hides a detector that misses defects. The score says how a run
-   went; the lower levels say why.
+   A good score next to poor lower-level metrics can mean that the trial did
+   not test the weak part. The lecture's example: a trial with few defective
+   cells hides a detector that misses defects. Chance can also give one good
+   run. The score says how a run went; the lower levels say why.
 
 
 .. admonition:: Question 10
@@ -270,7 +272,8 @@ True or False (Questions 9 to 14)
 
    The difference is 0.85 − 0.75 = 0.10. The standard error of the
    difference is :math:`\sqrt{0.080^2 + 0.097^2}` = 0.126, so the gap is
-   smaller than one standard error. In the lecture's simulation, two systems
+   smaller than one standard error of the difference. In the lecture's
+   simulation, two systems
    with the **same** true rate of 0.80 differ by 0.10 or more in 54.8% of
    comparisons of 20 runs each.
 

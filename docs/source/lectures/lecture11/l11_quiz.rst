@@ -67,7 +67,7 @@ Multiple Choice (Questions 1 to 11)
    is valid JSON that matches the schema. How does the lecture classify this,
    and what can catch it?
 
-   A. A plan failure; layer 2 (schema) catches it.
+   A. A plan failure; the schema check catches it.
 
    B. A sensor failure; a second source, such as ``/agvN/tray_status``, can
       catch it.
@@ -137,16 +137,18 @@ Multiple Choice (Questions 1 to 11)
    **B**.
 
    On tick 2 the guard checks its condition first, finds it false, and stops
-   the place while it is still running. The selector starts tester 2 in the
-   same tick. Retry never sees a failure (**A**), and a skill never decides
-   recovery itself (**C**). In ROS, stopping a skill means cancelling its
-   action goal, but the tree does it, not the skill.
+   the place while it is still running, which cancels its action goal. The
+   cancel parks robot 1 before ``CANCELED`` comes back, so the place on
+   tester 2 waits one tick and starts on tick 3. Retry never sees a failure
+   (**A**), and a skill never decides recovery itself (**C**): the tree sends
+   the cancel, not the skill.
 
 
 .. admonition:: Question 5
    :class: hint
 
-   Run D repeats Run B with selector memory off. What goes wrong on tick 4?
+   Run D repeats Run B with selector memory off. What goes wrong on ticks 4
+   and 5?
 
    A. The selector skips tester 2 and goes straight to ``hold_cell``.
 
@@ -163,9 +165,11 @@ Multiple Choice (Questions 1 to 11)
    **B**.
 
    With memory off, the selector starts again from its first child on every
-   tick. Tester 1's fourth attempt fails, Retry counts it as failure 1 of 3
-   and returns ``RUNNING``, and the selector stops tester 2. With memory on,
-   the selector goes on from its running child and stays with tester 2.
+   tick. On tick 4 tester 1's fourth attempt waits for robot 1, and the
+   selector stops the place on tester 2, which cancels it. On tick 5 the
+   cancel is done, the fourth attempt fails, and Retry counts it as failure 1
+   of 3. With memory on, the selector goes on from its running child and
+   stays with tester 2.
 
 
 .. admonition:: Question 6
@@ -197,26 +201,28 @@ Multiple Choice (Questions 1 to 11)
 .. admonition:: Question 7
    :class: hint
 
-   An LLM reply is valid JSON, matches the schema and uses only allowed
-   tools, but asks to pick cell ``c9``, which is not in the world state. At
-   which layer is it rejected?
+   An LLM agent with L8's tools calls ``robot1_place_on_tester`` with the
+   arguments ``{"tester": 2, "cell": "c9"}``. Which check of
+   ``check_call()`` refuses it?
 
-   A. Layer 1, syntax
+   A. Check 1, tool
 
-   B. Layer 2, schema
+   B. Check 2, schema
 
-   C. Layer 3, tools
+   C. Check 3, guard
 
-   D. Layer 4, objects
+   D. None: the call is accepted, and the skill ignores the extra argument.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   **D**.
+   **B**.
 
-   Only layer 4, which reads the world state, can catch an invented object.
-   This is reply D in the demonstration: ``cell 'c9' is not in the world
-   state``. A schema alone would have passed it.
+   The tool exists, so check 1 passes (**A**). Each L8 schema allows no
+   other arguments, so ``cell`` breaks it: ``Additional properties are not
+   allowed ('cell' was unexpected)``. This is reply D in the demonstration.
+   No L8 tool takes a cell ID, so an invented cell never reaches a robot, and
+   the guard is never reached (**C**).
 
 
 .. admonition:: Question 8
@@ -238,10 +244,11 @@ Multiple Choice (Questions 1 to 11)
 
    **B**.
 
-   Ask again once, with the exact error message (as in L8). If the second
-   reply also fails, stop asking and take a safe action: hold position,
-   pause the feed, or hand over to the GP3 PDDL plan for the normal flow.
-   Policy run 2 shows the fall back.
+   A refused call goes back to the model as that call's result, with the
+   exact error (L8's ``run()``). Two refused calls in a row end the run
+   (``MAX_INVALID = 2``, chosen in L8); then take a safe action: hold the
+   cell, pause the feed, or hand the step to the GP3 PDDL plan. Policy run 2
+   shows the fall back.
 
 
 .. admonition:: Question 9
@@ -316,7 +323,7 @@ Multiple Choice (Questions 1 to 11)
    For the vacuum tool malfunction (Example A), the shell and the tool are
    where they were, and the failure clears once the pads lose contact, so
    the tree retries a sequence that starts by moving the gripper away. The
-   conveyor malfunction is local too. The voltage tester malfunction is
+   conveyor malfunction is local too: the plan stays and waits. The voltage tester malfunction is
    global (the plan assumed two testers), and the high-priority order is
    global (the goal changed).
 
@@ -339,8 +346,8 @@ True or False (Questions 12 to 16)
    **False**.
 
    The skill never retries a task itself. It returns success or a failure
-   reason, and the behavior tree decides first (retry, timeout, another
-   branch). Only then does the failure move up to the planner or agent.
+   result, and the behavior tree decides first (retry, wait, timeout,
+   another branch). Only then does the failure move up to the planner or agent.
 
 
 .. admonition:: Question 13
@@ -379,37 +386,37 @@ True or False (Questions 12 to 16)
 .. admonition:: Question 15
    :class: hint
 
-   True or false: a schema check alone would have rejected replies C (a
-   made-up tool) and D (a made-up cell) in the demonstration.
+   True or false: a strict enough JSON schema would have refused replies E
+   (a full slot) and F (a broken tester) in the demonstration.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **False**.
 
-   Both replies are valid JSON that match the schema. Layer 3 (tools)
-   rejects C, and layer 4 (objects) rejects D. A schema alone would have
-   passed both.
+   Both calls name a real tool with arguments that fit its schema. Slot 1
+   already holds a cell, and tester 1 is ``MALFUNCTIONING``: facts about the
+   factory now, which change during a run. No schema can know them. Only the
+   guard, which reads the observation and the record, refuses E and F.
 
 
 .. admonition:: Question 16
    :class: hint
 
-   True or false: who pays for model calls during development was announced
-   with the specification in L11.
+   True or false: while your team develops GP4 and the final demo, its model
+   calls run on the course key.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **False**.
 
-   Who pays for model calls is still to be decided. The rest is set: the
-   grading rubric (75 points for the run, 25 for the class session), the
-   code freeze (Friday, April 30, 2027, at 11:59 pm), and the model (Gemini
-   Robotics ER as the course example, another VLM allowed on the course key
-   (a Google model) or locally, one course key for
-   the evaluation runs). The specification itself (what the system must do,
-   and how the demo is run) was posted in L11.
+   The course key runs the graded runs only (GP4 and the final demo). While
+   you develop, your team uses its own free-tier Gemini key. The rest is set
+   too: the grading rubric (75 points for the run, 25 for the class session),
+   the code freeze (Friday, April 30, 2027, at 11:59 pm), and the model
+   (Gemini Robotics ER as the course example; another VLM is allowed if it is
+   a Google model on the course key or a model that runs locally).
 
 
 ----
@@ -438,37 +445,45 @@ Short Answer (Questions 17 to 20)
 .. admonition:: Question 18
    :class: hint
 
-   Tester 1 goes down for 45 s during a kit, and the feed rate is 0.1 cells
-   per second. How many cells arrive during the outage, and why is the
-   recovery global?
+   In L9's trial, tester 1 goes down for 70 s during a kit. Which response
+   does the rule give, and what did L9's two recordings show?
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   One cell arrives every 10 s, and :math:`45 / 10 = 4.5`, so four or five
-   cells arrive during the outage. A plan that keeps sending cells to
-   tester 1 stalls them for the whole outage, because its assumption of two
-   working testers is false. An assumption of the plan is false, so the rule
-   says replan globally: use tester 2 only, and replan again when tester 1
-   returns.
+   The plan assumes two testers, and one is down, but tester 2 can do its
+   job. So the rule says replan, which is global: use tester 2 only, and
+   replan again when tester 1 returns. In the replan recording, Gemini sent
+   cells 2 and 3 to tester 2, and slot 3 was filled at 108.8 s, against
+   105.1 s in the scripted dry run with no malfunction. In the wait
+   recording, Gemini waited 5, 10, 20 and 30 s while robot 2 held a tested
+   cell that could already go to slot 1: :math:`112.6 - 38.2 = 74.4` s. Both finished
+   at about 225 s, because by chance two cells in the replan run went to
+   recycling (80.0 s), so one recording each cannot say which policy is
+   faster. Each was recorded once, on 2026-10-17, with gemini-3.5-flash-lite.
 
 
 .. admonition:: Question 19
    :class: hint
 
-   The rule for choosing says to call the LLM only when the rule-based
-   handlers do not cover the case. Why, and which of the three worked
-   examples does call it?
+   The lecture gives two designs for where the LLM fits: the L8 and L9 agent,
+   and a hybrid. How do they differ, and which of the three worked examples
+   calls the LLM agent?
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   The common cases should not cost tokens: a retry or a fixed replan
-   handles them without a model call and its latency. Example C, a
-   high-priority order with two cells on AGV 1, calls the LLM agent: the
-   goal changed, and the agent chooses which AGV takes the NiMH kit, whether
-   to finish the Li-Ion kit first, and when to switch the feed back. Its
-   plan still passes the five layers of checks before any robot moves.
+   The L8 and L9 agent calls the model at every step, recovery included: in
+   L9's replan recording, one kit took 26 model calls and 122,861 input
+   tokens. In a hybrid, which GP4 allows, rule-based handlers cover the
+   common cases (the retry, wait and replan answers in the lecture's tables),
+   and the LLM is called only when no handler covers the case, so the common
+   cases cost no tokens. Both fit L1's definition: the agent "picks the next
+   step from what it observes, not from a fixed script". Example C, a
+   high-priority order with two cells on AGV 1, calls the LLM agent: the goal
+   changed, and the agent chooses which AGV takes the NiMH kit, whether to
+   finish the Li-Ion kit first, and when to switch the feed back. Each of its
+   tool calls still passes ``check_call()`` before any robot moves.
 
 
 .. admonition:: Question 20

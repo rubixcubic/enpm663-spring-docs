@@ -12,10 +12,11 @@ Lecture
 
 .. important::
 
-   **The course skills package is still being built.** The last two sections
-   describe it by role, from its design: what it is planned to do, not code
-   you can read yet. Its action names and fields will be on its documentation
-   page when it is published.
+   **The course skills package, version 0.2.0.** The last three sections use
+   the release you have, the skills of the two inspection robots, with its own
+   action names and result codes. The :doc:`Course Skills Package
+   </ariac/skills>` page lists every action, goal and result code. Skills for
+   the Task 2 robots are planned for a later release.
 
 
 .. _l10-recap:
@@ -69,8 +70,10 @@ Today covers steps 4 and 5, and what step 3 reports back to steps 1 and 2.
 
 **The motion layer stays classical.**
 
-- No learned grasping and no learned policies in the projects: AI sits at the
-  task level (L8, L9).
+- No learned grasping and no learned policies in the projects. AI decides at
+  the task level (the GP4 agent, L8 and L9) and helps in perception (the VLM
+  in GP4, the embodied-reasoning model in the final demo). Motion stays
+  classical.
 - Cells and shells have known shapes, so a fixed grasp per part type works,
   and when it fails, the failure is easy to read. L13 surveys the learned
   alternative.
@@ -79,25 +82,40 @@ Today covers steps 4 and 5, and what step 3 reports back to steps 1 and 2.
 What ARIAC 2025 Gives Each Robot
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**A joint trajectory action** (ARIAC ROS API page):
+.. list-table::
+   :header-rows: 1
+   :widths: 24 30 46
+   :class: compact-table
+
+   * - **Robot**
+     - **Motion**
+     - **Grasping or tool**
+   * - Inspection robots 1 and 2
+     - A joint trajectory action
+     - A gripper action (Robotiq 2F-85)
+   * - Assembly robot 1
+     - A joint trajectory action
+     - A gripper action (Robotiq 2F-85)
+   * - Assembly robot 2
+     - A joint trajectory action
+     - No gripper. Services to attach and detach a vacuum tool, and the
+       tool's grasp and release services
+   * - Gantry welder
+     - A joint trajectory action (three slide joints)
+     - No gripper. A weld service
+
+The table is the one in L1. Source: each robot's controller file in
+``ariac_description/config``, and the tool changer, vacuum tool and welder
+plugins in ``ariac_plugins``.
+
+**The two actions** (ARIAC ROS API page). The joint trajectory action, of type
+``control_msgs/FollowJointTrajectory``, runs a timed list of joint positions.
+The gripper action opens or closes a Robotiq 2F-85.
 
 .. code-block:: text
 
    /{robot_name}/joint_trajectory_controller/follow_joint_trajectory
-
-Its type is ``control_msgs/FollowJointTrajectory``: it runs a timed list of
-joint positions.
-
-**A gripper action:**
-
-.. code-block:: text
-
    /{robot_name}/gripper_controller/gripper_command
-
-It opens or closes a Robotiq 2F-85.
-
-**Tool changer and vacuum services.** Assembly robot 2 only: attach or detach
-the VG2 and VG4 vacuum tools, and grasp or release with each.
 
 .. warning::
 
@@ -279,8 +297,8 @@ What Each Failure Means, and What to Do
        ``world``
      - Fix the name; draw the tree (below)
 
-In the skills package, a failed lookup is planned to become a "place not
-found" result, not a crash.
+In the skills package, a failed lookup becomes a ``PLACE_NOT_FOUND`` result,
+not a crash.
 
 **Draw the tree.** ``ros2 run tf2_tools view_frames`` listens to TF2 for
 5 seconds and writes the current tree to a PDF file in the folder you run it
@@ -335,8 +353,9 @@ Task 2: The Top Shell Lands Somewhere New Each Time
    3D point in the camera's optical frame.
 4. TF2 moves that point into the ``world`` frame, using the camera pose in
    your configuration file.
-5. The result is a stamped pose. The pick skill for the top shell takes it
-   from your camera, never the true pose from the simulator.
+5. The result is a stamped pose. The pick skill for the top shell (planned
+   for the package's Task 2 release) takes it from your camera, never the true
+   pose from the simulator.
 
 
 What an ARIAC Camera Publishes
@@ -463,8 +482,8 @@ Three Frames at the Camera, Seen From the Side
    :width: 90%
    :align: center
 
-   Side view, looking along world +x; not to scale. The camera is 1.0 m above
-   the table, with RPY (0, :math:`\pi`/2, 0).
+   Side view, looking along world +x; not to scale. The camera's lens is
+   1.0 m above the table, with RPY (roll, pitch, yaw) = (0, :math:`\pi`/2, 0).
 
 1. ``world``.
 2. ``top_camera_frame``, the frame ARIAC publishes.
@@ -604,7 +623,9 @@ The Parts Between a Skill Goal and the Controller
    calls **MoveItCpp** inside the same process, with no ROS actions or
    services between them.
 2. **The planning pipeline:** request adapters check or fix the start state, a
-   planner plugin finds a path, and response adapters add time stamps to it.
+   planner plugin finds a path, and response adapters check the path or add
+   its timing. OMPL's path gets its timing from a response adapter; Pilz times
+   its own path (skills package NOTICE).
 3. **The planning scene:** the robot's current joint state and the collision
    objects around it. A planner can only avoid what is in the scene.
 4. ``move_group``: a node that offers the same parts through ROS actions and
@@ -669,8 +690,9 @@ Sampling-Based Planners (OMPL)
   and reuses it for many queries. It pays off when the scene does not change.
 - **RRTstar**, the example team's OMPL setting, grows one tree and keeps
   shortening its path while time remains. OMPL's documentation calls it
-  "asymptotically-optimal": it is "guaranteed to converge to an optimal
-  solution" as it runs longer.
+  "asymptotically-optimal" and says it "is guaranteed to converge to an
+  optimal solution", where "the notion of optimality is with respect to a
+  specified OptimizationObjective".
 
 .. warning::
 
@@ -741,10 +763,17 @@ The Pilz Industrial Motion Planner
   motions".
 - A straight-line descent is what you want when you lower a cell into a
   voltage tester or a tray slot: predictable and repeatable.
-- Each motion has a fixed shape, so it cannot go around an obstacle. MoveIt's
-  own Pilz integration test plans a PTP move into a box and expects planning
-  to fail. The MoveIt documentation does not say this in words; the test
-  does.
+- Each motion has a fixed shape, so it cannot go around an obstacle.
+
+**A course measurement: Pilz planned into a box.**
+
+- With the example team's Pilz settings, which have no response adapters, a
+  goal 0.02 m inside a collision box still planned "successfully" (skills
+  package NOTICE, checked 2026-10-12 with ``is_state_colliding()`` on the
+  plan's last state).
+- So the skills package adds the response adapter ``ValidateSolution`` to its
+  Pilz settings. It checks the path against the planning scene, and a Pilz
+  plan into an obstacle then fails.
 
 
 Choosing a Planner for an ARIAC Motion
@@ -771,8 +800,10 @@ Choosing a Planner for an ARIAC Motion
 
 **In the course skills package:**
 
-- It is planned to plan with Pilz first. If Pilz finds no path, it tries once
-  with OMPL. That is its only planning retry.
+- It plans with Pilz first. If Pilz finds no path, it tries once with OMPL.
+- One more retry: when MoveIt stops a motion with "controller is taking too
+  long" (ARIAC issue 386), it re-plans the rest with Pilz and runs it once
+  more. The result's ``attempts`` counts both retries.
 - **Trajectory optimization** (CHOMP, STOMP) starts from a path and pushes it
   away from obstacles while keeping it smooth. It is installed with MoveIt 2
   but not used here.
@@ -793,95 +824,140 @@ A Grasp Is a Part Frame Plus a Fixed Offset
 .. admonition:: Definition: parameterized grasp
    :class: note
 
-   A **parameterized grasp** places the gripper at the part's frame combined
-   with a fixed offset, one offset per part type.
+   A **parameterized grasp** places the gripper at a part's frame combined
+   with a fixed offset.
 
-For an upright cell gripped from above, the offset sets the approach height
-above the cell, the grasp depth and the gripper's closed width. The 2F-85
-opens from 0 to 0.085 m (ARIAC's gripper controller rejects other widths).
+In the skills package, each place in ``skills.yaml`` has a TF frame, an offset
+and an approach height. Tester 1: the frame ``voltage_tester_1_frame``, offset
+(0, 0, 0), approach 0.05 m above it. The 2F-85 opens from 0 to 0.085 m
+(ARIAC's gripper controller rejects other widths).
 
-**A pick is a short sequence of poses:**
+**A tester pick is a short sequence of poses** (``pick_from_tester``):
 
-1. Approach: move above the part.
-2. Descend in a straight line (Pilz LIN).
+1. Approach: move 0.05 m above the tester frame.
+2. Descend in a straight line (Pilz LIN) to the frame.
 3. Close the gripper.
-4. Lift, then move on.
+4. Lift back to the approach point, then retreat to the park pose.
 
-The skill reports the stage it is in as action feedback.
+The skill reports each stage as action feedback: ``open``, ``enter_zone``,
+``approach``, ``descend``, ``grasp``, ``lift``, ``retreat``.
+
+The conveyor pick is different: the arm waits at one fixed pose, and the cell
+comes to it.
 
 
 .. _l10-conveyor:
 
-Worked Example: Where Is the Cell on the Moving Conveyor?
+Worked Example: When Does the Cell Reach the Catch Point?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **What is known.**
 
 - ARIAC publishes no pose for a cell. Your **break beam** (a sensor that
-  fires when something crosses its light beam) fires when a cell passes it.
-- Belt speed: 0.1 m/s, the largest speed the ARIAC team configuration allows,
-  and the value in the docs' example configuration.
-- Chosen for this example: the arm starts 2.0 s after the beam fires and takes
-  1.5 s to reach the grasp.
+  fires when something crosses its light beam) fires when a cell crosses it.
+  The goal of ``pick_from_conveyor`` carries that message's header: the
+  beam's frame (where) and its stamp (when).
+- The arm waits at one fixed pose: gripper level, pointing upstream, fingers
+  open across the belt at the **catch point**, x = 1.40 m. The cell rides
+  into the fingers. A cell held from the side can be laid flat in a tester;
+  one held from the top cannot (package README).
+- The package's own setup: beam at x = 0.60 m, belt at 0.1 m/s, the largest
+  speed ARIAC allows.
 
-**In numbered steps:**
+**In numbered steps** (``conveyor.py``):
 
-1. When the arm starts, the cell has moved 0.1 m/s × 2.0 s = 0.20 m past the
-   beam.
-2. It keeps moving while the arm reaches down: 0.1 m/s × 1.5 s = 0.15 m more.
-3. So the arm aims at 0.20 + 0.15 = 0.35 m past the beam, 2.0 + 1.5 = 3.5 s
-   after the beam fired.
-4. If that point is out of the arm's reach, the skill is planned to refuse
-   before moving instead of chasing the cell.
+1. From the beam to the catch point: 1.40 - 0.60 = 0.80 m.
+2. At 0.1 m/s that takes 0.80 / 0.1 = 8.0 s: the cell arrives 8.0 s after the
+   beam fired.
+3. The fingers close 0.15 s earlier, at 8.0 - 0.15 = 7.85 s (``close_delay``,
+   measured).
 
 
-The Cell Seen From Above
-~~~~~~~~~~~~~~~~~~~~~~~~
+The Catch Seen From Above
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l10/conveyor_intercept.svg
-   :alt: A conveyor belt seen from above, moving to the right (arrow). A break beam, tag 1, crosses the belt at 0 m. Red circles show one cell at three times: faded at 0 m (t = 0 s) and 0.20 m (t = 2.0 s), solid at 0.35 m (t = 3.5 s), tag 3. A hollow red circle at 0.50 m (t = 5.0 s) is tag 4. Below, a distance axis from 0 to 0.5 m past the beam, and a bar from 0 to 0.45 m, tag 2.
+   :alt: The inspection conveyor seen from above, moving to the right (arrow), along world x. A break beam, tag 1, crosses the belt at x = 0.6 m. A gripper, tag 2, waits at x = 1.4 m with two open fingers pointing upstream, one on each side of the belt's center. Red circles show one cell: faded at 0.6 m (t = 0 s) and 0.8 m (t = 2.0 s), solid between the fingers at 1.4 m (t = 8.0 s), tag 3. A hollow red circle at 1.2 m (t = 6.0 s) is tag 4. Below, a world x axis from 0.6 to 1.4 m.
    :width: 95%
    :align: center
 
-   The belt moves right (arrow); distances along the belt are to scale.
+   The belt moves along world +x (arrow). Distances along the belt are to
+   scale; the belt's width and the sizes of the cell and the gripper are not.
    :math:`t`: seconds after the beam fired.
 
 1. The break beam.
-2. The stretch the arm can reach, 0.00 m to 0.45 m past the beam (chosen for
-   this example).
-3. Where the arm meets the cell in run A.
-4. Where it would meet the cell in run B, which starts 1.5 s later.
+2. The gripper, waiting at the catch point.
+3. The cell reaches the fingers (run A).
+4. Where the cell stops in run C, when the belt stops at :math:`t` = 6.0 s.
+
+.. note::
+
+   **A contrast, not the course skill.** A **moving intercept** aims the arm
+   at a predicted point anywhere in its reach. The course skill never does
+   this: it waits at one pose.
 
 
-Demonstration: Three Separate Runs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When the Catch Skill Refuses or Gives Up
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``conveyor_intercept.py`` plays three separate runs, A, B and C, each with one
+**Refused before any motion** (``PRECONDITION_FAILED``):
+
+1. The beam's stamp is older than 8.0 s (``max_trigger_age``), or in the
+   future.
+2. The cell would reach the catch point sooner than 3.925 s from now
+   (``side_lead_time``). That is the longest measured move to the catch pose,
+   3.015 s, plus 0.410 s to open the gripper, plus a 0.5 s margin.
+3. The belt is stopped, and the beam is not at the catch point (within
+   0.005 m).
+
+**Ends while waiting** (``PRECONDITION_FAILED``): the belt stops or changes
+speed. The skill does not close the gripper, retreats, and reports that it
+holds nothing. The beam saw the cell only as it crossed, so the skill no
+longer knows where the cell is.
+
+Sources, in the skills package v0.2.0: ``conveyor.py`` (``plan_catch``),
+``inspection_robot_1.py`` (``_belt_change``), ``skills.yaml`` and the README.
+The :doc:`Course Skills Package </ariac/skills>` page says the same.
+
+
+Demonstration: Four Separate Runs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``conveyor_intercept.py`` is a model of the skill's timing and refusals, with
+the package's numbers. It plays four separate runs, A to D, each with one
 cell:
 
 .. literalinclude:: outputs/conveyor_intercept.txt
    :language: text
 
-Run C stands in for the conveyor malfunction challenge: from 1.0 s on, the
-status topic reports speed 0.
+"Refused" is ``PRECONDITION_FAILED``. Run C stands in for the conveyor
+malfunction challenge.
+
+Passing the timing checks only lets the skill go on to the grasp. The real
+``pick_from_conveyor`` can still end ``GRASP_FAILED`` if the fingers close on
+nothing (``inspection_robot_1.py``, lines 130 to 140, v0.2.0); the script does
+not simulate the grasp.
 
 
-Reading the Three Runs
-~~~~~~~~~~~~~~~~~~~~~~
+Reading the Four Runs
+~~~~~~~~~~~~~~~~~~~~~
 
-1. Run A matches the worked example: 0.35 m, inside the reach.
-2. Run B starts at 3.5 s, so the cell would be 0.1 × 5.0 = 0.50 m out when the
-   arm arrives, past the 0.45 m reach. The skill refuses before moving.
-3. Run C: the belt stops at 1.0 s, so the cell stops at 0.1 × 1.0 = 0.10 m and
-   stays there. The current speed times the elapsed time would give
-   0 × 3.5 = 0 m: wrong. Add up the distance piece by piece instead.
+1. Run A: 8.0 - 2.0 = 6.0 s remain, more than 3.925 s. The skill waits and
+   catches the cell.
+2. Run B: 8.0 - 5.0 = 3.0 s remain, less than 3.925 s, so the skill refuses
+   before moving. The latest goal is 8.0 - 3.925 = 4.075 s after the beam.
+3. Run C: the belt stops at 6.0 s, with the cell at 0.60 + 0.1 × 6.0 =
+   1.20 m, 0.20 m short of the fingers. Only the script knows that. The skill
+   ends ``PRECONDITION_FAILED`` without closing.
+4. Run D: a goal sent while the belt is stopped is refused. The beam
+   (0.60 m) is not at the catch point.
 
-**The time budget per cell.**
+**The conveyor malfunction challenge (L9: wait).** Wait until the status is no
+longer ``MALFUNCTIONING``. Then send a new goal with the header of a cell that
+crosses the beam after the restart. Never reuse an old header (README).
 
-- The docs' example configuration feeds 0.1 cells per second: one cell every
-  1 / 0.1 = 10 s.
-- At 0.1 m/s the cells are 0.1 × 10 = 1.0 m apart, and inspection robot 1 has
-  10 s per cell.
+**The time budget per cell.** A feed of 0.1 cells per second gives one cell
+every 1 / 0.1 = 10 s, so cells are 0.1 × 10 = 1.0 m apart.
 
 
 .. _l10-skills:
@@ -890,24 +966,24 @@ Inside the Course Skills Package
 --------------------------------
 
 This section traces one goal from call to result, and covers robots sharing
-space. The package is described by role: it is still being built, and
-everything below is what its design plans. Its action names and fields will
-be on its documentation page when it is published.
+space. It describes version 0.2.0, the release you use: the skills of the two
+inspection robots. The :doc:`Course Skills Package </ariac/skills>` page lists
+every action, goal and result code.
 
 
 How the Package Is Built
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-The package is planned as:
-
 - One server process. Inside it, one ROS 2 node per robot, each serving that
-  robot's skills as ROS 2 actions.
+  robot's skills as ROS 2 actions at ``/<robot>/skills/<skill>``.
 - Each robot node owns its robot's MoveItPy instance.
 - A ``MultiThreadedExecutor`` lets the robots move at the same time: the L1
   executor demonstration, where a single-threaded executor let one slow
   callback starve a timer.
 - Each skill goes from a goal to a MoveIt 2 plan, to a joint trajectory on the
   ARIAC controller, to a gripper command.
+- Skills for the assembly robots and the welder (Task 2) are planned for a
+  later release.
 
 .. tip::
 
@@ -915,50 +991,58 @@ The package is planned as:
    result. It never imports MoveIt.
 
 
-Trace: Place a Cell in a Tray Slot
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace: ``place_in_slot``, Goal ``agv`` (1 to 3) and ``slot`` (1 to 4)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The place skill is planned to run these steps:
-
-1. Check what the robot holds. Placing with an empty gripper is refused: a
-   precondition failure.
-2. Check that the AGV is at the inspection station, with ``/agvN/info``.
+1. Check what the robot holds. Placing with an empty gripper is refused:
+   ``PRECONDITION_FAILED``.
+2. Check that the AGV is at the inspection station, with ``/agvN/info``. The
+   skill checks again before the descent and before the release.
 3. Look up the slot frame with TF2 now, because the AGV moves. A failed lookup
-   returns "place not found".
+   returns ``PLACE_NOT_FOUND``.
 4. Plan with MoveIt 2: Pilz first, then OMPL once if Pilz finds no path.
 5. Run the plan on the joint trajectory action, with a time limit per stage,
    so a hung controller becomes a failure result instead of a hang.
-6. Open the gripper, retreat, and return a result: a code, a message, what the
-   robot holds and how many attempts were made.
+6. Check that the cell is still held, open the gripper, lift, and return a
+   result: a code, a message, what the robot holds and how many attempts were
+   made.
 
 
 .. _l10-failure-results:
 
-The Failure Results, by Meaning
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Failure Codes, by Meaning
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every skill returns a ``SkillResult``. Its ``code`` is one of these, or
+``SUCCESS``:
 
 .. list-table::
    :header-rows: 1
-   :widths: 28 72
+   :widths: 32 68
    :class: compact-table
 
-   * - **Result**
+   * - **Code**
      - **When**
-   * - No path found
-     - Both planners failed
-   * - Execution failed
+   * - ``PLANNING_FAILED``
+     - Pilz, then OMPL, found no path
+   * - ``EXECUTION_FAILED``
      - The controller rejected or stopped the trajectory, or a stage ran past
        its time limit
-   * - Grasp failed
-     - Nothing is held after a grasp, or the part was lost on the way
-   * - Precondition failed
-     - Wrong object held, AGV at the wrong station, or a cell out of reach
-   * - Place not found
+   * - ``GRASP_FAILED``
+     - The gripper closed on nothing, or the cell slipped out before release
+   * - ``PRECONDITION_FAILED``
+     - Wrong object held or AGV away; for the conveyor catch, a stale
+       trigger, a cell the arm cannot meet in time, or a stopped or changed
+       belt
+   * - ``PLACE_NOT_FOUND``
      - A TF2 lookup failed
-   * - Zone busy
-     - A shared zone stayed locked too long (below)
-   * - Canceled
+   * - ``ZONE_BUSY_TIMEOUT``
+     - The other robot held the tester area too long (below)
+   * - ``CANCELED``
      - The caller canceled the goal
+
+``holding`` says what the robot holds at the end: ``NOTHING``, ``CELL``,
+``SHELL`` or ``MODULE``.
 
 
 No Hidden Retries
@@ -966,12 +1050,14 @@ No Hidden Retries
 
 **After a failure.**
 
-- A skill never re-picks or re-places by itself.
-- It is planned to lift to a safe height, leave every shared zone, and report
-  what it holds.
+- A skill never re-picks, re-places or re-checks a precondition by itself.
+  The only retries are the two that ``attempts`` counts: the planner fallback
+  and the re-execution after a controller timeout (above).
+- If the arm moved, it lifts straight up. If the skill held the tester area,
+  it then parks and releases the lock. The result says what the robot holds.
 
-**After a cancel.** It is planned to stop the trajectory, retreat, release its
-zone locks and return "canceled" with what it holds.
+**After a cancel.** It stops the trajectory, retreats, releases its zone lock
+and returns ``CANCELED`` with what it holds.
 
 **Why.**
 
@@ -993,13 +1079,24 @@ Robots Sharing Space: Two Safe Plans Can Collide
 - A collision between two robots counts twice: each robot is charged.
 - L12 works through the scoring formula.
 
-**Zone locks.** A **zone lock** lets one robot at a time into a shared area.
-The package is planned to have:
+**Zone locks: one zone in v0.2.0.** A **zone lock** lets one robot at a time
+into a shared area.
 
-- Two zones: one around the voltage testers (the two inspection robots), one
-  around the module (the assembly robots and the welder).
-- A skill takes a zone's lock before its arm enters and releases it when the
-  arm is out. A lock that is not free in time returns "zone busy".
+- ``tester_area``, shared by the two inspection robots. ``pick_from_tester``
+  and ``place_on_tester`` take its lock before the arm enters and release it
+  once the arm is parked outside. A lock not free within 120 s of wall-clock
+  time (``zone_wait``) returns ``ZONE_BUSY_TIMEOUT``.
+- ``place_in_slot`` and ``drop_in_recycling`` take no zone: in 20 runs beside
+  inspection robot 1 at a tester, the two robots never touched (README).
+
+**Zone locks: what your code must know.**
+
+- If a retreat after a failure or a cancel does not finish, the robot keeps
+  the lock, because the arm may still be inside.
+- Every later result from that robot then says so in its message. Only a
+  ``move_home`` that succeeds releases the lock.
+- Zones for the Task 2 robots are not settled yet: they come with the later
+  release.
 
 .. warning::
 
@@ -1023,15 +1120,16 @@ Tool Descriptions That Name Preconditions and Failures
 
 - Each skill's **preconditions** (what must be true before it runs): what the
   robot must hold, where the AGV must be.
-- Each failure result it can return.
-- An agent that reads "precondition failed: AGV not at the inspection station"
-  can move the AGV and try again. One that reads only "failed" cannot.
+- Each failure code it can return, with the message that explains it.
+- An agent that reads ``PRECONDITION_FAILED`` with the message "AGV not at the
+  inspection station" can move the AGV and try again. One that reads only
+  "failed" cannot.
 
 **Retry or replan (the L9 rule):**
 
-- Grasp failed: a candidate for one local retry.
-- Place not found, or the AGV at the wrong station: the world is not what the
-  plan assumed. Replan.
+- ``GRASP_FAILED``: a candidate for one local retry.
+- ``PLACE_NOT_FOUND``, or the AGV at the wrong station: the world is not what
+  the plan assumed. Replan.
 
 
 Task 2 Motion in the Final Demo (Scenario Page)
@@ -1048,7 +1146,8 @@ Task 2 Motion in the Final Demo (Scenario Page)
 .. warning::
 
    The vacuum tool malfunction challenge makes one chosen grasp of VG2 or VG4
-   fail. The skill reports it; your code moves the tool away and retries.
+   fail. The Task 2 skill (planned) reports it; your code moves the tool away
+   and retries.
 
 
 Next Class
@@ -1057,7 +1156,7 @@ Next Class
 **Quiz 5** (Wednesday, April 14, start of class) covers L9 and L10. Review:
 VLM grounding and replanning; static and moving frames; the pinhole model and
 the pixel-to-table steps; the MoveIt 2 parts; RRT-Connect, PRM and Pilz; the
-conveyor example; the skill failure results.
+conveyor catch and its refusals; the skill failure codes.
 
 **L11: Recovery, Robustness, and Failure Handling for Agentic Systems.** What
 your tree and agent do with today's failure results. The final demo

@@ -65,7 +65,7 @@ are true or false, not sums of numbers. So a separate selection step in
 Python makes that choice, and its result goes into the PDDL problem as
 facts.
 
-When a cell fails inspection, or the world no longer matches the plan, the
+When a queued cell fails inspection, or the world no longer matches the plan, the
 executor stops and asks for a new plan from the updated state. GP3 spans
 spring break (Week 8). Lectures L6 and L7 cover what GP3 needs.
 
@@ -186,7 +186,7 @@ Tasks
 
    **Requirements:**
 
-   - Trigger a new plan on: a cell that fails inspection, a voltage outside
+   - Trigger a new plan on: a queued cell fails inspection, a voltage outside
      the cell range, or a skill that still fails after its retries.
    - On a trigger: stop the plan, update the state, and plan again.
    - Log the trigger and the new plan.

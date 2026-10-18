@@ -213,8 +213,9 @@ Multiple Choice (Questions 1 to 9)
 
    The output shows ``status: INTERNAL_ERROR``, ``plan: None`` and
    ``Reason: Invalid requirement. Got: :numeric-fluents``. Fast Downward
-   supports "PDDL 2.2 level 1 plus the :action-costs requirement from PDDL
-   3.1", and no part of numerical planning. UPF only warned that it could
+   "aims to support PDDL 2.2 level 1 plus the :action-costs requirement from
+   PDDL 3.1", and has no numeric fluents: only the few numeric features that
+   ``:action-costs`` needs. UPF only warned that it could
    not tell whether Fast Downward could solve the problem.
 
 
@@ -238,9 +239,13 @@ Multiple Choice (Questions 1 to 9)
 
    **A**.
 
-   The translator writes out the action with every combination of objects
-   for its parameters. With 8 cells and 2 AGVs it is
-   2 × 8 × 8 × 8 × 8 = 8192 of the 8334. A per-slot fact
+   The translator drops only the ground actions that its relaxed test
+   (delete effects ignored) rules out. That test cannot see that a cell
+   fills only one slot, so all 256 fillings stay, although only
+   4 × 3 × 2 × 1 = 24 use four different cells and can ever apply. The test
+   does drop what it can rule out: ``place-in-slot`` keeps 16 of its 32
+   combinations and ``recycle`` none of its 8. With 8 cells and 2 AGVs,
+   ``check-kit`` has 2 × 8 × 8 × 8 × 8 = 8192 of the 8334. A per-slot fact
    ``(filled ?a ?s)`` would let ``check-kit`` take only the AGV.
 
 
@@ -372,10 +377,10 @@ Short Answer (Questions 15 to 19)
    :class-container: sd-border-success
 
    1. **Full observation**: a cell's defects and voltage are unknown until
-      the lidar scan and the tester measure them.
-   2. **Deterministic actions**: a malfunctioning tester gives no valid
-      reading (−1 V with status ``MALFUNCTIONING``); in Task 2, a vacuum
-      grasp can fail.
+      the lidar scan and the tester measure them, and a malfunctioning
+      tester gives no valid reading at all (−1 V with status
+      ``MALFUNCTIONING``).
+   2. **Deterministic actions**: in Task 2, a vacuum grasp can fail.
    3. **A static world**: new cells keep arriving, the conveyor can stop,
       and a high-priority order can arrive at any time.
 
@@ -401,7 +406,9 @@ Short Answer (Questions 15 to 19)
 
    The kit can still be finished, but only by a narrow band of cells.
    Compare three cells at 3.75 V in the lecture: there the fourth had to be
-   3.00 V to 3.30 V, and no cell in range could finish the kit.
+   3.00 V to 3.30 V, and no cell in range could finish the kit. GP1's check
+   allows the tray here (11.10 V is inside 10.45 V to 11.15 V) and would
+   have refused the third cell there (11.25 V).
 
 
 .. admonition:: Question 17
@@ -457,6 +464,5 @@ Short Answer (Questions 15 to 19)
    The model has no time: a plan is an order of steps, and every action
    costs 1, so a cell that waits costs nothing. A classical plan is also a
    single sequence, one step per column, even when the two robots could
-   work at the same time. The executor can run steps for different robots
-   together when they touch different objects, but the plan itself does not
-   say so.
+   work at the same time. The plan does not say which steps could
+   overlap.

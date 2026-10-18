@@ -1165,8 +1165,8 @@ Next Class
 
 **Before next class:**
 
-- Set up LLM access (a hosted API account or a local open-weight model, as
-  the course's :doc:`AI Access </ariac/ai_setup>` page describes).
+- Set up LLM access (a free-tier Gemini API key or a local open-weight
+  model, as the course's :doc:`AI Access </ariac/ai_setup>` page describes).
 - Run the offline L8 scripts in ``lecture8/code/``: ``validator.py`` and
   ``token_growth.py`` print the tables above, and
   ``python3 orchestrator.py --fake --runs 2`` runs the loop without ARIAC.

@@ -113,8 +113,9 @@ Next Steps
 
 - **Before next class:**
 
-  - Install the planner in a virtual environment, run the L6 scripts with
-    ``run_all.sh`` (see :doc:`l6_code`), and compare your outputs with the
+  - Install the planner in a virtual environment, run the L6 scripts from
+    ``lecture6/code/`` with ``VENV=~/venvs/planning bash run_all.sh`` (see
+    :doc:`l6_code`), and compare your outputs with the
     ones in the notes. Planning times differ from run to run.
   - Work through the :doc:`L6 exercises <l6_exercises>` and the
     :doc:`self-check quiz <l6_quiz>`.

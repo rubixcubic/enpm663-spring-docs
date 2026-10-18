@@ -11,11 +11,11 @@ Exercises
    work, which is the five in-class quizzes, the four group projects and
    the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
-Six take-home exercises on the L3 slides and ``kit_views.py``. Exercises 1 to
-3 are on paper: a frame, the observed, inferred and unknown facts of Task 1,
-and an ontology check. Exercises 4 to 6 change ``kit_views.py``: more invalid
-records, new schema rules, and a Ni-MH kit. For those, predict the output
-first, write it down, then run the script.
+Seven take-home exercises on the L3 slides and programs. Exercises 1 to 3
+are on paper: a frame, the observed, inferred and unknown facts of Task 1,
+and an ontology check. Exercises 4 to 7 change ``kit_views.py``: more invalid
+records, new schema rules, a Ni-MH kit, and more tester readings. For those,
+predict the output first, write it down, then run the script.
 
 .. note::
 
@@ -23,7 +23,8 @@ first, write it down, then run the script.
    original still gives the output in the notes. To check a new record, build
    it in ``main`` (``copy.deepcopy(KIT)``, then change one field, as the script
    does for AGV 5) and call ``check("a name", record)``. Every output below
-   was measured with Python 3.12.3 and ``jsonschema`` 4.10.3 on 2026-10-12.
+   was measured with Python 3.12.3 and ``jsonschema`` 4.10.3, last rerun on
+   2026-10-18 with the current script.
 
 
 .. dropdown:: Exercise 1. A Voltage Tester Frame
@@ -207,13 +208,13 @@ first, write it down, then run the script.
    **Specification**
 
    Use the classes and relations from the ontology sketch in the notes:
-   inSlot(Cell, AGV, slot), atStation(AGV, Station), testedBy(Cell, Tester),
-   partOf(Cell, Kit).
+   inSlot(Cell, AGV, Slot), atStation(AGV, Station), testedBy(Cell, Tester),
+   partOf(Cell, Kit). ``s2`` and ``s3`` are Slots.
 
    1. Which of these statements make sense, and why not for the others?
 
-      a. inSlot(c7, agv1, 2)
-      b. inSlot(agv2, agv1, 3)
+      a. inSlot(c7, agv1, s2)
+      b. inSlot(agv2, agv1, s3)
       c. atStation(agv1, shipping)
       d. testedBy(agv1, voltage_tester_1)
       e. partOf(c7, kit3)
@@ -221,12 +222,15 @@ first, write it down, then run the script.
    2. Perception reports that c7 has a dent. Statement (e) is in the world
       model. What does the ontology say follows, and what must the system do?
 
+   To check Question 1 by machine, add the instances to ``INSTANCES`` in a
+   copy of ``ontology_check.py`` and call ``check`` for each statement.
+
    .. dropdown:: Solution
       :color: success
 
       **Question 1.**
 
-      a. Makes sense: a Cell, an AGV and a slot.
+      a. Makes sense: a Cell, an AGV and a Slot.
       b. Rejected: inSlot needs a Cell first, and agv2 is an AGV. This is the
          lecture's example: a cell can be in a slot; an AGV cannot.
       c. Makes sense: an AGV and a Station.
@@ -275,8 +279,9 @@ first, write it down, then run the script.
    Then answer:
 
    12. Which records pass, and what is wrong with each of them?
-   13. ``AgvStations.msg`` has an ``IN_TRANSIT`` station, but the schema
-       rejects it. Is that a mistake?
+   13. The lecture leaves ``IN_TRANSIT`` out of ``station`` on purpose. Give
+       one case where your system would need a record for a moving AGV, and
+       say what else must change if you add it.
 
    .. dropdown:: Solution
       :color: success
@@ -327,11 +332,15 @@ first, write it down, then run the script.
 
       Exercise 5 adds rules for all three.
 
-      **Question 13.** Not by itself, but it is a choice to make on purpose.
-      The record describes a kit at a station, and an agent that plans with
-      an AGV still moving should not get a valid record for it. If your
-      system does need to describe a moving AGV, add ``IN_TRANSIT`` to the
-      ``enum``, and make the code that reads the record handle it.
+      **Question 13.** One case: a high-priority order arrives while
+      ``agv1`` drives to shipping, and the agent must decide now whether to
+      start the Ni-MH kit on another AGV. It needs a record that says
+      ``agv1`` is moving and what it carries. Adding ``IN_TRANSIT`` to the
+      ``enum`` is the one-line part. The rest is in the code that reads the
+      record: no skill may place a cell on a moving AGV, the planner must
+      not treat ``IN_TRANSIT`` as a station it can send work to, and the
+      record must be refreshed when the AGV arrives (``AgvStations.msg``
+      gives ``IN_TRANSIT`` the value −1).
 
 
 .. dropdown:: Exercise 5. Add Schema Rules
@@ -533,7 +542,9 @@ first, write it down, then run the script.
            (passed c13)
            (slot-empty agv2 s4)
          Text:
-           AGV 2 is at the inspection station. Kit type Ni-MH. Slots 1 to 3 hold cells at 1.18 V, 1.25 V and 1.21 V. Slot 4 is empty.
+           AGV 2 is at the inspection station. Kit type Ni-MH.
+           Slots 1 to 3 hold cells at 1.18 V, 1.25 V and 1.21 V.
+           Slot 4 is empty.
 
       The PDDL facts do not say the cells are Ni-MH. If the planner must
       know (a high-priority order needs a Ni-MH kit), add a fact such as
@@ -578,3 +589,77 @@ first, write it down, then run the script.
 
       A safer function takes the nominal voltage from the record's
       ``cell_type``, so the two cannot disagree.
+
+
+.. dropdown:: Exercise 7. Twenty Readings Instead of Five
+   :icon: number
+   :class-container: sd-border-primary
+   :class-title: sd-font-weight-bold
+
+   **Goal**
+
+   See how the number of readings behind each average changes the margins
+   and the verdicts of the fourth-cell example.
+
+   .. raw:: html
+
+      <hr>
+
+   **Specification**
+
+   Your tree takes 20 readings per cell instead of the lecture's five. The
+   kit is the lecture's example kit (10.87 V in slots 1 to 3), and the
+   margins are still twice what chance moves each number.
+
+   1. By hand: how far does one average wander, and how far does a sum of
+      four averages wander?
+   2. By hand: the kit margin, the cell margin (both rounded to 0.01 V), and
+      the range for the fourth cell.
+   3. Check your answers with ``chance(readings=20)`` and
+      ``fourth_cell_range(KIT, margin=..., cell_margin=...)``.
+   4. Cell ``c4`` averages 3.599 V, as in the lecture's ``track_cell.py``
+      example. Does it go in slot 4 now?
+   5. How many spreads over the edge is the 0.07 V overshoot of a 3.75 V
+      cell now, and how often would a true 14.55 V kit read that high? Use
+      ``tail`` from ``kit_views.py``.
+
+   .. dropdown:: Solution
+      :color: success
+
+      **Question 1.**
+
+      1. One average: 0.05 / √20 = 0.0112 V.
+      2. Four averages: √4 × 0.0112 = 0.0224 V.
+
+      **Question 2.**
+
+      1. Kit margin: 2 × 0.0224 = 0.04 V. Cell margin: 2 × 0.0112 = 0.02 V.
+      2. Low end: the larger of 14.25 + 0.04 − 10.87 = 3.42 V and
+         3.40 + 0.02 = 3.42 V, so 3.42 V.
+      3. High end: the smaller of 14.55 − 0.04 − 10.87 = 3.64 V and
+         3.80 − 0.02 = 3.78 V, so 3.64 V.
+
+      **Question 3.** Measured (printed with four and two decimals):
+
+      .. code-block:: text
+
+         0.0112 0.0194 0.0224
+         0.04 0.02
+         10.87 3.42 3.64
+
+      The three numbers on the first line are one average, three averages
+      and four averages. The range with margins is 3.42 V to 3.64 V, against
+      3.47 V to 3.59 V with five readings.
+
+      **Question 4.** Yes. 3.599 V is inside 3.42 V to 3.64 V, so ``c4`` goes
+      in slot 4: 10.87 + 3.599 = 14.469 V is 0.081 V below the top edge,
+      more than the 0.04 V kit margin, so GP1's check can be called. With
+      five readings, the same total was inside the 0.09 V margin, and GP1's
+      safe call was to recycle ``c4``.
+
+      **Question 5.** Measured: 0.07 / 0.0224 = 3.13 spreads, and
+      ``100 * tail(3.13)`` prints 0.1 (%). With five readings it was 1.57
+      spreads and 5.9%. Four times as many readings halve every spread, so
+      the 3.75 V verdict goes from likely to nearly certain, and the range
+      for the fourth cell widens. The cost is time: with readings at a fixed
+      rate, each cell sits on the tester four times as long.

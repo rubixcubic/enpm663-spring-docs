@@ -87,6 +87,18 @@ lecture. Every link was checked on 2026-10-12.
          tolerances (0.2 V per cell, 0.15 V per kit) used in the kit voltage
          window.
 
+      .. grid-item-card:: What ARIAC gives each robot
+         :link: https://github.com/usnistgov/ARIAC/tree/ariac2025/ariac_description/config
+         :class-card: sd-border-secondary
+
+         **ARIAC source:** ``ariac_description/config`` and ``ariac_plugins/src``
+
+         Each robot's controller file: a joint trajectory controller for
+         every robot, and a gripper controller only for the inspection robots
+         and assembly robot 1. ``tool_changer_plugin.cpp``,
+         ``vacuum_tool_plugin.cpp`` and ``welder_plugin.cpp`` create the
+         tool, grasp and weld services.
+
       .. grid-item-card:: Sensors and their costs
          :link: https://pages.nist.gov/ARIAC_docs/en/latest/pages/sensors.html
          :class-card: sd-border-secondary

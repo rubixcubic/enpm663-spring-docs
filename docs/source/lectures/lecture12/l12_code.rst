@@ -2,15 +2,16 @@
 Code
 ====================================================
 
-L12 has three short Python scripts. None of them uses ROS 2 or the ARIAC
-simulation: they read small data files that sit next to them and print their
-results. The outputs below come from running them with Python 3.12.3,
-numpy 1.26.4 and PyYAML 6.0.1 on 2026-10-12.
+L12 has four short Python scripts. None of them uses ROS 2 or the ARIAC
+simulation: they read small data files that sit next to them, or need none,
+and print their results. The outputs below come from running them with
+Python 3.12.3, numpy 1.26.4 and PyYAML 6.0.1 (on 2026-10-12, and on
+2026-10-18 for ``batch_bar.py``).
 
 .. note::
 
-   **What you need.** Python 3 with ``numpy`` (for ``success_spread.py``)
-   and ``PyYAML`` (for ``score_calculator.py``). On Ubuntu 24.04 both come
+   **What you need.** Python 3 with ``numpy`` (for ``success_spread.py``
+   and ``batch_bar.py``) and ``PyYAML`` (for ``score_calculator.py``). On Ubuntu 24.04 both come
    from apt:
 
    .. code-block:: bash
@@ -49,6 +50,10 @@ numpy 1.26.4 and PyYAML 6.0.1 on 2026-10-12.
    * - :download:`success_spread.py <code/success_spread.py>`
      - How far chance moves a success rate measured over :math:`n` runs.
      - :ref:`l12-how-many-runs`
+   * - :download:`batch_bar.py <code/batch_bar.py>`
+     - How often a 20-run batch passes a bar of 19 of 20, for four true
+       success rates.
+     - :ref:`l12-runs-a-claim-needs`
    * - :download:`score_calculator.py <code/score_calculator.py>`
      - The ARIAC 2025 run score of the two worked-example runs, computed
        the way ``scoring.py`` does.
@@ -58,7 +63,7 @@ numpy 1.26.4 and PyYAML 6.0.1 on 2026-10-12.
        ariac2025, commit 0c3e722).
      - :ref:`l12-scoring`
    * - :download:`run_all.sh <code/run_all.sh>`
-     - Runs all three scripts and writes their outputs to ``../outputs/``.
+     - Runs all four scripts and writes their outputs to ``../outputs/``.
      - See the last section
 
 
@@ -122,6 +127,31 @@ Output:
    :language: text
 
 
+Batch pass rate: ``batch_bar.py``
+---------------------------------
+
+The course skills package tests its skills in batches of 20 runs, and a skill
+passes at 19 of 20 or better. For each true success rate :math:`p` (0.80,
+0.90, 0.95 and 0.99, chosen for this example) the script prints the chance
+that all 20 runs succeed, :math:`p^{20}`, the chance that exactly one fails,
+:math:`20 \times p^{19} \times (1 - p)`, and their sum: the chance that the
+batch passes. A simulation of 1000000 batches with a fixed seed (19) checks
+each sum.
+
+.. code-block:: bash
+
+   python3 batch_bar.py
+
+.. literalinclude:: code/batch_bar.py
+   :language: python
+   :caption: batch_bar.py
+
+Output:
+
+.. literalinclude:: outputs/batch_bar.txt
+   :language: text
+
+
 Score calculator: ``score_calculator.py``
 -----------------------------------------
 
@@ -139,7 +169,9 @@ dictionary: ``kits_wanted`` and ``kits_done``, ``modules_wanted`` and
 report time, in seconds), ``hp_s`` (one entry per high-priority order, in
 seconds from announcement to submission; an empty list if there is none),
 ``defective`` and ``correct`` (defective cells, and correct reports), and
-``events`` (penalty name and number of occurrences).
+``events`` (penalty name and number of occurrences). Set ``kits_wanted`` or
+``modules_wanted`` to 0 for a trial without kits or modules: that part of the
+base score is then 0, as in ``scoring.py``.
 
 .. code-block:: bash
 
@@ -168,7 +200,7 @@ The JSON file the script writes:
 Run everything: ``run_all.sh``
 ------------------------------
 
-``run_all.sh`` runs the three scripts in turn, writes each output to
+``run_all.sh`` runs the four scripts in turn, writes each output to
 ``../outputs/``, and records the Python, numpy and PyYAML versions in
 ``versions.txt``. It clears the environment (``env -i``) and calls
 ``/usr/bin/python3``, so it uses the system Python even when a ROS 2 setup or

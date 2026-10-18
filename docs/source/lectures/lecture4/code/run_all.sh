@@ -20,10 +20,15 @@ run retry_demo.txt       /usr/bin/python3 retry_demo.py
 run composite_status.txt /usr/bin/python3 composite_status.py
 run parallel_watch.txt   /usr/bin/python3 parallel_watch.py
 run blackboard_demo.txt  /usr/bin/python3 blackboard_demo.py
+run kit_spread.txt       /usr/bin/python3 kit_spread.py
 run ros_tree_ok.txt      /usr/bin/python3 ros_tree_demo.py ok
 run ros_tree_timeout.txt /usr/bin/python3 ros_tree_demo.py timeout
 run ros_tree_bad_kit.txt /usr/bin/python3 ros_tree_demo.py bad_kit
 # Ten more runs of the two timed cases: how far the tick counts move.
 run ros_tree_repeats.txt "for r in ok timeout; do for i in \$(seq 10); do \
 echo -n \"\$r: \"; /usr/bin/python3 ros_tree_demo.py \$r 2>/dev/null \
+| grep 'tree finished'; done; done"
+# Five more sets of ten timeout runs: how far the tick-33 split moves.
+run ros_tree_repeat_sets.txt "for s in \$(seq 5); do for i in \$(seq 10); do \
+echo -n \"set \$s: \"; /usr/bin/python3 ros_tree_demo.py timeout 2>/dev/null \
 | grep 'tree finished'; done; done"

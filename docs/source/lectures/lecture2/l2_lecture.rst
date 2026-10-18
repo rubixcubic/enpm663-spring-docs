@@ -86,8 +86,8 @@ Behavior-Based Control and Subsumption
    **suppressing** its inputs and **inhibiting** its outputs. The lower
    layers keep running.
 
-- The 1986 paper says that not all sensors need to feed a central
-  representation.
+- The 1986 paper says: "Not all sensors need to feed into a central
+  representation" (p. 17).
 - Brooks's stronger claim, that a robot can work with no explicit world model,
   comes later, in "Intelligence without representation" (1991).
 
@@ -122,7 +122,8 @@ The Three-Layer Architecture (Gat, 1998)
      - **In this course**
    * - Deliberative
      - What to do over a long horizon: which kit to build, which cells to use
-     - The PDDL planner (GP3), then the LLM agent (GP4)
+     - A PDDL planner (GP3; PDDL is a planning language, covered in L6), then
+       the LLM agent (GP4)
    * - Executive
      - Runs the plan step by step: calls skills, watches results, retries or
        reports failure
@@ -157,7 +158,8 @@ The Four Architectures Side by Side
    :align: center
 
    1: sense-plan-act. 2: reactive. 3: subsumption; at each S, a higher level
-   replaces the signal on the line below it (Brooks calls this suppression).
+   replaces the signal on the line below it where that line enters the next
+   stage, here the actuators (Brooks calls this suppression).
    4: three-layer. Blue: deliberation. Amber: the executive. Green: reaction.
    Gray: the world and sensing.
 
@@ -285,8 +287,9 @@ Architecture 2: React Only
    :lines: 175-191
    :caption: lecture2/code/toy_factory.py (excerpt)
 
-Each pass of the loop looks at what the sensors show now and fires the first
-rule that matches:
+Each pass of the loop looks at what the sensors show now. It checks both
+testers against rules 2 and 3, then checks rule 4, so several rules can fire
+in one pass:
 
 1. Rule 1: four cells on AGV 1's tray, so ship.
 2. Rule 2: a tester holds a cell and reads −1 V with ``MALFUNCTIONING``, and
@@ -343,7 +346,12 @@ Architecture 3: The Planner Chooses the Cells for the Kit
   the room is 0.25 V for slot 1, 0.20 V for slot 2, 0.15 V for slot 3 and
   0.10 V for slot 4.
 - A cell that is in range but does not fit goes to a spare tray (AGV 2, then
-  AGV 3) for a later kit. **Robots recycle only out-of-range cells.**
+  AGV 3) for a later kit. **This is a simplification of the toy. GP1 recycles
+  instead:** :doc:`GP1 Task 4 </assignments/gp1>` says "Before placing a cell
+  inside that range, check that the four-cell total can still land in
+  14.25 V to 14.55 V. If it cannot, recycle the cell."
+- Defective cells never reach the robots: ARIAC's inspection door lets a cell
+  through only if your team submitted a passing report for it.
 
 
 .. _l2-toy-result:
@@ -367,7 +375,10 @@ they arrive. The kits:
    which is 0.05 V above 14.55 V.
 3. **Three layers** ships cells 1, 3, 4 and 6:
    3.73 + 3.61 + 3.52 + 3.60 = 14.46 V, inside the window. It takes 107 s,
-   against 74 s for react only, because it sets aside cells that do not fit.
+   against 74 s for react only, mostly because it tests six cells, not four:
+   cells 2 and 5 do not fit and are set aside. One cell takes about 14 s
+   (``three_layers.txt`` logs cell 1 at 8.0 s and cell 2 at 22.0 s), so the
+   two extra cells are about 2 × 14 = 28 s of the 107 − 74 = 33 s.
 
 
 Plan Only and React Only, Step by Step
@@ -506,8 +517,9 @@ Steps 4 to 6: Handled Where Seen, Then Status Moves Up
 
 .. important::
 
-   This is the rule from 4D/RCS that L3 covers: **an error is handled where
-   it is seen, and only the status moves up.** The planner never learns what
+   This is a rule from 4D/RCS, NIST's reference model for robot control,
+   which L3 covers: **an error is handled where it is seen, and only the
+   status moves up.** The planner never learns what
    a −1 V reading is.
 
 
@@ -539,7 +551,7 @@ Steps 7 and 8: Recovery, and the Whole Story in One Table
      - Executive: up to 3 attempts
      - Nothing, unless all 3 fail
    * - Recovery
-     - Executive: status check
+     - Planner: asks for the status before each cell
      - Planner: uses tester 1 again
      - "tester 1 OPERATIONAL"
 
@@ -624,7 +636,8 @@ Sources (MoveIt documentation, Rolling version):
 Where AI Plugs In
 -----------------
 
-An LLM agent goes in the deliberative layer, a VLM goes in perception, and
+An LLM agent goes in the deliberative layer, a vision-language model (VLM)
+goes in perception, and
 everything else stays classical.
 
 Two AI Components and Their Places
@@ -670,8 +683,8 @@ Why the Executive Stays Classical
    measures what an LLM adds.
 
 
-Discussion: Which Layer Decides Each Task 1 Step?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Discussion: Assign Each Task 1 Step to a Layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In class we fill in this table together on the board.
 
@@ -829,15 +842,19 @@ A Two-System VLA Next to the Three Layers
    :width: 90%
    :align: center
 
-   1: a two-system VLA; numbers from Figure's Helix page. 2: this course.
+   1: Helix, a two-system VLA; numbers from Figure's Helix page. 2: this
+   course.
    Same colors as the earlier drawings: blue deliberates, amber executes,
    green reacts.
 
 .. important::
 
-   A two-system VLA has the deliberative and reactive roles, but nothing
-   between them checks each step: the policy acts on the slow model's output
-   directly. Your behavior tree is that check.
+   Helix has the deliberative and reactive roles, and its policy acts on the
+   slow model's output directly: nothing between them checks each step. Your
+   behavior tree is that check. Not every two-system design works this way:
+   in Gemini Robotics 1.5, the reasoning model "gives Gemini Robotics 1.5
+   natural language instructions for each step" and "estimates its success
+   and progress" (Google DeepMind, 2025).
 
 
 The Tradeoffs This Course Weighs
@@ -867,8 +884,9 @@ The Tradeoffs This Course Weighs
 
 .. important::
 
-   The course keeps the modular stack because it grades your engineering on
-   trials your system has never seen, and the last row is the price of that
+   The course keeps the modular stack for the first three rows: it runs with
+   no training data or GPUs, every failure can be traced, and every kit can be
+   checked against the voltage window. The last row is the price of that
    choice.
 
 
@@ -920,16 +938,16 @@ The Shared Tester Area, to Scale
 8. AGVs 1 to 3.
 
 - **Dashed circles:** each arm's reach, 0.50 m and 0.85 m, drawn flat around
-  its base. These are Universal Robots' published reach values for the
-  original UR3e (500 mm) and the UR5e (850 mm). ARIAC builds both arms from
-  those models' kinematics in the ``ur_description`` package.
+  its base. These are the reach values in Universal Robots' UR3e data sheet
+  (500 mm) and UR5e data sheet (850 mm), read on 2026-10-18. ARIAC builds
+  both arms from those models' kinematics in the ``ur_description`` package.
 - **Shaded:** the area both arms reach. It holds both testers.
 - Positions come from ``ariac.world`` and the robot URDFs. The tester and bin
   outlines are schematic.
 
 
-One Decision Maker, or One per Robot?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Central or Per-Robot Decision Makers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. grid:: 1 1 2 2
    :gutter: 3
@@ -1052,11 +1070,11 @@ Next Class
 **L3: Knowledge Representation for Agentic Robotics** (Wednesday,
 February 10):
 
-- Frames and ontologies for cells, kits and AGVs.
-- A world model at each layer, and errors that move up (two ideas from
+- Frames and an ontology for ARIAC cells, kits, modules and AGVs.
+- A world model at each layer, and status that moves up (two ideas from
   4D/RCS).
-- One kit written three ways: PDDL predicates, a JSON schema, a text
-  description.
+- One kit written three ways: PDDL facts, a JSON record checked by a JSON
+  schema, and text.
 
 **Before next class:**
 

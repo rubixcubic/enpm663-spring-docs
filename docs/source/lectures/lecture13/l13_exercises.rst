@@ -24,7 +24,9 @@ what the camera for the ER step costs in sensor points.
    The scripts and how to run them are on the :doc:`code page <l13_code>`.
    Work on a copy, so the original still gives the output in the notes. Every
    output below was measured with Python 3.12.3, ``google-genai`` 2.29.0,
-   ``httpx`` 0.28.1 and ``jsonschema`` 4.10.3 on 2026-10-12. All labels are
+   ``httpx`` 0.28.1 and ``jsonschema`` 4.10.3 on 2026-10-12. The scripts' own
+   outputs are the same under ``google-genai`` 2.31.0 and ``jsonschema``
+   4.26.0, the versions on the code page (checked 2026-10-18). All labels are
    the example's: ``TRUTH`` and ``LIDAR`` are chosen for the example, and the
    ER labels come from the scripted stand-in.
 
@@ -555,9 +557,9 @@ check in ``outputs/er_demo.txt``; "none" means no defect):
 
    **The setup** (chosen for this exercise)
 
-   Your team's sensors cost $9200 before you add a camera. The lecture gives
-   the camera prices ($800 at 1080p, $500 at 720p) and the over-budget
-   penalty, 1000 × (cost / 9600 - 1). The sensor cost bonus, from the ARIAC
+   Your team's sensors cost $9200 before you add a camera. An RGB camera
+   costs $800 at 1080p and $500 at 720p (ARIAC sensors page). The lecture
+   gives the over-budget penalty, 1000 × (cost / 9600 - 1). The sensor cost bonus, from the ARIAC
    scoring page and ``scoring.py`` (L12), is 1000 × (1 - cost / 9600), and
    never below zero. The bonus counts only if every kit and module was
    submitted.

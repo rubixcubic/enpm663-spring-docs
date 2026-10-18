@@ -258,9 +258,21 @@ files and the packages that the slides name. Every link was checked on
 
          **Fast Downward: PDDL Support**
 
-         "PDDL 2.2 level 1 plus the :action-costs requirement from PDDL
-         3.1"; "all aspects of numerical planning" are listed as not
-         supported.
+         Fast Downward "aims to support PDDL 2.2 level 1 plus the
+         :action-costs requirement from PDDL 3.1"; "All aspects of numerical
+         planning" are listed as not supported, except the numeric features
+         of :action-costs.
+
+      .. grid-item-card:: What the translator keeps
+         :link: https://www.fast-downward.org/latest/for-developers/problem-transformations/
+         :class-card: sd-border-secondary
+
+         **Fast Downward: Problem transformations performed by the planner**
+
+         "The translator can prune facts and actions that are not relaxed
+         reachable from the initial state or that are not relevant to the
+         goal in the sense that they never contribute to an irreducible
+         plan."
 
       .. grid-item-card:: A numeric planner
          :link: https://unified-planning.readthedocs.io/en/latest/engines/01_available_engines.html

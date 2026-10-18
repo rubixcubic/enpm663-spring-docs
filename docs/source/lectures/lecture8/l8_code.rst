@@ -476,12 +476,11 @@ the guard and the stop conditions stay as they are.
 
 .. important::
 
-   **GP4 does not require Gemini.** Any provider whose API supports tool
-   calling works, hosted or a local open-weight model (see the
-   :doc:`AI Access </ariac/ai_setup>` page). Google calls the feature
-   "function calling".
+   **GP4 accepts Gemini or a local open-weight model.** No other hosted
+   provider works (see the :doc:`AI Access </ariac/ai_setup>` page). Google
+   calls tool calling "function calling".
 
-An adapter for another provider does the jobs ``GeminiModel`` does in
+An adapter for a local model does the jobs ``GeminiModel`` does in
 ``gemini_model.py``:
 
 1. **Send the tools in the provider's format.** ``to_declaration()`` turns

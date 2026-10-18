@@ -31,6 +31,7 @@ for p in ('unified-planning', 'up-fast-downward'): print(p, v(p))"
 "${PY[@]}" compare_planners.py > $OUT/compare_planners.txt 2>&1
 "${PY[@]}" numeric_try.py > $OUT/numeric_try.txt 2>&1
 "${SYS[@]}" select_cells.py > $OUT/select_cells.txt 2>&1
+"${SYS[@]}" kit_margin.py > $OUT/kit_margin.txt 2>&1
 
 # Fast Downward from the command line: A* with LM-cut on both
 # problems, and the number of ground actions of each kind.

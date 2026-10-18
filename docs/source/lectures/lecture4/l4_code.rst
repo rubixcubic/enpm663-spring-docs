@@ -2,12 +2,15 @@
 Code
 ====================================================
 
-L4 has five Python scripts and one shell script. Four scripts use ``py_trees``
+L4 has six Python scripts and one shell script. Four scripts use ``py_trees``
 alone and tick a tree of stand-in leaves: no robot, no ROS 2 node and no
 simulator. The fifth, ``ros_tree_demo.py``, runs a ``py_trees_ros`` tree as a
 ROS 2 node against stand-ins for the ARIAC voltage tester, two course skills
-and the kit check service, all in the same process. The outputs below come from
-running them on ROS 2 Jazzy on 2026-10-12.
+and the kit check service, all in the same process. The sixth,
+``kit_spread.py``, is plain Python: it measures how far chance moves a kit total
+built from averaged readings. The outputs below come from running them on
+ROS 2 Jazzy on 2026-10-12; ``kit_spread.py`` and the five sets of ten timeout
+runs were added on 2026-10-18.
 
 .. note::
 
@@ -65,8 +68,12 @@ running them on ROS 2 Jazzy on 2026-10-12.
      - A ``py_trees_ros`` tree with subscriber, action and service leaves, in
        three runs.
      - :ref:`l4-py-trees-ros`
+   * - :download:`kit_spread.py <code/kit_spread.py>`
+     - How far the sum of four averaged voltages wanders, by formula and
+       in 100,000 simulated kits.
+     - :ref:`l4-patterns`
    * - :download:`run_all.sh <code/run_all.sh>`
-     - Runs all five and writes their outputs to ``../outputs/``.
+     - Runs all six and writes their outputs to ``../outputs/``.
      - See the last section
 
 
@@ -224,11 +231,49 @@ which the timeout fires moves between 33 and 34 (see :ref:`l4-run2`):
 .. literalinclude:: outputs/ros_tree_repeats.txt
    :language: text
 
+Five more sets of ten ``timeout`` runs, last line only. The number of runs that
+end on tick 33 changes from set to set, from 3 to 6 of 10:
+
+.. literalinclude:: outputs/ros_tree_repeat_sets.txt
+   :language: text
+
+The ``timeout`` run above heard 35 voltage messages in 34 ticks. In the 60
+runs of these two files, the message count equals the tick count every time.
+
 The time stamps in the ``[INFO]`` lines and the exact times in the log change
 from run to run. On some runs, a line such as
 ``The following exception was never retrieved: cannot use Destroyable because
 destruction was requested`` appears after the last line, while the nodes shut
 down; it does not change the result.
+
+
+How Far Chance Moves the Kit Total: ``kit_spread.py``
+-----------------------------------------------------
+
+The tree adds four averaged voltages; ARIAC checks the cells' true voltages.
+The ARIAC tester adds noise with a standard deviation of 0.05 V to each reading
+(``noise_std_dev`` in ARIAC's ``voltage_tester/model.sdf``), and each average
+here uses five readings, as ``wait_for_voltage`` collects. The script works out
+the spread of one average and of the sum of four by formula, then simulates
+100,000 kits whose true total sits on the window's upper edge, 14.55 V, and
+counts how many read 14.62 V or more. It repeats both with 20 readings per
+cell. It needs no ROS 2.
+
+.. code-block:: bash
+
+   python3 kit_spread.py
+
+.. literalinclude:: code/kit_spread.py
+   :language: python
+   :caption: kit_spread.py
+
+.. literalinclude:: outputs/kit_spread.txt
+   :language: text
+
+The formula assumes each reading carries its own noise. The tester draws new
+noise 30 times per simulated second and publishes every 0.1 s, so readings
+0.1 s apart carry different draws while the simulation runs at a third of real
+time or faster.
 
 
 Run Everything: ``run_all.sh``

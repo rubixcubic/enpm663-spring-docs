@@ -68,8 +68,20 @@ commit 0c3e722 of the ``ariac2025`` branch, the commit the lecture read
 
          **NIST, ARIAC 2025 documentation: Scoring**
 
-         An accepted kit needs four good cells, so a defective cell in a kit
-         loses the kit: the price of a false negative.
+         An accepted kit needs four good cells, so a kit with a defective
+         cell is refused at shipping.
+
+      .. grid-item-card:: Check kit quality
+         :link: https://github.com/usnistgov/ARIAC/blob/0c3e722/ariac_plugins/src/agv_tray_interface_plugin.cpp
+         :class-card: sd-border-secondary
+
+         **ARIAC source:** ``ariac_plugins/src/agv_tray_interface_plugin.cpp``
+
+         The check kit quality service, which :doc:`GP1 </assignments/gp1>`
+         requires before the AGV moves, reports "Cell in slot N is defective"
+         at the AGV inspection station (line 423). With it, a false negative
+         costs a recycled tray and the rebuild time, and the kit only if the
+         rebuild misses the time limit.
 
       .. grid-item-card:: ARIAC's classification check
          :link: https://github.com/usnistgov/ARIAC/blob/0c3e722/ariac_plugins/src/physical_inspection_plugin.cpp
@@ -78,8 +90,9 @@ commit 0c3e722 of the ``ariac2025`` branch, the commit the lecture read
          **ARIAC source:** ``ariac_plugins/src/physical_inspection_plugin.cpp``
 
          Checks each inspection report: the number of defects, and each
-         defect's type, angle and height against thresholds. It also
-         measures a cell's report time from the moment the cell is created.
+         defect's type and height against thresholds. The angle test (line
+         387) is one-sided. It also measures a cell's report time from the
+         moment the cell is created.
 
       .. grid-item-card:: Ground truth for cells
          :link: https://github.com/usnistgov/ARIAC/blob/0c3e722/ariac_plugins/src/cheat_tools_plugin.cpp

@@ -5,7 +5,7 @@ goal position in 0.0085 m steps, one step every 0.2 s, and sends feedback after
 each step. The client sends two goals. It lets the first one finish and cancels
 the second one after 0.5 s, the way a behavior tree stops a running skill.
 
-control_msgs comes with ARIAC 2025 (its arm and gripper controllers use it).
+control_msgs comes with ARIAC 2025 (its joint trajectory controllers use it).
 """
 
 import threading
@@ -15,7 +15,6 @@ import rclpy
 from action_msgs.msg import GoalStatus
 from control_msgs.action import GripperCommand
 from rclpy.action import ActionClient, ActionServer, CancelResponse
-from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.node import Node
 
@@ -36,7 +35,6 @@ class GripperServer(Node):
             "gripper/command",
             self.execute,
             cancel_callback=lambda goal: CancelResponse.ACCEPT,
-            callback_group=ReentrantCallbackGroup(),
         )
 
     def execute(self, goal_handle):
@@ -97,6 +95,9 @@ def main():
     client = ActionClient(
         client_node, GripperCommand, "gripper/command"
     )
+    # execute() holds one thread until the goal ends. A multi-threaded
+    # executor takes the cancel request on another thread; a single-threaded
+    # one sees it only after the goal has ended SUCCEEDED.
     executor = MultiThreadedExecutor()
     executor.add_node(server)
     executor.add_node(client_node)

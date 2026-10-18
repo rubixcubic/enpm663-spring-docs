@@ -27,8 +27,8 @@ From L11
 ~~~~~~~~
 
 - Failures sorted into types, each with a signal that detects it.
-- Recovery at three levels: the robot skill, the behavior tree, the planner
-  or agent.
+- Three layers: the skill reports success or a failure reason, the behavior
+  tree recovers locally, and the planner or agent recovers globally.
 - A challenge test matrix: each challenge alone and combined, each run more
   than once.
 
@@ -85,13 +85,14 @@ Perception (lidar, camera, VLM) reads the factory and feeds both the planner
 and the behavior tree. The factory reports the ARIAC score table.
 
 .. image:: /_static/images/l12/metric_levels.svg
-   :alt: A block diagram of the course stack. A box "Planner or LLM agent" at
-         the top, tag 1, has an arrow down to "Behavior tree and skills", tag
-         3, which has an arrow down to "ARIAC factory in Gazebo". An arrow goes
-         from the factory to a box on the right, "Perception: lidar, camera,
-         VLM", tag 2, which has arrows to the planner and to the behavior
-         tree. An arrow goes from the factory to a box on the left, "ARIAC
-         score table", tag 4.
+   :alt: A block diagram of the course stack. In the middle column, a box
+         "Planner or LLM agent", tag 1, has an arrow down to "Behavior tree
+         and skills", tag 3, which has an arrow down to a white box "ARIAC
+         factory in Gazebo". An arrow goes from the factory right and up to a
+         box on the right, "Perception, lidar, camera, VLM", tag 2, which has
+         an arrow up and left to the planner and an arrow left to the behavior
+         tree. An arrow goes from the factory left to a box "ARIAC score
+         table", tag 4.
    :width: 90%
    :align: center
 
@@ -111,9 +112,10 @@ Why Measure Below the Score
   **why**.
 - When the score drops, the lower levels show where: a longer plan, a
   detector that missed defects, or a skill that failed more often.
-- A good score next to poor lower-level metrics means the trial did not test
-  the weak part. Example: a trial with few defective cells hides a detector
-  that misses defects.
+- A good score next to poor lower-level metrics can mean that the trial did
+  not test the weak part. Example: a trial with few defective cells hides a
+  detector that misses defects. Chance is the other cause: one good run can
+  come from a weak system.
 
 .. tip::
 
@@ -142,7 +144,8 @@ For any planner:
    - **Length:** the number of actions, that is, skill calls and service
      calls.
    - **Cost:** the sum of the action costs, if the domain defines them, or
-     the time the plan takes to run.
+     the time the plan takes to run. In the GP4 comparison table, cost means
+     tokens or dollars (:doc:`GP4 </assignments/gp4>` Task 7).
 
 **Checking validity.** A **validator** replays the plan on the model and names
 the first action whose precondition fails. The Unified Planning Framework has
@@ -163,7 +166,8 @@ Comparing them:
 1. Both are valid: every precondition holds, and both reach the goal.
 2. In Plan A each cell waits for the cell before it to leave tester 1. In
    Plan B two cells can be on testers at once.
-3. So Plan A takes longer.
+3. So Plan A takes longer when the voltage tester, not the robots, is the
+   slowest step.
 
 .. tip::
 
@@ -174,17 +178,23 @@ Comparing them:
 Extra Measures for an LLM Planner
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-An LLM planner can fail in ways a PDDL planner cannot, so the GP4 comparison
-has four more columns:
+An LLM planner can fail in ways a PDDL planner cannot, and it has a cost per
+call.
+
+**Required in the GP4 table**, with validity and plan length
+(:doc:`GP4 </assignments/gp4>` Task 7):
+
+- **Cost:** tokens and dollars per decision for a hosted model, or GPU time
+  for a local one.
+- **Latency per decision:** the time from the observation to a validated
+  decision.
+
+**Extra columns worth adding:**
 
 - **Schema-valid rate:** the share of replies that pass the JSON schema on
   the first try, and after one re-prompt.
 - **Invented objects:** the number of replies that name a cell, slot, AGV or
   order ID that does not exist.
-- **Tokens and dollars per decision** for a hosted model, or GPU time for a
-  local one.
-- **Latency per decision:** the time from the observation to a validated
-  decision.
 
 **How to report them.** Report them per decision, from the decision logs your
 team has kept since L9. A list per decision gives a mean and a spread. A
@@ -290,14 +300,17 @@ Which Error Costs More in ARIAC 2025
 The two errors do not cost the same.
 
 **A false positive.** A good cell flagged as defective gets a failing
-inspection report. The inspection door pushes it into the inspection bin.
-Penalty: 50 points per cell (``GOOD_CELL_IN_INSPECTION_BIN`` in
-``scoring_weights.yaml``).
+inspection report. The inspection door stays closed, and the cell drops into
+the inspection bin. Penalty: 50 points per cell
+(``GOOD_CELL_IN_INSPECTION_BIN``, ``scoring_weights.yaml`` line 2).
 
-**A false negative.** A defective cell passes. If it goes into a kit, ARIAC
-does not accept the kit at shipping, because an accepted kit needs four good
-cells (ARIAC scoring page). That loses the kit's share of the base score and
-the time to rebuild the kit. The cell's report also does not count toward the
+**A false negative.** A defective cell passes and goes into a kit. GP1 Task 5
+requires: "Call the check kit quality service." At the AGV inspection
+station, the check reports "Cell in slot N is defective"
+(``agv_tray_interface_plugin.cpp`` line 423). So the cell costs a recycled
+tray, with its good cells, and the time to rebuild the kit. The kit's base
+points and every bonus are lost only if the rebuild does not finish before
+the time limit. The cell's report also does not count toward the
 classification bonus.
 
 .. tip::
@@ -314,8 +327,11 @@ What to Report for Your Detectors
 - For the VLM: precision and recall **per cell type** (Li-Ion against
   Ni-MH).
 - ARIAC's own classification check is stricter. A report counts only if it
-  has the right number of defects, and each defect's type, angle and height
-  are within ARIAC's thresholds (``physical_inspection_plugin.cpp``).
+  has the right number of defects, and each defect's type and height match
+  within ARIAC's thresholds (``physical_inspection_plugin.cpp``).
+- The angle test is one-sided in commit 0c3e722: line 387 applies ``abs`` to
+  the comparison, not to the distance, so an angle on one side of the true
+  angle passes at any distance.
 
 **In the final demo.** The embodied-reasoning model judges defects from camera
 images of the same cells your GP2 lidar detector inspects. Your comparison
@@ -446,24 +462,45 @@ The Standard Error of a Success Rate
    A system completes the trial on :math:`k` of :math:`n` runs. Its measured
    **success rate** is :math:`p = k / n`.
 
-   Chance alone moves :math:`p` from one set of :math:`n` runs to the next by
-   about its **standard error**:
+   The **standard error** (SE) is the spread of one estimate: about how far
+   one measured :math:`p` lands from the system's true success rate.
 
    .. math::
 
       \mathrm{SE} = \sqrt{p\,(1 - p) / n}
 
-   For the difference between the rates of two systems tested on separate
-   runs:
-
-   .. math::
-
-      \mathrm{SE}_{\mathrm{diff}} = \sqrt{\mathrm{SE}_1^2 + \mathrm{SE}_2^2}
+With :math:`k = 0` or :math:`k = n` the formula gives 0. That does not mean
+the rate has no spread: the runs were too few to show it.
 
 .. tip::
 
    The standard error shrinks with the square root of :math:`n`: four times
    the runs halves it.
+
+
+Two Sets of Runs Differ by More Than One SE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Two independent sets of :math:`n` runs each carry their own error. So they
+differ from each other by about :math:`\sqrt{2} \times \mathrm{SE}`, not by
+one SE. For the difference between the rates of two systems tested on
+separate runs:
+
+.. math::
+
+   \mathrm{SE}_{\mathrm{diff}} = \sqrt{\mathrm{SE}_1^2 + \mathrm{SE}_2^2}
+
+**Example: true rate 0.80, n = 20 (chosen for this example).**
+
+1. One set: :math:`\mathrm{SE} = \sqrt{0.80 \times 0.20 / 20} = \sqrt{0.008}`
+   = 0.089.
+2. Difference of two sets: :math:`\sqrt{0.089^2 + 0.089^2} = \sqrt{2} \times
+   0.089` = 0.126.
+
+.. tip::
+
+   A measured rate lands about 0.089 from the true rate. Two sets of 20 runs
+   land about 0.126 apart.
 
 
 .. _l12-gp3-gp4:
@@ -539,8 +576,12 @@ against the number of runs, not a picture of the factory.
 3. One simulated measurement over :math:`n` runs (40 shown for each
    :math:`n`).
 
-With 5 runs, a system that truly succeeds 80% of the time can measure
-anywhere from 0.40 to 1.00. With 100 runs, the middle 95% is 0.72 to 0.87.
+With 5 runs, a system that truly succeeds 80% of the time measures anywhere
+from 0.40 to 1.00 in 95% of experiments. It can also land lower, at 0.20 or 0:
+the chance is :math:`0.2^5 + 5 \times 0.8 \times 0.2^4` = 0.0067, about 1
+experiment in 150. With 100 runs, the middle 95% is 0.72 to 0.87 with this
+seed. The upper end is 0.87 or 0.88, depending on the seed (0.88 with seeds
+1, 2, 3 and 5, measured 2026-10-18).
 
 
 Two Equal Systems Still Measure Differently
@@ -567,6 +608,53 @@ Output:
    A difference smaller than about two standard errors is not evidence.
    Report every success rate with its run count, so a reader can redo the
    arithmetic.
+
+
+.. _l12-runs-a-claim-needs:
+
+How Many Runs a Claim Needs: Comparing Two Systems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+How many runs would the GP3 and GP4 example need before its 0.10 gap counts
+as evidence? Keep the measured rates, 0.85 for GP3 and 0.75 for GP4, and give
+each system :math:`n` runs:
+
+1. :math:`\mathrm{SE}_{\mathrm{diff}} = \sqrt{(0.85 \times 0.15 + 0.75
+   \times 0.25) / n} = \sqrt{(0.1275 + 0.1875) / n} = \sqrt{0.315 / n}`.
+2. The class rule needs :math:`2 \times \mathrm{SE}_{\mathrm{diff}} \le
+   0.10`, so :math:`\sqrt{0.315 / n} \le 0.05`.
+3. Square both sides: :math:`0.315 / n \le 0.0025`.
+4. So :math:`n \ge 0.315 / 0.0025` = 126 runs per system, 2 × 126 = 252
+   runs in all.
+
+**What this means for a test plan.**
+
+- Pick :math:`n` before running, from the smallest gap the plan must detect.
+  Halving the gap needs four times the runs.
+- At 126 runs a true 0.10 gap can count as evidence. It does not pass the
+  rule every time: the measured gap lands above or below 0.10 by chance.
+  Exercise 3 measures how often.
+
+
+How Many Runs a Claim Needs: A 20-Run Batch
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The course skills package tests its skills in batches of 20 runs, and a skill
+passes at 19 of 20 or better (skills package README, "Measured success
+counts"). A skill with true success rate :math:`p` passes when all 20 runs
+succeed, :math:`p^{20}`, or when exactly one fails. The failed run can be any
+of the 20, so that term is :math:`20 \times p^{19} \times (1 - p)`.
+``batch_bar.py`` computes both terms and checks them by simulation, for true
+rates chosen for this example:
+
+.. literalinclude:: outputs/batch_bar.txt
+   :language: text
+
+- **Can show:** a skill at 0.80 would pass only 7 batches in 100, so a pass
+  is evidence against a rate that low.
+- **Cannot show:** 0.95 from 0.99, since both usually pass. A 0.95 skill
+  misses the bar in 1 − 0.74 = 0.26 of batches, so one missed batch alone
+  does not prove the skill got worse.
 
 
 ARIAC's Choice: Five Runs, Best Two Averaged
@@ -602,14 +690,14 @@ comparison with GP3 that way.
          poses, conveyor speed, feed rate), the software (skills release,
          executor, model name, version, settings) and the machine (the same
          computer for every run). Under them, marked tag 2, each column has
-         its own box with a heavy outline: "PDDL planner (GP3)" and "LLM agent
-         (GP4)". At the bottom, marked tag 3, eight runs in time order: 1
-         GP3, 2 GP4, 3 GP3, 4 GP4, and so on to 8 GP4, above an arrow labeled
-         time.
+         its own white box with a heavy outline: "PDDL planner (GP3)" and
+         "LLM agent (GP4)". At the bottom, marked tag 3, eight white run boxes
+         in time order: 1: GP3, 2: GP4, 3: GP3, 4: GP4, and so on to 8: GP4,
+         above an arrow labeled time.
    :width: 90%
    :align: center
 
-1. Held fixed for every run of both systems.
+1. Held fixed for every run of both systems (the gray boxes).
 2. The one variable that changes: the planner.
 3. The run order alternates the two systems.
 
@@ -739,7 +827,8 @@ Three Bonuses for Speed
      - :math:`W_5\,(1 - \tau / 150\,\mathrm{s})`
      - 600
      - :math:`\tau`: average time from a high-priority order's announcement
-       to its submission. 0 if the trial has no high-priority order.
+       to its submission. The bonus is 0 if the trial has no high-priority
+       order.
 
 The 4 s and 150 s are ``NOMINAL_INSPECTION_TIME`` and
 ``NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION`` in the weights file.
@@ -766,7 +855,7 @@ Bonuses for Sensor Cost and Classification
      - :math:`W_7 \cdot \nu / \delta`
      - 500
      - :math:`\nu`: defect reports with every element right. :math:`\delta`:
-       defective cells in the run. 0 if there are none.
+       defective cells in the run. The bonus is 0 if there are none.
 
 **What a sensor costs in points:**
 
@@ -915,8 +1004,8 @@ The Score Terms Side by Side
 .. image:: /_static/images/l12/score_breakdown.svg
    :alt: A horizontal bar chart of the ARIAC 2025 score terms for two runs
          on the same trial, Run 1 in blue and Run 2 in orange. The x axis
-         is points, with grid lines every 1000 from 0 to 7000; the y axis
-         lists the score terms. Base score: Run 1 5000.0, Run 2 3333.3;
+         is points, with grid lines every 1000 from 0 to 7000, labeled every
+         2000; the y axis lists the score terms. Base score: Run 1 5000.0, Run 2 3333.3;
          Bonus: trial time: Run 1 300.0, Run 2 0.0; Bonus: inspection
          speed: Run 1 125.0, Run 2 0.0; Bonus: high-priority speed: Run 1
          120.0, Run 2 0.0; Bonus: sensor cost: Run 1 614.6, Run 2 0.0;
@@ -938,12 +1027,16 @@ What the Example Shows
 2. So finishing every order matters more than any speed bonus. A slow
    recovery that finishes the kit beats a fast system that drops one.
 3. In Run 1 the sensor cost bonus, 614.6, is the largest bonus. An extra
-   $800 camera for a VLM would lower it by 83.3 points, so a camera must earn
-   its cost.
-4. A good cell in the inspection bin costs 50 points: the price of a false
-   positive. A defective cell in a kit can cost the kit, worth
-   5000 / 3 = 1666.7 points of base here, and every bonus if the kit is never
-   accepted: the price of a false negative.
+   $800 camera would lower it by 1000 × 800 / 9600 = 83.3 ARIAC points. In
+   this course the cameras are required (:doc:`GP4 </assignments/gp4>` Task
+   3), and the :doc:`final demo </assignments/final_demo>` grade counts kits
+   and modules accepted, not ARIAC bonuses.
+4. A false positive costs 50 points (``scoring_weights.yaml`` line 2). A
+   false negative caught by the kit quality check costs a recycled tray and
+   the rebuild time. It costs the kit, 5000 × 1 / 3 = 1666.7 base points here
+   (W1 at line 9 of that file; ``scoring.py`` line 102), and every bonus
+   (``scoring.py`` lines 64 to 72) only if the rebuild misses the time
+   limit.
 
 
 Check the Hand Calculation Against ARIAC
@@ -974,7 +1067,8 @@ What a Good Test Plan Has
 
 1. Several trial configurations your team writes: each challenge alone and
    combined, with Task 1 and Task 2.
-2. A fixed number of runs per configuration, chosen before running.
+2. A fixed number of runs per configuration, chosen before running from the
+   smallest gap the plan must detect (:ref:`l12-runs-a-claim-needs`).
 3. For each run: the ARIAC score table, plus your own metrics at the plan,
    perception and execution levels.
 4. For each challenge: detected or not, the time to detection, recovered or

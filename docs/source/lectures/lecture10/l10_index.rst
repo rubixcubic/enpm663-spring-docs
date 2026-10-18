@@ -13,7 +13,7 @@ It starts with **TF2**, the ROS 2 library that tracks coordinate frames. The
 transform from an AGV to its tray slot never changes, while the transform from
 the world to the AGV changes every time the AGV drives. A skill must look up a
 slot when its goal arrives: a pose cached at the inspection station is
-4.229 m off once the AGV is at the assembly station. Three short scripts show
+4.229 m off once the AGV is at the assembly station. Two short scripts show
 the lookup, and the three ways a lookup fails.
 
 Next comes the **pinhole camera model**, which turns a camera pixel into a
@@ -27,17 +27,19 @@ configurations the ARIAC example team ships. It compares the sampling-based
 planners (RRT-Connect, PRM, RRTstar) with the **Pilz industrial motion
 planner**, using a small RRT-Connect toy that finds five different paths for
 the same start and goal. It then defines a **parameterized grasp** and works
-out where a cell on the moving inspection conveyor will be when the arm
-arrives. It ends inside the course skills package: one goal traced from call
-to result, the failure results, and why a skill reports a failure instead of
-retrying.
+out when a cell on the moving inspection conveyor reaches the skill's fixed
+catch point, and when the skill refuses the catch. It ends inside the course
+skills package: one goal traced from call to result, the failure codes, and
+why a skill reports a failure instead of retrying.
 
 .. important::
 
-   **ARIAC tie-in.** ARIAC 2025 gives each robot a joint trajectory action and
-   a gripper action, plus vacuum tool services on assembly robot 2. It has no
-   pick, place or move-to-pose service, and it publishes no frame for a cell or
-   a shell. The course skills package fills the first gap; your sensors fill
+   **ARIAC tie-in.** ARIAC 2025 gives every arm and the gantry a joint
+   trajectory action. Inspection robots 1 and 2 and assembly robot 1 also get
+   a Robotiq 2F-85 gripper action; assembly robot 2 gets tool changer and
+   vacuum tool services instead, and the gantry welder gets a weld service. It
+   has no pick, place or move-to-pose service, and it publishes no frame for a
+   cell or a shell. The course skills package fills the first gap; your sensors fill
    the second. Task 2 motion (placing cells, placing the top shell, the six
    welds) appears here for the first time, ahead of the final demo.
 
@@ -56,10 +58,11 @@ retrying.
 
 .. note::
 
-   **The course skills package is still being built.** These pages describe it
-   by role, from its design: what it is planned to do, not released code. Its
-   action names and fields will be on its documentation page when it is
-   published.
+   **The course skills package, version 0.2.0.** These pages use the release
+   you have: the skills of the two inspection robots, with their own action
+   names and result codes. The :doc:`Course Skills Package </ariac/skills>`
+   page lists every action, goal and result code. Skills for the Task 2
+   robots are planned for a later release.
 
 
 Learning Objectives
@@ -76,8 +79,9 @@ By the end of this lecture, you will be able to:
   planning pipeline and the trajectory controllers, and where MoveItPy fits.
 - Compare RRT-Connect, PRM and the Pilz industrial motion planner, and choose
   one for a given ARIAC motion.
-- Compute a grasp target as a fixed offset from a part frame, including the
-  predicted position of a cell on the moving inspection conveyor.
+- Compute a grasp target as a fixed offset from a part frame, and compute
+  when a cell on the moving inspection conveyor reaches the skill's fixed
+  catch point.
 - Explain how the course skills package turns a skill goal into a trajectory
   and a gripper command, and why it reports failures instead of retrying
   them.
@@ -104,14 +108,14 @@ Next Steps
 
 - **Quiz 5** (Wednesday, April 14, start of class) covers L9 and L10. From
   L10: static and moving frames; the pinhole model and the pixel-to-table
-  steps; the MoveIt 2 parts; RRT-Connect, PRM and Pilz; the conveyor example;
-  the skill failure results.
+  steps; the MoveIt 2 parts; RRT-Connect, PRM and Pilz; the conveyor catch and
+  its refusals; the skill failure codes.
 
 - **Before next class:**
 
   - GP4 (due Week 13): write tool descriptions that list each skill's
     preconditions and failure results.
-  - Read the course skills package documentation page when it is published.
+  - Read the :doc:`Course Skills Package </ariac/skills>` page.
   - Run the L10 scripts (see :doc:`l10_code`) and compare your outputs with
     the ones in the notes. Optional: the example team's Move Robots demo.
   - Work through the :doc:`L10 exercises <l10_exercises>` and the

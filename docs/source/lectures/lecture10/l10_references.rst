@@ -350,10 +350,22 @@ links point to the ``ariac2025`` branch of the ARIAC repository.
    :class-container: sd-border-secondary
    :open:
 
-   The belt speed limit, a stopped belt, and what a collision costs.
+   The belt speed limit, a stopped belt, the course skill's conveyor catch,
+   and what a collision costs.
 
    .. grid:: 1 1 2 2
       :gutter: 2
+
+      .. grid-item-card:: Course Skills Package
+         :link: /ariac/skills
+         :link-type: doc
+         :class-card: sd-border-secondary
+
+         **ENPM663: Course Skills Package (v0.2.0)**
+
+         The actions, goals and result codes; how the conveyor catch works,
+         when it is refused, and why a conveyor malfunction ends it; the
+         tester area lock.
 
       .. grid-item-card:: Team configuration schema
          :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_setup/config/user_config_schema.json

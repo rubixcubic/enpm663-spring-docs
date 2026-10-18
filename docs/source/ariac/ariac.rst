@@ -89,5 +89,5 @@ Setup Order
 2. :doc:`ROS 2 Jazzy and Gazebo Harmonic <ros_setup>`: needed from L1.
 3. :doc:`ARIAC and robotics tools <ariac_setup>`: ARIAC 2025, MoveIt 2,
    ``py_trees_ros``, OpenCV and a PDDL planner. Needed from GP1.
-4. :doc:`LLMs and VLMs <ai_setup>`: a hosted API or local models. Needed
+4. :doc:`LLMs and VLMs <ai_setup>`: Gemini or local models. Needed
    from L8 and GP4.

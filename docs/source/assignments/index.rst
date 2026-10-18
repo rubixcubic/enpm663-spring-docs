@@ -86,8 +86,10 @@ Each group project extends your team's system from the previous one:
 The Course Skills Package
 -------------------------
 
-ARIAC 2025 gives each robot a joint trajectory action and a gripper action,
-but no pick or place skills. The course provides them: a Python ROS 2
+ARIAC 2025 gives its robots low-level controls only: a joint trajectory
+action for each robot, and a gripper action, vacuum tool services or a weld
+service (the table in :ref:`l1-robot-interfaces`). None of them is a pick or
+place skill. The course provides them: a Python ROS 2
 package, built on MoveIt 2, with skills such as picking a cell and placing
 it. Its page is :doc:`Course Skills Package </ariac/skills>`. Your team moves the AGVs with ARIAC's own AGV
 move action.
@@ -174,7 +176,7 @@ Task 2 (module construction), and handles the ARIAC challenges:
 
 1. **Integrated system:** GP1 to GP4 running end to end from a Dockerfile.
 2. **Physical AI step:** a hosted embodied-reasoning model judges cell
-   defects from camera images over the inspection conveyor, scored with
+   defects from camera images of the inspection conveyor, scored with
    precision and recall on the same cells as your GP2 lidar detector.
 3. **Evaluation run:** before the Week 15 class, the instructor runs your
    Docker image, built from your code-freeze tag, on a trial no team has

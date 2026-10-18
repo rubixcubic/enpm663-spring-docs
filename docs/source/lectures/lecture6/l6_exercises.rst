@@ -632,12 +632,14 @@ result first, write the prediction down, then run the script.
          3.40 V to 3.43 V.
       3. c5 (3.52 V) is too high: agv2. c6 (3.41 V) fits.
       4. Total: 3.78 + 3.76 + 3.58 + 3.41 = 14.53 V, inside 14.25 V to
-         14.55 V.
+         14.55 V by the averages (Part C looks at the noise).
 
       **Question 4.** c1, c2 and c3 go on agv1: 3.78 + 3.76 + 3.70 =
       11.24 V. The fourth cell would have to be from 14.25 − 11.24 =
       3.01 V to 14.55 − 11.24 = 3.31 V, below every cell in range. The kit
-      is lost, and agv1 goes to recycling.
+      is lost, and agv1 goes to recycling. GP1's check, before every place,
+      would have refused c3: three cells must total 10.45 V to 11.15 V, and
+      11.24 V is above 11.15 V.
 
       **Question 5.** Measured:
 
@@ -657,7 +659,7 @@ result first, write the prediction down, then run the script.
            c4 3.58 V: agv1 slot 3; rest must sum to 3.13 to 3.43 V
            c5 3.52 V: agv2 (blocks agv1)
            c6 3.41 V: agv1 slot 4; kit full
-           kit total 14.53 V: complete
+           kit total 14.53 V: in range by the averages
            goal: (in-slot c1 agv1 s1)
            goal: (in-slot c2 agv1 s2)
            goal: (in-slot c4 agv1 s3)
@@ -696,7 +698,7 @@ result first, write the prediction down, then run the script.
 
       The last line says "lost" because ``fill_kit`` ran out of arrivals
       with three cells on agv1, and the script prints "lost" for any kit
-      that is not complete. agv1 is not lost yet: a later cell at exactly
+      that is not full and in range. agv1 is not lost yet: a later cell at exactly
       3.40 V would finish it. But such a cell is itself at the cell limit,
       where the same noise applies. The margin made c6 wait, where the
       plain window accepted a kit 0.02 V below its top edge (14.55 − 14.53
@@ -780,9 +782,11 @@ result first, write the prediction down, then run the script.
         Large: 1 × 8 × 2 × 4 = 64.
 
       **Question 2.** ``recycle`` needs ``(voltage-bad ?c)``. Neither problem
-      lists a ``voltage-bad`` fact, and no action makes one true, so no
-      ground ``recycle`` can ever apply. The translator keeps only the
-      ground actions that can ever apply, so it writes none.
+      lists a ``voltage-bad`` fact, and no action makes one true. The
+      translator's relaxed test (delete effects ignored) finds that no
+      ground ``recycle`` is reachable, so it writes none. The test does not
+      catch every action that can never apply: 232 of the 256 ``check-kit``
+      ground actions repeat a cell and stay (the notes, "Many Objects").
 
       **Question 4.** Only ``check-kit`` changes: it now has one parameter,
       so it has one ground action per AGV, 1 (small) and 2 (large), instead

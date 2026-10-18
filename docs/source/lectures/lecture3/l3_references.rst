@@ -32,9 +32,13 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          **ARIAC source:** ``ariac_interfaces/msg`` (branch ``ariac2025``)
 
          ``CellTypes.msg`` (types, nominal voltages, tolerances),
-         ``CellDefect.msg`` (defect type, θ and z), ``AgvStations.msg``,
-         ``AgvTrayStatus.msg`` and ``HighPriorityOrder.msg``: the slots of
-         the cell, AGV and order frames.
+         ``InspectionReport.msg`` and ``CellDefect.msg`` (the report your
+         team submits: passed, and each defect's type, θ and z),
+         ``AgvStations.msg``, ``AgvTrayStatus.msg`` and
+         ``HighPriorityOrder.msg``: the slots of the cell, AGV and order
+         frames. The services ``ControlCellFeeder.srv`` (the cell type you
+         feed) and ``SubmitInspectionReport.srv`` are in
+         ``ariac_interfaces/srv``.
 
          +++
 
@@ -85,10 +89,11 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          *4D/RCS: A Reference Model Architecture for Unmanned Vehicle
          Systems, Version 2.0.* NISTIR 6910, NIST.
 
-         The two ideas the course uses, quoted from page 31 and page 55
-         (a world model at each layer, at the detail that layer needs) and
-         page 19 and page 45 (errors handled where they are seen, status
-         passed up), and the eight levels of Table 1 (page 55).
+         What 4D/RCS is, quoted from page 9, page 12 and page 16; the two
+         ideas the course uses, quoted from page 31 and page 55 (a world
+         model at each layer, at the detail that layer needs) and page 19
+         and page 45 (errors handled where they are seen, status passed
+         up); and the eight levels of Table 1 (page 55).
 
 
 .. dropdown:: One Kit, Three Views
@@ -152,4 +157,9 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          The code to check against when you design your world model, for
          example which models ARIAC publishes TF frames for (AGVs and their
          tray slots do; the lecture says individual cells and shells do
-         not).
+         not). The lecture also quotes ``physical_inspection_plugin.cpp``
+         (the reply to a failing report), and takes the 0.05 V reading noise
+         from ``ariac_gz/models/voltage_tester/model.sdf``. The kit check on
+         the cells' true voltages is ``validate_kit()`` in
+         ``ariac_plugins/src/agv_tray_interface_plugin.cpp`` (lines 388 to
+         446).

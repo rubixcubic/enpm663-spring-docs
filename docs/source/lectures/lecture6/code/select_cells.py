@@ -2,8 +2,11 @@
 
 Li-Ion limits from ARIAC's CellTypes.msg: nominal 3.6 V, each cell
 within 0.2 V, the kit of four within 0.15 V. The measured voltages
-below are chosen for this example. Sums are rounded to 0.01 V so
-that floating-point error does not move a cell across a limit.
+below are chosen for this example. They are averages of noisy
+readings: "in range by the averages" is not a promise that ARIAC
+accepts the kit (kit_margin.py measures how often it would not).
+Sums are rounded to 0.01 V so that floating-point error does not
+move a cell across a limit.
 """
 NOMINAL, CELL_TOL, KIT_TOL = 3.6, 0.2, 0.15
 LOW = round(NOMINAL - CELL_TOL, 2)                  # 3.4
@@ -58,7 +61,7 @@ for look_ahead in (False, True):
     kit = fill_kit(ARRIVALS, look_ahead)
     total = round(sum(v for _, v in kit), 2)
     if len(kit) == 4 and KIT_LOW <= total <= KIT_HIGH:
-        print(f"  kit total {total:.2f} V: complete")
+        print(f"  kit total {total:.2f} V: in range by the averages")
         for slot, (cell, _) in enumerate(kit, start=1):
             print(f"  goal: (in-slot {cell} agv1 s{slot})")
     else:

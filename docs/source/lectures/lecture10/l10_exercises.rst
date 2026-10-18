@@ -13,7 +13,7 @@ Exercises
 
 Six take-home exercises built on the L10 slides and their running examples:
 slot 1 of AGV 1, the camera 1.0 m above the assembly table, the RRT-Connect
-toy, the cell on the moving conveyor, and the skill failure results.
+toy, the conveyor catch, and the skill failure codes.
 Exercises 1, 2, 4 and 5 mix paper arithmetic with a change to one of the
 :doc:`L10 scripts <l10_code>`. Exercise 3 changes ``tf_failures.py``.
 Exercise 6 is paper only, and is the one closest to GP4.
@@ -493,15 +493,15 @@ Exercise 6 is paper only, and is the one closest to GP4.
       (22.51 m to 32.18 m) is larger than the change.
 
 
-.. dropdown:: Exercise 5. The Conveyor, With More Runs
+.. dropdown:: Exercise 5. The Conveyor Catch, With More Runs
    :icon: number
    :class-container: sd-border-primary
    :class-title: sd-font-weight-bold
 
    **Goal**
 
-   Predict a cell's position from a speed history, find the latest moment
-   the arm can start, and check both with ``conveyor_intercept.py``.
+   Decide by hand whether the course skill accepts a catch, find which check
+   refuses it, and check your answers with ``conveyor_intercept.py``.
 
    .. raw:: html
 
@@ -509,18 +509,17 @@ Exercise 6 is paper only, and is the one closest to GP4.
 
    **Part A. By hand**
 
-   Use the class numbers: the arm takes 1.5 s to reach the grasp, and it can
-   reach from 0.00 m to 0.45 m past the beam (both chosen for the example).
+   Use the package's numbers from class: beam at x = 0.60 m, catch point at
+   x = 1.40 m, ``side_lead_time`` 3.925 s, ``close_delay`` -0.15 s,
+   ``max_trigger_age`` 8.0 s. Times are seconds after the beam fired.
 
-   1. Run D: the belt runs at 0.1 m/s, stops 1.0 s after the beam fires, and
-      starts again at 0.1 m/s at 3.0 s. The arm starts at 2.0 s. Where is the
-      cell when the arm starts, and when it arrives? Can the arm take it?
-   2. In run D, what would "current speed × elapsed time" give at the
-      meeting time, and how far off is it?
-   3. With the belt at 0.1 m/s the whole time, what is the latest time the
-      arm can start and still meet the cell inside the reach?
-   4. The feed is one cell every 10 s. Below what belt speed would two cells
-      sit inside the 0.45 m reach at once?
+   1. The belt runs at 0.1 m/s. The goal is sent at 4.0 s. Is the catch
+      accepted? If so, when do the fingers close?
+   2. The same, with the goal sent at 4.1 s.
+   3. The goal is sent at 2.0 s, and the belt slows to 0.05 m/s at 5.0 s.
+      What does the skill do, and where is the cell when the belt slows?
+   4. Your team sets the belt to 0.05 m/s. When does the cell reach the
+      catch point? A goal is sent at 9.0 s: which check refuses it?
 
    .. raw:: html
 
@@ -533,62 +532,69 @@ Exercise 6 is paper only, and is the one closest to GP4.
 
       .. code-block:: python
 
-         plan("D. belt stops at 1.0 s, restarts at 3.0 s",
-              [(0.0, 0.1), (1.0, 0.0), (3.0, 0.1)], 2.0)
-         plan("E. belt at 0.1 m/s, arm starts after 2.9 s",
-              [(0.0, 0.1)], 2.9)
-         plan("F. belt at 0.1 m/s, arm starts after 3.0 s",
-              [(0.0, 0.1)], 3.0)
+         run("E. goal sent at t = 4.0 s", [(0.0, SPEED)], 4.0)
+         run("F. goal sent at t = 4.1 s", [(0.0, SPEED)], 4.1)
+         run("G. goal sent at t = 2.0 s, belt slows at t = 5.0 s",
+             [(0.0, SPEED), (5.0, 0.05)], 2.0)
 
-      Run it and compare with Part A.
+      Run it and compare with questions 1 to 3.
+   6. In a second copy, set ``SPEED = 0.05`` and add two runs before the
+      ``feed_rate`` line:
+
+      .. code-block:: python
+
+         run("H. goal sent at t = 7.0 s", [(0.0, SPEED)], 7.0)
+         run("I. goal sent at t = 9.0 s", [(0.0, SPEED)], 9.0)
+
+      Run it and compare with question 4.
 
    .. dropdown:: Solution
       :color: success
 
-      **1.** Add the distance piece by piece.
+      **1.** The cell reaches the catch point at (1.40 - 0.60) / 0.1 = 8.0 s.
 
-      1. From 0 to 1.0 s: 0.1 × 1.0 = 0.10 m.
-      2. From 1.0 to 2.0 s, stopped: 0 m. When the arm starts the cell is at
-         0.10 m.
-      3. From 2.0 to 3.0 s, still stopped: 0 m.
-      4. From 3.0 to 3.5 s (the arm arrives at 2.0 + 1.5 = 3.5 s):
-         0.1 × 0.5 = 0.05 m.
-      5. At 3.5 s: 0.10 + 0.05 = **0.15 m**, inside the reach. The arm can
-         take it.
+      1. Time left: 8.0 - 4.0 = 4.0 s, more than 3.925 s. Accepted.
+      2. The fingers close at 8.0 - 0.15 = **7.85 s**.
 
-      **2.** At 3.5 s the belt runs at 0.1 m/s again, so
-      0.1 × 3.5 = 0.35 m. That is 0.35 - 0.15 = 0.20 m too far along the
-      belt: the 2.0 s the belt stood still, at 0.1 m/s.
+      **2.** Time left: 8.0 - 4.1 = 3.9 s, less than 3.925 s. **Refused**
+      before any motion (``PRECONDITION_FAILED``). The latest goal is
+      8.0 - 3.925 = 4.075 s.
 
-      **3.** The arm meets the cell 1.5 s after it starts. The cell must be at
-      most 0.45 m out then, so the meeting time is at most 0.45 / 0.1 = 4.5 s
-      after the beam, and the start at most 4.5 - 1.5 = **3.0 s**.
+      **3.** The goal is accepted at 2.0 s (6.0 s left). At 5.0 s the belt
+      speed changes, so the skill stops waiting, does not close, retreats,
+      and ends **PRECONDITION_FAILED**. The cell is then at
+      0.60 + 0.1 × 5.0 = **1.10 m**. The skill does not know that.
 
-      **4.** The cells are (speed × 10 s) apart. Two fit inside 0.45 m when
-      that gap is less than 0.45 m: speed × 10 < 0.45, so a speed below
-      0.45 / 10 = **0.045 m/s**. At the class speed of 0.1 m/s they are
-      1.0 m apart.
+      **4.** At 0.05 m/s: 0.80 / 0.05 = **16.0 s**. A goal at 9.0 s would pass
+      the time check (16.0 - 9.0 = 7.0 s left, more than 3.925 s), but the
+      trigger is 9.0 s old, older than ``max_trigger_age`` (8.0 s), so that
+      check refuses it. For a slower belt, raise ``max_trigger_age`` in your
+      copy of ``skills.yaml`` (its comment there says so).
 
       **5.** The three new runs print:
 
       .. code-block:: text
 
-         D. belt stops at 1.0 s, restarts at 3.0 s
-           arm starts at t = 2.0 s, cell at 0.10 m
-           arm meets it at t = 3.5 s, cell at 0.15 m
-           in reach: move
-         E. belt at 0.1 m/s, arm starts after 2.9 s
-           arm starts at t = 2.9 s, cell at 0.29 m
-           arm meets it at t = 4.4 s, cell at 0.44 m
-           in reach: move
-         F. belt at 0.1 m/s, arm starts after 3.0 s
-           arm starts at t = 3.0 s, cell at 0.30 m
-           arm meets it at t = 4.5 s, cell at 0.45 m
-           in reach: move
+         E. goal sent at t = 4.0 s
+           cell at the catch x at t = 8.00 s; close at t = 7.85 s
+           belt kept its speed: caught, holding CELL
+         F. goal sent at t = 4.1 s
+           refused, no motion: cell due in 3.90 s, arm needs 3.925 s
+         G. goal sent at t = 2.0 s, belt slows at t = 5.0 s
+           cell at the catch x at t = 8.00 s; close at t = 7.85 s
+           t = 5.0 s, belt changed: PRECONDITION_FAILED, not closed
+           cell was at x = 1.10 m; the beam saw it at x = 0.60 m
 
-      Run F starts at the latest time from Part A and lands exactly on the
-      0.45 m edge. Run B in class started at 3.5 s, 0.5 s later, and was out
-      of reach.
+      **6.** The two new runs print (runs A to D change too, at the slower
+      belt):
+
+      .. code-block:: text
+
+         H. goal sent at t = 7.0 s
+           cell at the catch x at t = 16.00 s; close at t = 15.85 s
+           belt kept its speed: caught, holding CELL
+         I. goal sent at t = 9.0 s
+           refused, no motion: trigger 9.0 s old, limit 8.0 s
 
 
 .. dropdown:: Exercise 6. Failure Results and a Tool Description
@@ -607,17 +613,18 @@ Exercise 6 is paper only, and is the one closest to GP4.
 
    **Part A. Which result?**
 
-   For each case, name the failure result the skills package is planned to
-   return. Where the L9 rule from the slides applies, say whether your code
-   retries or replans.
+   For each case, name the code the skills package returns. Where the L9
+   rule from the slides applies, say whether your code retries or replans.
 
-   1. Your agent calls place on inspection robot 2, but its gripper is empty.
-   2. AGV 1 is still at the assembly station when place is called.
+   1. Your agent calls ``place_in_slot`` on inspection robot 2, but its
+      gripper is empty.
+   2. AGV 1 is still at the assembly station when ``place_in_slot`` is
+      called.
    3. The TF2 lookup of ``agv1_slot3_frame`` fails.
    4. The gripper closes on a cell, and after the lift nothing is held.
    5. The trajectory controller stops the trajectory halfway.
-   6. Inspection robot 2 waits for the voltage tester zone, and the lock is
-      not free in time.
+   6. ``pick_from_tester`` on inspection robot 2 waits for the tester area,
+      and the lock is not free within 120 s.
    7. Your tree cancels the goal because a high-priority order arrived.
 
    .. raw:: html
@@ -626,7 +633,8 @@ Exercise 6 is paper only, and is the one closest to GP4.
 
    **Part B. A tool description**
 
-   8. Write the tool description your GP4 agent would get for the place skill:
+   8. Write the tool description your GP4 agent would get for
+      ``place_in_slot``:
       what it does, its preconditions, and each failure result it can return.
       Who moves the AGV if the precondition on its station fails?
 
@@ -645,47 +653,50 @@ Exercise 6 is paper only, and is the one closest to GP4.
    .. dropdown:: Solution
       :color: success
 
-      **1. Precondition failed** (nothing held). The slides' rule does not
+      **1.** ``PRECONDITION_FAILED`` (nothing held). The slides' rule does not
       list this case. The plan assumed a held cell, so the world is not what
       the plan assumed, the reason the rule gives for replanning.
 
-      **2. Precondition failed** (AGV at the wrong station). The L9 rule:
+      **2.** ``PRECONDITION_FAILED`` (AGV at the wrong station). The L9 rule:
       replan. An agent that reads the reason can move the AGV and try again.
 
-      **3. Place not found.** The L9 rule: replan.
+      **3.** ``PLACE_NOT_FOUND``. The L9 rule: replan.
 
-      **4. Grasp failed.** The L9 rule: a candidate for one local retry.
+      **4.** ``GRASP_FAILED``. The L9 rule: a candidate for one local retry.
 
-      **5. Execution failed.** The slides give no rule for it; your tree or
+      **5.** ``EXECUTION_FAILED``. The slides give no rule for it; your tree or
       agent decides (L11 covers recovery).
 
-      **6. Zone busy.** The skill is planned to leave every shared zone and
-      report what it holds.
+      **6.** ``ZONE_BUSY_TIMEOUT``. The other robot held the tester area for
+      more than 120 s (``zone_wait``), and the arm never entered it. The
+      slides give no rule for it; your tree or agent decides.
 
-      **7. Canceled.** The skill is planned to stop the trajectory, retreat,
-      release its zone locks, and return "canceled" with what it holds.
+      **7.** ``CANCELED``. The skill stops the trajectory, retreats, releases
+      its zone lock, and returns ``CANCELED`` with what it holds.
 
       **8.** One possible description:
 
       .. code-block:: text
 
-         place_in_tray_slot(robot, agv, slot)
-         Places the cell the robot holds into a tray slot of an AGV.
+         place_in_slot(agv, slot)
+         Inspection robot 2 places the cell it holds in tray slot `slot`
+         (1 to 4) of AGV `agv` (1 to 3).
          Preconditions:
            - the robot holds a cell;
            - the AGV is at the inspection station (check /agvN/info).
-         Failure results:
-           - precondition failed: no cell held, or AGV at the wrong station;
-           - place not found: the slot frame lookup failed;
-           - no path found: both planners failed;
-           - grasp failed: the cell was lost on the way;
-           - execution failed: the controller stopped, or a stage timed out;
-           - zone busy: a shared zone stayed locked too long;
-           - canceled: the caller canceled the goal.
+         Failure codes:
+           - PRECONDITION_FAILED: no cell held, agv or slot out of range,
+             or the AGV not at the inspection station;
+           - PLACE_NOT_FOUND: the slot frame lookup failed;
+           - PLANNING_FAILED: Pilz, then OMPL, found no path;
+           - GRASP_FAILED: the cell slipped out before release;
+           - EXECUTION_FAILED: the controller stopped, or a stage timed out;
+           - CANCELED: the caller canceled the goal.
          Every result says what the robot holds.
 
-      The name and arguments are made up for this exercise; the package's
-      real action names will be on its documentation page. If the AGV is at
+      The action is the package's own, ``/inspection_robot_2/skills/place_in_slot``
+      (see the :doc:`Course Skills Package </ariac/skills>` page). It takes no
+      zone, so it never returns ``ZONE_BUSY_TIMEOUT``. If the AGV is at
       the wrong station, your code moves it with ARIAC's own ``/agvN/move``
       action. Moving an AGV is not a skill.
 

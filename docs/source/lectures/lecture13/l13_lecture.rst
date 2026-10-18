@@ -6,21 +6,24 @@ Lecture
 
    These notes follow the L13 slides shown in class, in the same order and
    with the same sections, so you can read them at home. Every program output
-   below comes from running ``er_demo.py`` and ``score_er.py`` with Python
-   3.12.3, ``google-genai`` 2.29.0, ``httpx`` 0.28.1 and ``jsonschema``
-   4.10.3. The scripts and how to run them are on the
-   :doc:`code page <l13_code>`.
+   below comes from running ``er_demo.py``, ``er_rerun.py`` and
+   ``score_er.py`` with Python 3.12.3, ``google-genai`` 2.31.0, ``httpx``
+   0.28.1 and ``jsonschema`` 4.26.0. The scripts and how to run them are on
+   the :doc:`code page <l13_code>`.
 
 .. admonition:: Class logistics for this week
    :class: warning
 
-   - **There is no quiz this week and nothing is due.** The five quizzes
-     ended in Week 12.
+   - **There is no quiz this week.** The five quizzes ended in Week 12.
+   - **The final demo code freeze is Friday, April 30, at 11:59 pm**, two
+     days after this class: push your code-freeze tag and submit your team
+     configuration file (see :ref:`l13-final-demo`).
    - **The final demo is next week**, Week 15 (Wednesday, May 5). The last
      part of class is for your questions about it.
 
-The reference pages quoted below were read on 2026-10-12. They change often,
-so the quotes are checked again the week before class.
+The reference pages quoted below were read on 2026-10-12 and checked again on
+2026-10-18. They change often, so the quotes are checked again the week before
+class.
 
 
 .. _l13-physical-ai:
@@ -32,8 +35,9 @@ Physical AI and This Course
   reasons about the factory and calls classical robot skills.
 - This lecture surveys the other side, where learned models produce the
   robot's motions.
-- It is a survey: no policy training and no GPU. No quiz this week and
-  nothing is due.
+- It is a survey: no policy training and no GPU. No quiz this week.
+- The final demo code freeze is Friday, April 30, at 11:59 pm, two days
+  after this class.
 
 
 Two Kinds of Physical AI System
@@ -52,6 +56,9 @@ The last two verbs give two kinds of system:
   side, the subject of this lecture.
 - **Orchestrate:** an agent decides what happens next and calls skills that
   carry it out. This is the side the course built.
+
+The course's own term, agentic physical AI, is the orchestrate kind (L1,
+:ref:`l1-agentic-physical-ai`).
 
 
 The Stack Your Team Has Now, on the L2 Layers
@@ -151,8 +158,8 @@ Five VLAs
 `openpi <https://github.com/Physical-Intelligence/openpi>`_)
 
 - pi-0 is "a flow-based vision-language-action model (VLA)".
-- pi-0.5 is "an upgraded version of :math:`\pi_0` with better open-world
-  generalization."
+- pi-0.5 is "an upgraded version of pi0 with better open-world
+  generalization." (README, Updates list)
 - The base checkpoints are "pre-trained on 10k+ hours of robot data."
 - The README writes the names with Greek letters: :math:`\pi_0` and
   :math:`\pi_{0.5}`.
@@ -162,8 +169,8 @@ Five VLAs
 
 - The page calls its VLA a model "that converts vision and language input
   into motor control."
-- On 2026-10-12 the current versions are Gemini Robotics 2 and Gemini
-  Robotics ER 2, written with no hyphen.
+- The current models include Gemini Robotics 2 and Gemini Robotics ER 2
+  (page read 2026-10-18), written with no hyphen.
 
 **NVIDIA Isaac GR00T** (`README <https://github.com/NVIDIA/Isaac-GR00T>`_)
 
@@ -184,51 +191,60 @@ The Dated Events of These Models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The timeline places each model by the month of a dated event. Only the
-horizontal position carries data; the labels alternate above and below the
+horizontal position carries data; the tags alternate above and below the
 line so they do not overlap.
 
 .. image:: /_static/images/l13/model_timeline.svg
    :alt: A horizontal timeline from June 2024 to October 2026 with year marks
-         at 2025 and 2026. Dots, left to right: OpenVLA, Jun 2024; pi-0, Oct
-         2024; SmolVLA, Jun 2025; pi-0.5 in openpi, Sep 2025; GR00T N1.7, Apr
-         2026; Gemini Robotics ER 2, Jul 2026; ER 1.6 deprecated, Aug 2026.
-         Labels alternate above and below the axis; only the horizontal
-         position carries data.
+         at 2025 and 2026. Seven numbered dots, left to right, each with its
+         month: tag 1, Jun 2024; tag 2, Oct 2024; tag 3, Jun 2025; tag 4, Sep
+         2025; tag 5, Apr 2026; tag 6, Jul 2026; tag 7, Aug 2026. Tags
+         alternate above and below the axis; only the horizontal position
+         carries data.
    :width: 90%
    :align: center
 
-Gemini Robotics 2 is not on the line: its page gives no date. The table gives
-the source of each date (all read on 2026-10-12).
+The table gives each tag's event and the source of its date (read on
+2026-10-12, checked again on 2026-10-18). Gemini Robotics 2 is not on the
+line: its page gives no date.
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 17 53
+   :widths: 5 28 17 50
    :class: compact-table
 
-   * - **Event**
+   * - **Tag**
+     - **Event**
      - **Date**
      - **Source**
-   * - OpenVLA paper, version 1
+   * - 1
+     - OpenVLA paper, version 1
      - 13 Jun 2024
      - `arXiv 2406.09246 <https://arxiv.org/abs/2406.09246>`_, submission
        date
-   * - pi-0 paper, version 1
+   * - 2
+     - pi-0 paper, version 1
      - 31 Oct 2024
      - `arXiv 2410.24164 <https://arxiv.org/abs/2410.24164>`_, submission
        date
-   * - SmolVLA blog post
+   * - 3
+     - SmolVLA blog post
      - 3 Jun 2025
      - Hugging Face blog, publication date
-   * - pi-0.5 released in openpi
+   * - 4
+     - pi-0.5 released in openpi
      - Sep 2025
      - openpi README, Updates list
-   * - GR00T N1.7 release
+   * - 5
+     - GR00T N1.7 release
      - 18 Apr 2026
      - GitHub release ``n1.7-release``, publication date
-   * - Gemini Robotics ER 2 preview
+   * - 6
+     - Gemini Robotics ER 2 preview
      - Jul 2026
      - Gemini API robotics page, "Latest update"
-   * - Gemini Robotics ER 1.6
+   * - 7
+     - Gemini Robotics ER 1.6 deprecated
      - 31 Aug 2026
      - Same page: "deprecated on August 31, 2026"
 
@@ -284,8 +300,9 @@ Two-System Designs
 ------------------
 
 A **two-system design** puts a slow model, for meaning and planning, above a
-fast control policy. The 2026 VLA web check recorded in the course design log
-found this to be the dominant VLA design.
+fast control policy. SmolVLA's authors call a vision-language model combined
+with an action prediction module "a common design pattern in recent VLA
+systems" (Hugging Face blog).
 
 
 Two Forms of the Split
@@ -317,14 +334,16 @@ A Single VLA, a Two-System VLA and Your Stack
    :alt: Three block diagrams side by side. Panel 1: camera images and a
          language instruction go into one VLA model, which outputs robot
          actions. Panel 2: the same inputs go into a slow reasoning model (an
-         ER model or a VLM, blue), whose output goes straight to a fast policy
-         (a VLA or an action expert, orange), marked tag 4, which outputs
-         robot actions. Panel 3: ARIAC topics and services, lidar and camera
-         go into an LLM agent or PDDL planner (blue), then through a tool call
-         marked tag 5 to the behavior tree (green), then to the skills package
-         and MoveIt 2 (orange), which send ARIAC trajectory and gripper
-         actions. Dashed arrows marked tag 6 go back up from the skills to the
-         tree and from the tree to the agent.
+         ER model or a VLM, blue), whose output goes straight down to a fast
+         policy (a VLA or an action expert, orange), marked tag 4, which
+         outputs robot actions. A dashed arrow marked tag 5 goes from the
+         robot actions back up to the slow model. Panel 3: ARIAC topics and
+         services, lidar and camera go into an LLM agent or PDDL planner
+         (blue), then through a tool call marked tag 6 to the behavior tree
+         (green), then to the skills package and MoveIt 2 (orange), which
+         send ARIAC trajectory and gripper actions. Dashed arrows marked tag
+         7 go back up from the skills to the tree and from the tree to the
+         agent.
    :width: 95%
    :align: center
 
@@ -333,8 +352,10 @@ A Single VLA, a Two-System VLA and Your Stack
    and action expert).
 3. Your stack.
 4. The slow model's output goes straight to the policy.
-5. A tool call, checked against a JSON schema (L8).
-6. Status and failure reasons move up.
+5. Gemini Robotics only: the ER model can judge progress and success from
+   video. SmolVLA has no such path.
+6. A tool call, checked against a JSON schema (L8).
+7. Status and failure reasons move up.
 
 Colors: blue is the deliberative role, green the executive role, orange the
 reactive role, gray no layer role.
@@ -355,7 +376,9 @@ Mapping the Split onto the Course
      - The ER model or VLM: reasons about the scene, calls functions
      - The GP4 agent: reasons about the scene, calls tools
    * - Executive
-     - None: the policy acts on the slow model's output directly
+     - SmolVLA: none, the action expert acts on the VLM's features directly.
+       Gemini Robotics: the ER model can judge progress and success (see
+       below)
      - The behavior tree: checks each skill result before the next step and
        stops cleanly on failure (L4, L7, L11)
    * - Reactive
@@ -364,6 +387,27 @@ Mapping the Split onto the Course
 
 The slow system matches your agent closely. The fast system does not: yours
 is classical motion planning, not a learned policy.
+
+
+What Checks Each Step, Design by Design
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Your stack.** The behavior tree checks each skill result before the next
+step and stops cleanly on failure (L4, L7, L11). These checks are code.
+
+**SmolVLA.** Nothing between the two parts checks each step: the VLM passes
+its features straight to the action expert. Helix (L2) works the same way.
+
+**Gemini Robotics.** The `Gemini API robotics page
+<https://ai.google.dev/gemini-api/docs/robotics-overview>`_ (read 2026-10-18)
+says Gemini Robotics ER 2 "specializes in embodied reasoning capabilities,
+such as agentic orchestration of robots (e.g. using VLAs), robot video
+understanding including progress understanding and success detection,
+instrument reading, pointing, and spatial reasoning."
+
+So the ER model can do executive work: it can judge from the robot's video
+whether a step succeeded. That judgment comes from a learned model, not from
+a coded check of a skill result.
 
 
 What Crosses the Interface
@@ -378,9 +422,10 @@ What Crosses the Interface
    :class: important
 
    - Your architecture has the deliberative and reactive roles of a
-     two-system VLA, plus an executive layer the VLA lacks.
+     two-system VLA, plus an executive layer that SmolVLA lacks.
    - The differences are three: what sits in the fast layer, what crosses
-     the interface, and whether anything checks each step.
+     the interface, and what checks each step (nothing in SmolVLA, a learned
+     judgment in Gemini Robotics, code in your behavior tree).
    - These three differences are where the auditability comparison in
      :ref:`l13-cost` starts.
 
@@ -465,8 +510,8 @@ A Learned Policy Is Judged by Outcomes over Many Runs
 
 - A learned policy has no readable plan to check, so you judge it by what
   happens over many runs.
-- L12's sample-size rule applies: how many runs, and how much the result
-  varies between runs.
+- L12's run-count rule applies ("How Many Runs a Claim Needs"): how many
+  runs, and how much the result varies between runs.
 - A rate from a few runs can only take a few values. With 4 runs (chosen for
   this example), one run moves a success rate by 1 / 4 = 0.25, so the rate
   can only be 0, 0.25, 0.50, 0.75 or 1.
@@ -515,17 +560,17 @@ GPU Memory Each Step Needs, as the Sources List It
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The chart shows the GPU memory each source lists for running a model and for
-fine-tuning it. Each value is a lower bound ("more than" or "or more"), so a
-bar shows the least memory the source asks for.
+fine-tuning it. Five values are lower bounds ("more than" or "or more"), so
+their bars show the least memory the source asks for. The GR00T fine-tuning
+value is what its README calls "recommended", not a minimum.
 
 .. image:: /_static/images/l13/gpu_memory.svg
    :alt: A horizontal bar chart. The horizontal axis is the GPU memory the
-         source lists, in GB, from 0 to 80, as a lower bound. The vertical
-         axis lists six steps. Course stack (hosted API): no bar, no GPU
-         assumed. openpi, run the model: more than 8 GB. GR00T, run the model:
-         16 GB or more. openpi, LoRA fine-tuning: more than 22.5 GB. GR00T,
-         fine-tuning: 40 GB or more per GPU. openpi, full fine-tuning: more
-         than 70 GB.
+         source lists, in GB, from 0 to 80. The vertical axis lists six steps.
+         Course stack (hosted API): no bar, no GPU assumed. openpi, run the
+         model: more than 8 GB. GR00T, run the model: 16 GB or more. openpi,
+         LoRA fine-tuning: more than 22.5 GB. GR00T, fine-tuning: 40 GB or
+         more, recommended. openpi, full fine-tuning: more than 70 GB.
    :width: 90%
    :align: center
 
@@ -564,9 +609,9 @@ The step: place a cell in voltage tester 1.
 .. admonition:: Auditability
    :class: important
 
-   The course design log puts it this way: LLM-based plans produce
-   inspectable traces; learned-policy failures are opaque. With a VLA, you
-   see what the robot did, not a readable reason.
+   The instructor's view: an LLM-based plan leaves a trace a person can
+   inspect, and a learned policy's failure leaves no readable reason. With a
+   VLA, you see what the robot did, not why.
 
 
 Rows 4 and 5: Failure Modes and New Tasks
@@ -665,8 +710,10 @@ Lab Example 2: LLM Agents Run a Modular Production Line
 
 `Xia, Jazdi, Zhang, Shah and Weyrich, University of Stuttgart
 <https://arxiv.org/abs/2409.18009>`__ (IEEE ETFA 2025): a manager agent turns
-an order into a production plan, and operator agents send function calls to
-the automation modules, which do the physical work.
+an order into a production plan, and operator agents control the automation
+modules, which do the physical work. Each operator agent's LLM output holds a
+function call, "the concrete command that will be executed on the automation
+module" (p. 3 of the arXiv version). The command goes straight to the module.
 
 .. list-table:: GPT-4o on 100 test points (the paper's Table II)
    :header-rows: 1
@@ -683,12 +730,14 @@ the automation modules, which do the physical work.
      - 100%
 
 The authors write: "An accuracy of less than 100% means that the results are
-not fully reliable for directly controlling an automation system". They
-propose an assistant whose actions human supervisors approve.
+not fully reliable for directly controlling an automation system" (p. 7).
+Human approval is something the authors propose: "they can be developed as an
+assistant system, proposing next actions for human supervisors to approve"
+(p. 7).
 
 
-Industry Example: Amazon DeepFleet, at Production Scale
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Industry Example: Amazon DeepFleet
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 `Amazon Science blog
 <https://www.amazon.science/blog/amazon-builds-first-foundation-model-for-multirobot-coordination>`__
@@ -696,26 +745,31 @@ Industry Example: Amazon DeepFleet, at Production Scale
 
 - A foundation model trained on data from Amazon fulfillment and sortation
   centers. It is a learned model, not an LLM agent.
-- Amazon reports it helps assign tasks and route robots around congestion,
-  "increasing the efficiency of our robot deployments by 10%".
-- Today it advises the existing fleet planner: Amazon is "initially using
-  them to predict congestion, with the longer-term goal of using them to
-  produce outputs like assignments of robots to specific retrieval tasks and
-  target locations".
+- Amazon reports that DeepFleet "can already help assign tasks to our robots
+  and route them around potential congestion, increasing the efficiency of
+  our robot deployments by 10%".
+- The models are still being developed: Amazon is "initially using them to
+  predict congestion, with the longer-term goal of using them to produce
+  outputs like assignments of robots to specific retrieval tasks and target
+  locations".
 
 .. note::
 
-   Production scale today: a learned model advises a classical planner. The
-   two LLM examples are lab work, and both keep a check between the LLM and
-   the robots.
+   The two LLM examples are lab work. Lim and Kovalenko check each LLM answer
+   before it runs. In Xia et al., the LLM's commands go straight to the
+   modules, and the authors say an accuracy under 100% is not reliable enough
+   for that.
 
 
 What the Examples Show
 ~~~~~~~~~~~~~~~~~~~~~~
 
-- Published work so far is pilots and research. In each case, the LLM or
-  model proposes, and a check, a planner or a person decides. Motion and
-  control stay classical.
+- The two LLM examples are pilots and research. DeepFleet, a learned model,
+  is the one example that Amazon reports already helping in its robot
+  deployments.
+- In both lab examples, the LLM decides and classical controllers do the
+  motion: each robot's own controller (Lim and Kovalenko) or the automation
+  modules (Xia et al.).
 - The Gemini Robotics page says Gemini Robotics 2 "can coordinate multiple
   robots to work together in shared spaces."
 
@@ -756,13 +810,20 @@ demo.
 
 .. warning::
 
-   **The model in this section is a scripted stand-in.** A real model's
-   answers vary. No API key was used. The client code is the real
-   ``google-genai`` SDK; only the server's answers are scripted.
+   **This section has two kinds of output.**
 
-   Code: ``lecture13/code/er_demo.py`` and ``score_er.py``, run with
-   ``run_all.sh`` (see :doc:`l13_code`). Versions: Python 3.12.3,
-   ``google-genai`` 2.29.0, ``httpx`` 0.28.1, ``jsonschema`` 4.10.3.
+   - **Scripted model: fixed replies.** The first parts run offline. A
+     scripted stand-in answers instead of the model server, and no API key
+     is used. The client code is the real ``google-genai`` SDK; only the
+     server's answers are scripted.
+   - **Run 1 and Run 2:** the real model on 12 ARIAC camera images. Each run
+     was recorded once, on 2026-10-18, with
+     ``gemini-robotics-er-2-preview``. A rerun gives different answers.
+
+   Code: ``lecture13/code/er_demo.py``, ``er_rerun.py`` and ``score_er.py``;
+   ``run_all.sh`` runs the offline parts (see :doc:`l13_code`). Versions:
+   Python 3.12.3, ``google-genai`` 2.31.0, ``httpx`` 0.28.1, ``jsonschema``
+   4.26.0.
 
 
 What an Embodied-Reasoning Model Is, and Which One
@@ -789,7 +850,8 @@ The Final Demo's ER Step, in Five Steps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Capture** one image from an RGB camera placed through your team config,
-   over the inspection conveyor.
+   beside the inspection conveyor: a cell stands upright, and its defects are
+   on its side.
 2. **Ask:** send the image and one question to the model, and ask for the
    answer in a JSON format (L8).
 3. **Check** the answer against a JSON schema, as GP4 does for the agent.
@@ -810,7 +872,7 @@ Step 2: The Question
 
 .. literalinclude:: code/er_demo.py
    :language: python
-   :lines: 29-36
+   :lines: 41-48
    :caption: lecture13/code/er_demo.py (excerpt)
 
 - The prompt names the three ARIAC defect types and describes each one in
@@ -826,7 +888,7 @@ Step 2: The Call
 
 .. literalinclude:: code/er_demo.py
    :language: python
-   :lines: 121-131
+   :lines: 134-145
    :caption: lecture13/code/er_demo.py (excerpt)
 
 - ``client.interactions.create`` with a model, an input list and a generation
@@ -835,27 +897,40 @@ Step 2: The Call
   instead (base64 text in the ``data`` field).
 - "For thinking level use medium for a good balance between latency and
   performance" (same page).
+- ``extra`` is empty offline and in Run 1. Run 2 passes two arguments through
+  it (see :ref:`l13-run2-call`).
 
 
 How the Stand-In Replaces the Server
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   This part is in the notes only. The slides keep one line for it.
+
 .. literalinclude:: code/er_demo.py
    :language: python
-   :lines: 102-118
+   :lines: 115-131
    :caption: lecture13/code/er_demo.py (excerpt)
 
 - ``httpx.MockTransport`` catches each request before it leaves the machine
   and returns the next scripted answer. ``httpx`` is the HTTP library the SDK
   uses to send requests.
 - With a real key, you drop the mock client: the rest of the code stays the
-  same. The :doc:`code page <l13_code>` lists what you need for that.
+  same. Run 1 and Run 2 do this with ``make_live_client``, a plain ``httpx``
+  client that saves each request and response with the key removed. The
+  :doc:`code page <l13_code>` lists what you need for that.
 
 
 The Request the SDK Sends
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The body of the first call, from ``outputs/er_demo.txt``:
+.. note::
+
+   This part is in the notes only. The slides keep one line for it.
+
+Scripted model: fixed replies. The body of the first call, from
+``outputs/er_demo.txt``:
 
 .. literalinclude:: outputs/er_demo.txt
    :language: text
@@ -869,8 +944,8 @@ the prompt when it prints them.
 Step 3: The Answer and the Schema Check
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The answers come from the scripted stand-in, and the cell IDs are chosen for
-this example:
+Scripted model: fixed replies. The answers come from the scripted stand-in,
+and the cell IDs are chosen for this example:
 
 .. literalinclude:: outputs/er_demo.txt
    :language: text
@@ -930,7 +1005,7 @@ For one defect type, over the cells used:
 
 .. literalinclude:: code/score_er.py
    :language: python
-   :lines: 39-44
+   :lines: 58-63
    :caption: lecture13/code/score_er.py (excerpt)
 
 
@@ -941,9 +1016,10 @@ The Comparison Table for 12 Cells
    :language: text
    :caption: outputs/score_er.txt
 
-The ground truth and the lidar labels are chosen for this example, and the ER
-labels come from the scripted stand-in. The table shows how to score; it says
-nothing about how a real model or a real detector does.
+Scripted model: fixed replies. The ground truth and the lidar labels are
+chosen for this example, and the ER labels come from the scripted stand-in.
+The table shows how to score; it says nothing about how a real model or a
+real detector does.
 
 
 Reading the Table, Step by Step
@@ -963,13 +1039,271 @@ Reading the Table, Step by Step
 
 .. warning::
 
-   Each type has 2 defective cells here, so one cell moves recall by 1 / 2 =
+   Scripted model: fixed replies. Each type has 2 defective cells here, so
+   one cell moves recall by 1 / 2 =
    0.50. With so few cells, a difference between the two detectors can be
    one cell. Use many more cells (L12).
 
 
+.. _l13-real-runs:
+
+The Real Model: Two Runs on 12 ARIAC Images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- One ARIAC session (trial ``LEC13001``, seed 2) fed 12 Li-Ion cells past a
+  1080p camera and saved one image per cell. ARIAC's cell log
+  (``log_cell_info:=true``) is the ground truth: 8 cells have 9 defects in
+  all, and 4 have none.
+- The camera sits beside the belt, 0.20 m from the cell, looking 20 degrees
+  down (``code/config/l13_user_config.yaml`` in the slides repository).
+- The instructor chose the seed and the camera's side after replaying ARIAC's
+  random draws. The seed is the smallest one whose 12 cells have each defect
+  type 3 or more times and 3 or more good cells (``code/config/l13_trial.yaml``).
+  The side makes the side defects face the camera: 5 of the 9 point within 60
+  degrees of the direction to the camera (the angle between the defect's
+  outward direction and the line to the camera, ``angle_from_camera`` in
+  ``score_er.py``). Your team's camera would likely see fewer.
+- Two separate runs sent the same 12 images to the model, one call per image,
+  with no retry. Run 1 uses the call shown in :ref:`l13-demo` (Step 2). Run 2
+  adds structured output.
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+
+Run 1: The Schema Check Rejects Every Answer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From ``outputs/er_rec1.txt``, then ``outputs/score_er_rec1.txt``:
+
+.. literalinclude:: outputs/er_rec1.txt
+   :language: text
+   :lines: 28-30
+
+c02 to c08 (lines 31 to 51 of the file) carry the same fence. Then:
+
+.. literalinclude:: outputs/er_rec1.txt
+   :language: text
+   :lines: 52-54
+
+.. literalinclude:: outputs/score_er_rec1.txt
+   :language: text
+   :lines: 18-19
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+- All 8 answers came inside a Markdown code fence (c01 is shown; c02 to c08
+  are the same in ``er_rec1.txt``), although the prompt says "Answer only
+  with JSON". ``json.loads`` fails at the first character, so the deck's
+  check rejects all 8, and 0 of 12 cells are scored. The check worked: it
+  kept answers that are not JSON out of the scores.
+- Call 9 got HTTP 429. Google's message, in the error body
+  (``outputs/raw/er_rec1/c09.response.json``): "Rate limit exceeded for model
+  gemini-robotics-er-2-preview (limit: 5 requests per minute on Free Tier).
+  Please retry in 35s or upgrade your tier at https://ai.dev/rate-limit."
+- The recording does not fit a simple count per minute: the first 8 calls were
+  all answered within 34 s (their ``created`` times run from 09:29:48 to
+  09:30:22 UTC), and call 9 was refused. So the recording does not show how
+  the limit is counted.
+- The SDK waited and sent the call again. The recorder blocks every second
+  request, so c09 has no answer, and the run stopped: c10 to c12 were not
+  sent.
+- Both events matter to your team. You develop on your own free-tier key, so
+  you meet the same limit, and a schema check that rejects every answer
+  scores nothing.
+
+
+.. _l13-run2-call:
+
+Run 2: The Same Call, with Structured Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: code/er_demo.py
+   :language: python
+   :lines: 154-161
+   :caption: lecture13/code/er_demo.py (excerpt)
+
+- Each call is ``ask(client, png, **STRUCTURED)``. The model, the prompt and
+  the thinking level stay as in Run 1. The other two changes are the pacing
+  (calls start 13 s apart) and ``store``. 13 s is a choice, slower than 5
+  calls a minute; Run 2 shows it worked once (12 of 12 answered), not that a
+  shorter gap fails.
+- ``response_format`` "Enforces that the generated response is a JSON object
+  that complies with the JSON schema specified in this field"
+  (`Interactions API reference <https://ai.google.dev/api/interactions-api>`_,
+  read 2026-10-18). The schema is the deck's own ``ANSWER_SCHEMA``. Its
+  ``type`` field is a string ``enum``, which the
+  `structured output page <https://ai.google.dev/gemini-api/docs/structured-output>`_
+  lists among the supported keywords for strings.
+- Structured output is a request, so the deck's check still runs on every
+  answer. The structured output page says: "While output is syntactically
+  correct JSON, always validate values in your application."
+- ``store``: "Whether to store the response and request for later retrieval"
+  (API reference). The
+  `Interactions overview <https://ai.google.dev/gemini-api/docs/interactions-overview>`_
+  (read 2026-10-18) says: "By default, the API stores all Interaction
+  objects (store=true)", and "Free tier: The system retains interactions for
+  1 day." Run 2 sets it to ``False``; Run 1 used the default, so its 8
+  answered calls were stored. Run 2's responses carry no interaction ``id``,
+  and Run 1's do.
+
+.. warning::
+
+   **What you send on the free tier.** The
+   `pricing page <https://ai.google.dev/gemini-api/docs/pricing>`_ (read
+   2026-10-18) answers "Used to improve our products" with "Yes" for the free
+   tier of ``gemini-robotics-er-2-preview`` and "No" for the paid tier. Send
+   only images you may share.
+
+
+Run 2: All 12 Answers Pass the Check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From ``outputs/score_er_rec2.txt``:
+
+.. literalinclude:: outputs/score_er_rec2.txt
+   :language: text
+   :lines: 5-18
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+- All 12 calls were answered with no fence, and the check accepted all 12.
+  With 13 s between call starts, no call got HTTP 429.
+- The model named a defect on 6 cells, and all 6 have one. It said none on
+  c03 and c07. Neither scratch shows in the images: c03's faces away from
+  the camera, and c07's falls on the cell's dark side.
+- It named the right type only on the 3 bulges. c02 and c12 are dents called
+  bulges, and c04 is a scratch called a dent. On c10 it found the bulge, not
+  the dent that faces away (152 degrees from the camera).
+- c10 has two defects, so ``score_er.py`` scores each label as a set of types
+  (``set_counts``), not as the single label that ``counts`` compares on the
+  scripted example.
+
+
+Run 2: Precision and Recall per Type
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each rate below comes with a 95% interval (Wilson score): the range of true
+rates that these counts fit, at 95% confidence. It stays inside 0 to 1. L12's
+2 x SE rule would give a range of zero width at 0 of 3 or 3 of 3, because the
+SE of such a count is 0. The formula is in the footnote [#wilson]_.
+
+From ``outputs/score_er_rec2.txt``:
+
+.. literalinclude:: outputs/score_er_rec2.txt
+   :language: text
+   :lines: 20-34
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+.. warning::
+
+   Each type is on 3 cells, so one cell moves its recall by 1 / 3 = 0.33, and
+   DENT's precision rests on 1 call (one cell moves it by 1.00). Every
+   per-type 95% interval (Wilson score) is 0.56 to 0.79 wide. 12 cells cannot
+   rank this model against your lidar detector or another model; see
+   :ref:`l12-runs-a-claim-needs` in L12.
+
+.. [#wilson] Wilson score interval for :math:`k` of :math:`n`, with
+   :math:`\hat p = k / n` and :math:`z = 1.96`: center
+   :math:`(\hat p + z^2 / 2n) / (1 + z^2 / n)`, half width
+   :math:`\frac{z}{1 + z^2 / n} \sqrt{\hat p (1 - \hat p) / n + z^2 / 4n^2}`
+   (``wilson`` in ``score_er.py``). For 0 of 3: 0.00 to 0.56.
+
+
+Run 2: Where the Model Pointed
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: /_static/images/l13/er_points.png
+   :alt: Six close-up photo crops side by side, each of part of a blue Li-Ion
+         cell, with a black and white ring at the center and a numbered tag under it.
+         Tag 1: the ring sits on a bump in the cell's left outline. Tag 2:
+         the ring sits on a lighter, smeared patch near the bottom of the
+         cell, beside the label text. Tag 3: on a tilted cell, the ring sits
+         on a horizontal groove. Tag 4: the ring sits on a bump in the left
+         outline. Tag 5: the ring sits on a small lighter patch in the upper
+         part of the cell. Tag 6: the ring sits on a faint small patch
+         beside the label text.
+   :width: 95%
+   :align: center
+
+The model's type, then ARIAC's log:
+
+1. c01: BULGE (a bulge).
+2. c02: BULGE (a dent).
+3. c04: DENT (a scratch).
+4. c06: BULGE (a bulge).
+5. c10: BULGE (a bulge; its dent faces away).
+6. c12: BULGE (a dent).
+
+- Each ring is the model's point in pixels: row = y x 1080 / 1000, column =
+  x x 1920 / 1000. Each crop is 240 by 320 px of the 1920 by 1080 image,
+  centered on the point.
+- The instructor checked each ring by eye on the full image: every ring sits
+  on a bump, a patch or a groove.
+- The rings are not checked against a projected position. The camera model
+  puts the cell about 80 px (about 8 mm) off, so those positions are only
+  approximate. To locate a defect, your team finds the cell in the image
+  itself.
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+
+Run 2: Tokens, Latency and Cost
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   This part is in the notes only. The slides keep one line for it.
+
+From ``outputs/score_er_rec2.txt``:
+
+.. literalinclude:: outputs/score_er_rec2.txt
+   :language: text
+   :lines: 62-77
+
+.. note::
+
+   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
+   rerun gives different answers.
+
+- Every call had 1203 input tokens: 103 of text and 1100 for the image.
+  Thinking tokens are billed as output: for c01, 1203 + 51 + 332 = 1586, the
+  ``total_tokens`` the API reported.
+- The `pricing page <https://ai.google.dev/gemini-api/docs/pricing>`_ (read
+  2026-10-18) gives two price sets for the paid tier, per million tokens:
+  input "$1.00 (text / image / video / audio) through December 31, 2026" and
+  "$2.00 (text / image / video / audio) starting January 1, 2027"; output
+  (including thinking tokens) "$5.00 through December 31, 2026" and "$10.00
+  starting January 1, 2027".
+- The 12 calls cost $0.0307 at the 2026 prices and $0.0614 at the 2027
+  prices (the last line of the output above). The Spring 2027 semester runs
+  under the 2027 prices, so use those for your cost per call. The key is on
+  the free tier ("Free of charge"), so the run cost $0.
+- A call took 3.77 s on average. With 13 s between call starts, the whole run
+  took 147 s.
+
+
 Practical Points from the Sources
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   This part is in the notes only. The slides keep one line for it.
 
 **Gemini API robotics page.**
 
@@ -984,11 +1318,6 @@ Practical Points from the Sources
 
 - An RGB camera costs $800 at 1080p or $500 at 720p. It counts toward the
   sensor cost bonus, which pays only under the $9600 budget.
-- For the evaluation run, the instructor passes one course API key as an
-  environment variable at run time. No key is ever committed.
-
-In class, if model access is confirmed, the same code runs against the real
-model, and its real answer is shown, mistakes included.
 
 
 .. _l13-final-demo:
@@ -1009,10 +1338,42 @@ The Procedure
    instructor runs every team's Docker image on it, one after another on one
    machine, and records each run.
 3. **Class time:** presentations with the recorded runs, 5 to 6 minutes per
-   team, in an order drawn and posted before Week 15.
+   team, in an order drawn at random and posted this week.
 4. **RO01 teams:** your image runs on the same machine as every other team's,
    so you need no connection during the run. You present live in the class
    video meeting.
+
+
+Dates and Deliverables
+~~~~~~~~~~~~~~~~~~~~~~
+
+From the :doc:`final demo page </assignments/final_demo>`:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 24 76
+   :class: compact-table
+
+   * - **When**
+     - **What**
+   * - Fri, Apr 30, 11:59 pm
+     - Code freeze: push your code-freeze tag and submit your team
+       configuration file.
+   * - Sat, May 1
+     - The instructor builds every team's image. If yours does not build,
+       the instructor emails your team, and you have 24 hours to push a fix
+       tag that changes only build files (the Dockerfile and dependency
+       lists). That fix costs the 10 points of "Builds and runs from the
+       Dockerfile". If the fixed image still does not build, the run
+       criteria (75 points) score 0.
+   * - Tue, May 4, 11:59 pm
+     - RO01 teams: upload your talk as a 5 to 6 minute video to ELMS-Canvas.
+   * - Wed, May 5
+     - Each team has a 10-minute slot: 6 minutes of talk (5 minimum), 3
+       minutes of questions (one for each team member), 1 minute of
+       change-over.
+   * - After the demo
+     - Each team member fills in the peer-review form.
 
 
 The Run Rules
@@ -1032,9 +1393,11 @@ config, a fresh database, Record set to True and no cheat selected.
 - It sits in the repository root. It installs the dependencies, builds the
   ROS workspace, sources it in ``.bashrc``, and sets ``TEAM_CONFIG`` and
   ``TEAM_COMMAND``.
-- The instructor passes one course API key as an environment variable at
-  run time; no key is ever committed (course :doc:`AI setup page
-  </ariac/ai_setup>`).
+- For the evaluation run, the instructor passes one course API key as an
+  environment variable. Your README names the variable your model's SDK
+  reads (``GEMINI_API_KEY`` for Gemini). No key is ever committed
+  (:doc:`final demo page </assignments/final_demo>`, Task 5).
+- While developing, your team uses its own free-tier key (L1).
 
 
 How the Run Is Scored (ARIAC Scoring Page)
@@ -1053,22 +1416,68 @@ How the Run Is Scored (ARIAC Scoring Page)
    :class: compact-table
 
    * - Bonuses
-     - Trial time (1000), inspection speed (500), high-priority speed (600),
-       sensor cost under budget (1000), inspection classification (500).
+     - Each value is a maximum, which the run scales down: trial time (up to
+       1000), inspection speed (up to 500), high-priority speed (up to 600),
+       sensor cost (up to 1000), inspection classification (up to 500).
        They count only if every kit and module was submitted.
    * - Penalties
      - Good cell in the inspection bin 50, cell in the conveyor bin 25,
        object on an invalid surface 25, AGV collision 100, robot collision
        100 for every 5 s.
    * - Sensor cost
-     - Over the $9600 budget, the penalty is 1000 × (cost / 9600 - 1), from
-       ARIAC's ``scoring.py``.
+     - Under the $9600 budget, the bonus is 1000 × (1 - cost / 9600). Over
+       it, the penalty is 1000 × (cost / 9600 - 1). Both from ARIAC's
+       ``scoring.py``.
 
 **Example.** A sensor cost of $10560, chosen for this example, gives:
 
 1. 10560 / 9600 = 1.1,
 2. 1.1 - 1 = 0.1,
 3. 1000 × 0.1 = 100 points of penalty.
+
+
+How the Final Demo Is Graded
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+From the :doc:`final demo page </assignments/final_demo>` (Grading Rubric):
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 10 60
+   :class: compact-table
+
+   * - **Criterion**
+     - **Points**
+     - **How it is checked**
+   * - Builds and runs from the Dockerfile
+     - 10
+     - The image builds and starts with your README commands
+   * - Task 1 on the unseen trial
+     - 15
+     - 15 × (kits accepted / kits wanted)
+   * - Task 2 on the unseen trial
+     - 15
+     - 15 × (modules accepted / modules wanted)
+   * - Challenges handled
+     - 15
+     - Each challenge detected, a recovery action, the run continuing
+   * - Safe run
+     - 5
+     - 5 minus 1 for each penalty event, not below 0
+   * - Embodied-reasoning step
+     - 15
+     - The call in the run log and your comparison table; the model's
+       scores do not change the points
+   * - Presentation
+     - 15
+     - 5 to 6 minutes, with the four required parts
+   * - Questions
+     - 10
+     - Each member answers a question about code that member did not present
+
+- 10 + 15 + 15 + 15 + 5 + 15 = 75 points for the run, and 15 + 10 = 25 for
+  the class session: 100 points, 20% of the course grade.
+- The ARIAC run score R above is not the grade.
 
 
 Your Questions

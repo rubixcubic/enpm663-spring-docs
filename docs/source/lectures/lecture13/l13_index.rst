@@ -9,12 +9,15 @@ Overview
 reasons about the factory and calls classical robot skills. This lecture
 surveys the other side, where learned models produce the robot's motions.**
 It is a survey: you train no policy and need no GPU. There is no quiz this
-week and nothing is due.
+week. The final demo code freeze is Friday, April 30, at 11:59 pm, two days
+after this class.
 
 The lecture starts from the NVIDIA definition of **physical AI** used since
 L1. Its last two verbs, *perform* and *orchestrate*, give two kinds of
 system: a learned model that produces the robot's actions, and an agent that
-decides what happens next and calls skills. Your stack is the second kind.
+decides what happens next and calls skills. Your stack is the second kind,
+the orchestrate kind, which is what the course calls
+:ref:`agentic physical AI <l1-agentic-physical-ai>` (L1).
 
 It then covers **vision-language-action (VLA) models**, learned models that
 map camera images and language straight to robot actions, with five examples
@@ -25,8 +28,9 @@ robots, then adapted to a new one with less data.
 
 Many current VLAs use a **two-system design**: a slow reasoning model above a
 fast control policy. Set next to your three layers, the slow model plays the
-deliberative role and the policy the reactive one, but no executive layer
-checks each step. A **world model**, a learned model that predicts how a
+deliberative role and the policy the reactive one. What checks each step
+differs: nothing in SmolVLA, a learned model's judgment of progress and
+success in Gemini Robotics, and code in your behavior tree. A **world model**, a learned model that predicts how a
 scene will change, generates training data and tests policies before they
 reach a robot. The lecture compares a learned policy with your stack on data,
 compute (with the GPU memory the sources list), what a person can read after
@@ -35,9 +39,10 @@ one step, failure modes and new tasks.
 The last part shows the one physical AI step the final demo adds: an
 **embodied-reasoning (ER) model** that judges cell defects from a camera
 image. A demonstration calls Gemini Robotics ER through the real
-``google-genai`` SDK, with a scripted stand-in in place of the server, checks
-each answer against a JSON schema, and scores the answers with precision and
-recall against a GP2 lidar detector on the same cells. The class ends with
+``google-genai`` SDK, first with a scripted stand-in in place of the server,
+then in two runs recorded with the real model on 12 ARIAC camera images. It
+checks each answer against a JSON schema and scores the answers with
+precision and recall per defect type. The class ends with
 questions about the Week 15 final demo.
 
 .. important::
@@ -45,13 +50,14 @@ questions about the Week 15 final demo.
    **ARIAC tie-in.** ARIAC 2025 has no learned policies, and the final demo
    does not need one. The final demo does use one physical AI model for
    perception: a hosted embodied-reasoning model judges cell defects from
-   camera images over the inspection conveyor, and you score it with
+   camera images beside the inspection conveyor, and you score it with
    precision and recall on the same cells as your GP2 lidar detector.
 
 .. important::
 
-   **Group project.** The final demo is in Week 15 (Wednesday, May 5). Before
-   that class, your team pushes its code-freeze tag. The instructor builds
+   **Group project.** The final demo is in Week 15 (Wednesday, May 5). By the
+   code freeze, Friday, April 30, at 11:59 pm, your team pushes its
+   code-freeze tag and submits its team configuration file. The instructor builds
    every team's Docker image from its tag and runs it on the same unseen
    trial, on one machine, and records each run. Class time is for
    presentations with the recorded runs, 5 to 6 minutes per team. The full
@@ -67,8 +73,9 @@ By the end of this lecture, you will be able to:
   in this course.
 - Describe the two-system design used by many current VLAs (a slow reasoning
   model above a fast control policy) and compare it with the course's three
-  layers: the slow model plays the deliberative role and the policy the
-  reactive one, but no executive layer checks each step.
+  layers: which role each part plays, and what checks each step (nothing in
+  SmolVLA, a learned model's judgment in Gemini Robotics, code in your
+  behavior tree).
 - Explain what robot foundation models and world models are used for:
   generalizing across tasks, generating training data, and testing policies
   in simulation.

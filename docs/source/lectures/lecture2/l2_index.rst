@@ -88,11 +88,11 @@ Next Steps
 - In the next lecture we cover **L3: Knowledge Representation for
   Agentic Robotics** (Wednesday, February 10):
 
-  - Frames and ontologies for cells, kits and AGVs.
-  - A world model at each layer, and errors that move up (two ideas from
+  - Frames and an ontology for ARIAC cells, kits, modules and AGVs.
+  - A world model at each layer, and status that moves up (two ideas from
     4D/RCS).
-  - One kit written three ways: PDDL predicates, a JSON schema, a text
-    description.
+  - One kit written three ways: PDDL facts, a JSON record checked by a JSON
+    schema, and text.
 
 - **Before next class:**
 

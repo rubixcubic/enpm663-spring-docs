@@ -183,8 +183,8 @@ Multiple Choice (Questions 1 to 12)
 
    **C**.
 
-   ``Inverter`` swaps only ``SUCCESS`` and ``FAILURE``. A running child is not
-   yet a yes or a no, so the output shows ``child=RUNNING -> RUNNING``.
+   ``Inverter`` swaps only ``SUCCESS`` and ``FAILURE``. A running child has no
+   result yet, so the output shows ``child=RUNNING -> RUNNING``.
 
 
 .. admonition:: Question 7
@@ -219,8 +219,8 @@ Multiple Choice (Questions 1 to 12)
 
    A. The ``Retry`` has used up its 2 failures.
 
-   B. The tick starts again at the check; the ``Retry``, no longer running,
-      starts the pick again, and the running pick ends the sequence's tick.
+   B. The tick starts again at the check; the pick, no longer running, starts
+      again, and the running pick ends the sequence's tick.
 
    C. The place leaf fails on its first attempt.
 
@@ -231,9 +231,11 @@ Multiple Choice (Questions 1 to 12)
 
    **B**.
 
-   Without memory, every tick starts at the first child. The ``Retry``
-   returned ``SUCCESS`` on tick 4, so on tick 5 it starts its child again; the
-   pick returns ``RUNNING``, and the sequence stops the place (``INVALID``).
+   Without memory, every tick starts at the first child. On tick 5 the
+   sequence ticks the ``Retry``, which ticks the pick. The pick returned
+   ``SUCCESS`` on tick 4, so it is not running, and ticking it again starts it
+   again: its ``initialise`` runs and it returns ``RUNNING``. The sequence
+   then stops the place (``INVALID``).
    On a robot this sends a new pick goal for a cell the gripper already
    holds.
 
@@ -259,7 +261,8 @@ Multiple Choice (Questions 1 to 12)
    **D**.
 
    A service leaf returns ``RUNNING`` until the reply arrives, then
-   ``SUCCESS``, whatever the reply says. Run 3 shows
+   ``SUCCESS``, whatever the reply says (``FAILURE`` only if the request could
+   not be sent). Run 3 shows
    ``check_kit SUCCESS`` with ``success=False``. Only the condition
    ``kit_is_good`` after it made the tree fail.
 
@@ -267,7 +270,8 @@ Multiple Choice (Questions 1 to 12)
 .. admonition:: Question 10
    :class: hint
 
-   Why does a ``py_trees_ros`` tree not block its node's other callbacks?
+   Why does a ``py_trees_ros`` tree whose leaves never wait inside a tick not
+   block its node's other callbacks?
 
    A. Each leaf runs in its own thread.
 
@@ -285,7 +289,8 @@ Multiple Choice (Questions 1 to 12)
 
    ``tick_tock(period_ms=100.0)`` creates a timer that ticks the tree every
    100 ms. In run 1, the node heard 21 voltage messages in 21 ticks: none was
-   missed while the skills ran.
+   missed while the skills ran. A leaf that waits inside a tick would still
+   block the tree and the node's other callbacks.
 
 
 .. admonition:: Question 11
@@ -401,15 +406,19 @@ Short Answer (Questions 16 to 18)
 
    A Li-Ion kit already holds three cells of 3.50 V, 3.60 V and 3.65 V. The
    kit window is 14.25 V to 14.55 V, and one cell is good from 3.40 V to
-   3.80 V. Which voltages can the fourth cell have? Show the steps.
+   3.80 V. GP1 checks the kit before every place. Did the check allow the
+   third place? Which voltages can the fourth cell have? Show the steps.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    1. The three cells total 3.50 + 3.60 + 3.65 = 10.75 V.
-   2. The fourth cell must be from 14.25 − 10.75 = 3.50 V to
+   2. With one cell missing, three cells must total from
+      14.25 − 3.80 = 10.45 V to 14.55 − 3.40 = 11.15 V. 10.75 V is inside, so
+      the check allowed the third place.
+   3. The fourth cell must be from 14.25 − 10.75 = 3.50 V to
       14.55 − 10.75 = 3.80 V.
-   3. It must also be inside 3.40 V to 3.80 V on its own, so the range is
+   4. It must also be inside 3.40 V to 3.80 V on its own, so the range is
       3.50 V to 3.80 V.
 
    A cell at 3.45 V passes ``voltage_in_range`` but would make the kit

@@ -5,6 +5,8 @@
 # the ROS example away from any simulation running on domain 0.
 # Every data set here is SYNTHETIC (made in NumPy), except the mesh
 # depths, which are read from the ARIAC 2025 source in $ARIAC_SRC.
+# timing.txt holds measured times: they change from run to run and from
+# PC to PC, so only that file differs when you rerun this script.
 set -euo pipefail
 cd "$(dirname "$0")"
 ARIAC_SRC=${ARIAC_SRC:?set ARIAC_SRC to your ARIAC 2025 source folder}
@@ -34,4 +36,5 @@ py  calibrate.txt         calibrate.py
 py  detect_one.txt        detect_one.py ../outputs/residuals.csv
 py  precision_recall.txt  precision_recall.py
 py  voltage_average.txt   voltage_average.py
+py  timing.txt            timing.py
 py  mesh_depths.txt       mesh_depths.py "$ARIAC_SRC"

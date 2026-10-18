@@ -24,7 +24,11 @@ order of the slides, grouped by section. Every link was checked on
          of Robotics and Automation, vol. 2, no. 1, pp. 14 to 23.
 
          The subsumption architecture: layers of behaviors running in
-         parallel, suppression and inhibition.
+         parallel, suppression and inhibition. Page 17: "Inputs to modules
+         can be suppressed and outputs can be inhibited by wires terminating
+         from other modules. This is the mechanism by which higher level
+         layers subsume the role of lower levels." And: "Not all sensors need
+         to feed into a central representation."
 
       .. grid-item-card:: No explicit world model
          :link: https://doi.org/10.1016/0004-3702(91)90053-M
@@ -231,7 +235,9 @@ order of the slides, grouped by section. Every link was checked on
          **Google DeepMind: Gemini Robotics**
 
          A VLA model that acts and an embodied-reasoning (ER) model that
-         plans, working together.
+         plans, working together. DeepMind's Gemini Robotics 1.5 post
+         (2025-09-25): the ER model "gives Gemini Robotics 1.5 natural
+         language instructions for each step".
 
       .. grid-item-card:: Helix
          :link: https://www.figure.ai/news/helix
@@ -284,3 +290,14 @@ order of the slides, grouped by section. Every link was checked on
 
          The URDFs of inspection robot 1 (UR3e) and inspection robot 2
          (UR5e).
+
+      .. grid-item-card:: Arm reach
+         :link: https://www.universal-robots.com/manuals/latest/en/datasheets/ur3e/
+         :class-card: sd-border-secondary
+
+         **Universal Robots: UR3e and UR5e data sheets**
+
+         The UR3e has "a 500 mm reach"; the UR5e has "a reach of 850 mm"
+         (`UR5e data sheet
+         <https://www.universal-robots.com/manuals/latest/en/datasheets/ur5e/>`_).
+         Read on 2026-10-18.

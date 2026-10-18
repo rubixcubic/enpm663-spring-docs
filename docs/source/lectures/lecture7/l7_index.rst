@@ -21,8 +21,9 @@ update**: check the preconditions on the blackboard, send the goal, check that
 the effect happened, then write the effects. A five-step plan becomes a tree,
 and its tick trace shows each step handing over to the next.
 
-Next come two decorators that tolerate a failure. **Retry** runs a step again
-after it fails; **Timeout** fails a step that runs too long. Each one has an
+Next come two decorators. **Retry** runs a step again after it fails, so it
+tolerates a failed attempt; **Timeout** fails a step that runs too long, so it
+turns a stalled attempt into a failure. Each one has an
 ARIAC 2025 case (the vacuum tool malfunction and the voltage tester
 malfunction), and a measured demo shows that the order in which you nest them
 changes how long a step can take.
@@ -51,8 +52,8 @@ tree library used in industry (Nav2 builds on it), next to the same tree in
    **Group project.** GP3 (PDDL Planner and BT Executor) is posted today and
    is due in Week 10, on March 31. It combines L6 and L7: a PDDL domain for
    Task 1, a problem generator, a selection step for the kit voltages, and a
-   plan-to-BT executor with Retry and replanning triggers. GP3 spans spring
-   break.
+   plan-to-BT executor with retry and timeout decorators around each skill,
+   and replanning triggers. GP3 spans spring break.
 
 .. admonition:: This week
    :class: warning
@@ -72,8 +73,9 @@ By the end of this lecture, you will be able to:
   plan action from the action's name and arguments.
 - Explain the guard, act, verify pattern for a plan step and how it keeps the
   blackboard consistent with the factory.
-- Apply Retry and Timeout decorators to tolerate actions that fail once, and
-  explain how their nesting order changes their behavior.
+- Apply Retry to tolerate a failed attempt and Timeout to turn a stalled
+  attempt into a failure, and explain how their nesting order changes their
+  behavior.
 - Classify an execution failure as retry, wait, replan or stop, using the
   ARIAC 2025 challenges and Task 1 events as cases.
 - Describe the replanning loop: detect a trigger, stop at a safe point, write

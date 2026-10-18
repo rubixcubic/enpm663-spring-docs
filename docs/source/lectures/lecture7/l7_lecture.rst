@@ -122,10 +122,11 @@ A Registry Turns Each Action into a Subtree
          actions: pick-from-tester inspection_robot_2 c3 tester1;
          place-in-slot inspection_robot_2 c3 agv1 s3; move-agv agv1
          inspection shipping. An arrow leads to tag 2: a registry listing the
-         action names pick-from-tester, place-in-slot, move-agv and more. An
-         arrow leads to tag 3: a tree whose root is a Sequence with memory and
-         whose three children are step 1, step 2 and step 3. Under each step
-         are four small squares: blue, red, blue and green.
+         action names pick-from-tester, place-in-slot, move-agv and three
+         dots for more. An arrow leads to tag 3: a tree whose root is a box
+         labeled Sequence (memory), with three children labeled step 1, step
+         2 and step 3. Under each step are four small squares: blue, red,
+         blue and green.
    :width: 100%
    :align: center
 
@@ -152,9 +153,10 @@ The Registry in Code
 
 - Each ``build_...`` function is a builder. The ``place-in-slot`` builder is
   shown below.
-- ``check-voltage`` is the measurement step that L6 described as an action
-  whose result is not known in advance. The name is an example for this
-  lecture.
+- ``check-voltage`` is new in L7: the L6 domain has no such action. L6 gives
+  a cell with no reading ``voltage-ok`` as an assumption and leaves the
+  reading to the executor. ``check-voltage`` makes that reading a plan step
+  whose verify can fail (Demo 5).
 - ``RETRIES`` lists the actions that get a Retry decorator. It starts empty;
   the :ref:`Retry section <l7-retry>` fills it.
 
@@ -267,6 +269,8 @@ before the robot moves. The verify catches a step whose effect did not
 happen. A failing guard or verify is the signal that the
 :ref:`replanning triggers <l7-replanning>` act on.
 
+.. _l7-place-in-slot-builder:
+
 The place-in-slot Builder
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -274,6 +278,10 @@ The place-in-slot Builder
    :language: python
    :lines: 153-157,179-189
    :caption: lecture7/code/executor.py (excerpt)
+
+The excerpt joins two parts of the file: ``subtree`` (lines 153 to 157) and
+``build_place_in_slot`` (lines 179 to 189). The lines between them are left
+out.
 
 ``needs``, ``add`` and ``delete`` are the precondition and the effects of
 ``place-in-slot`` in the L6 domain, except ``(loads-agv ?r)``: which robot
@@ -354,7 +362,8 @@ Retry and Timeout
 -----------------
 
 A **decorator** is a node with one child that changes the child's result.
-This section covers two decorators that tolerate a failure, the ARIAC case for
+This section covers two decorators: Retry tolerates a failed attempt, and
+Timeout turns a stalled attempt into a failure. It gives the ARIAC case for
 each, and the order in which to nest them.
 
 .. _l7-retry:
@@ -378,8 +387,8 @@ The constructor is ``py_trees.decorators.Retry(name, child, num_failures)``.
 Retry wraps the whole subtree, so the guard checks the preconditions again
 before each new attempt.
 
-Demo 2: Retry Absorbs Two Failed Picks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo 2: Retry Runs the Pick Three Times
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In ``demo_retry.py``, the mock pick answers ``GRASP_FAILED`` a set number of
 times, then succeeds. ``demo_retry.py 2`` makes it fail twice.
@@ -555,6 +564,9 @@ Demo 4: The Measured Times, Five Runs of Each
 2. ``Timeout(Retry(act))``: one 0.2 s limit covers all attempts. An act that
    never ends gets 1 attempt; one that fails after 0.15 s gets a second
    attempt, which the limit cuts off.
+3. ``fail``, ``Retry(Timeout(act))``: a failure at 0.15 s is seen on the tick
+   at 0.16 s. Attempts start at 0.00, 0.18 and 0.36 s, so the step fails at
+   0.36 + 0.16 = 0.52 s.
 
 Choosing the Order and Setting the Limit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -569,7 +581,9 @@ example.
 **The limit.**
 
 1. Run each action about 20 times and record how long it takes.
-2. Set the limit above the longest time you saw.
+2. Set the limit above the longest time you saw, with a margin. If the runs
+   are independent and alike, about 1 new normal run in 21 takes longer than
+   all 20 earlier ones.
 
 .. warning::
 
@@ -654,15 +668,19 @@ Task 1 Events That Call for a New Plan
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. A cell fails inspection, and the inspection door pushes it into the
-   inspection bin. The plan expected it at the conveyor pick. **GP3 must show
-   this case.**
+   inspection bin. In the L6 domain it never gets ``at-door``, so no plan
+   names it. A plan that counted on it before its inspection, as a queued
+   cell in Demo 5 does, needs a new plan.
 2. A cell's averaged voltage is outside 3.4 V to 3.8 V (Li-Ion). It must be
    recycled, and the kit needs another cell.
 3. The kit window closes. L6's example: three cells at 3.75 V put
    3 × 3.75 = 11.25 V on the tray. The Li-Ion kit window is 14.25 V to
    14.55 V, so the fourth cell must be from 14.25 − 11.25 = 3.00 V to
    14.55 − 11.25 = 3.30 V. That is below the 3.4 V that any acceptable cell
-   has. The AGV must go to recycling, and the kit starts over.
+   has. The AGV must go to recycling, and the kit starts over. GP1's check
+   before every place (L4) refuses this third cell: three cells must total
+   10.45 V to 11.15 V, and 11.25 V is above. With that check as a guard, the
+   event is a refused place, and the plan needs another cell.
 4. A voltage tester malfunctions. The new plan uses only the other tester.
 5. A high-priority order arrives on ``/high_priority_orders``. The current
    plan stops at a safe point, and a Ni-MH kit is planned (GP4 and L11 cover
@@ -751,6 +769,8 @@ Demo 5: The Setup
 - ``inspection_robot_1`` is not in the plan: the mock factory puts the next
   cell on a tester as soon as it is free. In GP3 these steps are in the plan
   too.
+- ``(queued c3 tester1)`` is new in L7, like ``check-voltage``: ``c3`` lands
+  on ``tester1`` next, and it has not been inspected or measured yet.
 
 The output of ``demo_replan.py`` is one file, ``outputs/replan.txt``. The
 slides show it in five parts, and so do these notes.
@@ -874,8 +894,11 @@ A C++ Action Node
 
 - ``providedPorts()`` declares the input port ``tester``; ``getInput`` reads
   it, here from the blackboard entry ``{tester}``.
-- ``tick()`` returns SUCCESS, FAILURE or RUNNING, as ``update()`` does in
-  ``py_trees``. This mock fails a set number of times.
+- A ``SyncActionNode``'s ``tick()`` returns SUCCESS or FAILURE. If it
+  returns RUNNING, the tick throws ``BT::LogicError`` with the message
+  "SyncActionNode MUST never return RUNNING" (measured with 4.10.0). A node
+  that returns RUNNING while a goal runs derives from
+  ``StatefulActionNode``. This mock fails a set number of times.
 
 Registering the Nodes and Running the Tree
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1028,10 +1051,12 @@ Common Bugs and Their Symptoms
    * - **Bug**
      - **Symptom**
    * - A Sequence without memory
-     - Finished steps run again on every tick, and a robot repeats a move
-       (Demo 1 again)
+     - A finished step starts again: its guard fails, or without guards the
+       robot is sent the move again (Demo 1 again)
    * - A misspelled blackboard key
-     - A guard always fails, or reads an old value
+     - Misspelled where a leaf reads: ``KeyError`` or ``AttributeError``,
+       and the tick stops. Misspelled where a leaf writes: the reader gets
+       an old value
    * - A leaf that blocks inside ``update()``
      - The whole tree freezes until the call returns
    * - A time limit set too short
@@ -1053,10 +1078,12 @@ on March 31.
 
 - It is worth 10% of the course grade. It combines L6 and L7: a PDDL domain
   for Task 1, a problem generator, a selection step for the kit voltages, and
-  a plan-to-BT executor with Retry and replanning triggers.
-- Your team gives a demo on two or three trials, one of which triggers a
-  replan when a cell fails inspection, and writes a short reflection on what
-  PDDL captured well and where it strained.
+  a plan-to-BT executor with replanning triggers. GP3 Task 5 says: "Put
+  retry and timeout decorators around each skill." The rubric checks for
+  both.
+- Your team gives a demo on two or three trials, "one of which triggers a
+  replan", and writes a short reflection on what PDDL captured well and
+  where it strained.
 - GP3 uses the two inspection robots through the course skills package. It
   does not model the four challenges in PDDL. GP4 tests an LLM agent on three
   of them (conveyor, voltage tester, high-priority order); the final demo

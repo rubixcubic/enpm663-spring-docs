@@ -49,8 +49,9 @@ from running them with Python 3.12.3, ``py_trees`` 2.6.0 and ``jsonschema``
        to.
      - :ref:`l11-bt-recovery`
    * - :download:`llm_output_checker.py <code/llm_output_checker.py>`
-     - Five layers of checks on scripted LLM replies, and the re-prompt
-       once, then fall back policy.
+     - L8's ``check_call()`` (tool, schema, guard) on scripted replies that
+       use the L8 agent's tools, and the re-prompt once, then fall back
+       policy through L8's ``run()``.
      - :ref:`l11-llm-checks`
    * - :download:`tester_watcher.py <code/tester_watcher.py>`
      - A voltage tester watcher that treats a ``MALFUNCTIONING`` status and
@@ -76,11 +77,15 @@ same tree runs four separate times, each with its own injected failure:
   guard stops that branch.
 - **D:** as B, but with selector memory off.
 
-``run()`` ticks the tree up to 5 times (4 in Run D) with ``tick_once()``
-and stops when
-the root is no longer ``RUNNING``. Each ``StubSkill`` follows its script:
-``"fail"`` fails on the first tick, and a number ``n`` runs for ``n`` ticks,
-then succeeds.
+``run()`` ticks the tree up to 6 times (5 in Run D) with ``tick_once()``
+and stops when the root is no longer ``RUNNING``. Each ``StubSkill`` follows
+its script: ``"fail"`` fails on the first tick, and a number ``n`` runs for
+``n`` ticks, then succeeds. ``Robot`` stands for robot 1's action server and
+follows two rules of the course skills (README of v0.2.0, "One goal per arm"
+and "Cancel stops the arm and retreats"): one goal at a time across all of
+robot 1's skills, and a cancel that parks the arm before ``CANCELED`` comes
+back, here after ``CANCEL_TICKS = 1`` tick (chosen). A stub sends its goal
+only when robot 1 is free, and waits (``RUNNING``) until then.
 
 .. code-block:: bash
 
@@ -122,11 +127,16 @@ Output:
 Checking LLM Output: ``llm_output_checker.py``
 ----------------------------------------------
 
-``check()`` runs the five layers in order and returns the first failure as
-``(layer, message)``, or ``None`` if the reply passes. ``decide()`` plays the
-policy: ask, check, re-prompt once with the error, then fall back. The tool
-names, the cell IDs and the world state are chosen for this example; the
-three AGVs and the four tray slots come from ARIAC 2025.
+The script imports L8's ``orchestrator``, ``skill_tools`` and
+``fake_tools`` from ``lecture8/code`` (see the :doc:`L8 code page
+</lectures/lecture8/l8_code>`), so run it from this folder with that folder
+next to it, as in the course repository. ``make_state()`` runs eight calls
+through L8's ``FakeTools`` (no ARIAC) to build the state, and checks each one
+with ``check_call()`` first. The script then checks six separate replies with
+``check_call()``, runs none of them, and plays two runs of the policy with
+L8's ``run()`` and ``ScriptedModel``: a refused call goes back to the model as
+its result, and two refusals in a row end the run (``MAX_INVALID = 2``). The
+cell voltages and the tester 1 malfunction are chosen for this example.
 
 .. code-block:: bash
 

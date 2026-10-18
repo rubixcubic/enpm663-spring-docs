@@ -82,7 +82,8 @@ One perception step uses a hosted **embodied-reasoning model**: a model
 that answers spatial questions about an image. An example is Google's
 Gemini Robotics ER (on 2026-10-12 the Gemini API listed it as
 ``gemini-robotics-er-2-preview``). The model judges cell defects from a
-camera image over the inspection conveyor. It is scored with precision and
+camera image of the inspection conveyor (L13 shows where the course's
+camera sits, beside the belt, and why). It is scored with precision and
 recall on the same cells as your GP2 lidar detector: learned vision against
 classical lidar. Whether defects 0.84 to 2.49 mm deep (ARIAC's training
 cells, measured in L5) show in the camera image is part of the result.
@@ -92,8 +93,9 @@ vision-language model instead, a Google model that runs on the course key or
 a local model, if it reports the same comparison:
 precision and recall per defect type on the same cells, latency and cost.
 The instructor runs every team's image with one course API key (see the run
-rules), so every team gets the same quota. Who pays for model calls while
-you develop is to be announced.
+rules), so every team gets the same quota. The course key runs only these
+graded evaluations: while it develops, your team uses its own free-tier
+Gemini API key.
 
 Lectures L10 to L13 cover what the final demo adds: the motion layer under
 the skills package (L10), recovery (L11), evaluation with the ARIAC scoring
@@ -257,7 +259,7 @@ Tasks
 
    **Requirements:**
 
-   - Call the embodied-reasoning model on a camera image of each cell over
+   - Call the embodied-reasoning model on a camera image of each cell on
      the inspection conveyor.
    - Measure it against your GP2 lidar detector on the same cells:
      precision and recall per defect type, latency and cost per call, and
@@ -276,6 +278,14 @@ Tasks
    - Test on varied trial seeds and challenge mixes, within the ranges the
      specification gives.
    - Compute the ARIAC run score of each test run (L12).
+
+   .. tip::
+
+      **Set the run count first.** Choose the number of runs for each test
+      configuration before you run it, from the smallest gap your tests must
+      detect.
+      :ref:`l12-runs-a-claim-needs` shows how, in L12's frames "Comparing
+      Two Systems" and "A 20-Run Batch".
 
 .. dropdown:: Task 5: Write the Dockerfile
    :icon: gear

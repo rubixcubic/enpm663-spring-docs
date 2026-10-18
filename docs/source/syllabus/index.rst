@@ -611,8 +611,10 @@ Required Software and Tools
      - MoveIt 2, ``py_trees_ros``, OpenCV, Unified Planning Framework or
        Fast Downward
    * - AI access
-     - A paid LLM API account (Anthropic, OpenAI, Google) or local
-       open-weight models. Cost guidance is given per project.
+     - From GP4 on: Google Gemini by default. While it develops, your team uses its own
+       free-tier Gemini API key. The course Gemini key runs only the graded
+       GP4 and final demo evaluations. A team may run a local open-weight
+       model instead, as the GP4 and final demo pages allow.
    * - IDE
      - Visual Studio Code (recommended)
    * - Version Control

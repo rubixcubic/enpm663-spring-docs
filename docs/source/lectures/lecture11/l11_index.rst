@@ -18,24 +18,26 @@ recovery starts. AI components add two new sources of failure: LLM output,
 which shows up as plan failures, and VLM output, which shows up as sensor
 failures.
 
-The recovery tools come next, at three levels:
+The lecture maps the seven skill failure results from L10 to a response:
+retry, wait or replan. The recovery tools come next, at three levels:
 
 - **The behavior tree.** A selector falls back to another branch, Retry runs
   a failed skill again, Timeout turns a hang into a failure, and a guard
   stops a running branch when a device breaks. A demonstration in
   ``py_trees`` 2.6.0 injects failures into a tree that places a cell on a
   voltage tester, with no simulator.
-- **Checks on AI output.** Five layers of checks stop a bad LLM reply before
-  it reaches a robot, cheapest first. A VLM error passes a schema check, so
-  it needs a second source instead.
+- **Checks on AI output.** The three checks of the L8 orchestrator's
+  ``check_call()`` (tool, schema, guard) stop a bad tool call before it
+  reaches a robot. A VLM error passes a schema check, so it needs a second
+  source instead.
 - **Equipment.** The ARIAC docs say a malfunctioning voltage tester stops
   publishing. The ARIAC code keeps publishing voltage -1 with status
   ``MALFUNCTIONING``. A watcher with four rules handles both.
 
 The lecture then treats each ARIAC 2025 challenge as a failure scenario and
-ends with the rule for choosing **local recovery** (retry in the tree) or
-**global recovery** (a new plan from the planner or agent), worked on three
-examples.
+ends with L9's rule (retry, wait or replan), whether each choice is **local
+recovery** (the plan stays) or **global recovery** (the plan changes), where
+the LLM fits, and three worked examples.
 
 .. important::
 
@@ -64,9 +66,11 @@ examples.
      course site. The demo is in Week 15 (05/05) and is 20% of the course
      grade. The code freeze is Friday, April 30, 2027, at 11:59 pm, and the
      grading rubric is on the final demo page. Gemini Robotics ER is the
-     course example for the embodied-reasoning step; another VLM is allowed if it
-     runs on the course key (a Google model) or locally.
-     Who pays for model calls is to be announced.
+     course example for the embodied-reasoning step; another VLM is allowed
+     if it is a Google model that runs on the course key, or a model that
+     runs locally. Who pays is set: the course key runs the graded runs only
+     (GP4 and the final demo), and your team uses its own free-tier Gemini
+     key while you develop.
 
 
 Learning Objectives
@@ -79,13 +83,15 @@ By the end of this lecture, you will be able to:
   interfaces.
 - Build behavior tree recovery with ``py_trees``: selectors, the Retry and
   Timeout decorators, and guards that stop the active branch.
-- Check LLM output before it reaches a robot: the schema, tools that do not
-  exist, and objects that are not in the world state.
+- Check an LLM's tool call before it reaches a robot: a tool that does not
+  exist, arguments that break the schema, and a call the current state does
+  not allow.
 - Cross-check VLM output against a second source.
 - Handle equipment that stops giving valid readings with status checks,
   value checks, a time limit and degraded operation.
-- Choose local or global recovery for each ARIAC 2025 challenge, and give
-  the reason.
+- Choose retry, wait or replan for each skill failure result and each ARIAC
+  2025 challenge, say whether the recovery is local or global, and give the
+  reason.
 
 
 .. toctree::
@@ -111,7 +117,8 @@ Next Steps
     penalizes each recovery choice.
 
 - **GP4 is due Wednesday, April 21.** Add the checks and the challenge
-  handling from today, and log every detection and recovery.
+  handling from today (retry, wait or replan for each failure), and log
+  every detection and recovery.
 
 - **Before L12:**
 

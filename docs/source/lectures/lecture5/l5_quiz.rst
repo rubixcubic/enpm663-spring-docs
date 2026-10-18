@@ -58,8 +58,9 @@ Multiple Choice (Questions 1 to 12)
 
    10 × 20 = 200 samples. The Sensors page lists grade C as
    :math:`H \times V \leq 200`, but the code bills exactly 200 samples as
-   grade B. For grade C, use at most 199 samples. ARIAC refuses only more
-   than 400 samples.
+   grade B. For grade C, use at most 199 samples. ARIAC refuses a lidar with
+   more than 400 samples, a rate other than 10 or 20 Hz, or a pose outside
+   the boxes; this one has none of those.
 
 
 .. admonition:: Question 2
@@ -357,10 +358,11 @@ True or False (Questions 13 to 16)
 
    **False.**
 
-   At 1.5 mm the detector missed 4, one more than at 0.9 mm. The three misses
-   faced :math:`\theta` near 0 or :math:`\pm\pi`, where no lidar puts points.
-   A threshold cannot fix a defect no lidar sees; the four-lidar layout caught
-   all 56.
+   At 1.5 mm the detector missed 4, one more than at 0.9 mm. Each of the
+   three misses sat within 0.26 rad of :math:`\theta` = 0 or :math:`\pm\pi`.
+   Points landed on each, but at most one per defect passed 0.9 mm, and a
+   cluster needs 3. A higher threshold flags fewer points, not more; the
+   four-lidar layout caught all 56.
 
 
 .. admonition:: Question 15
@@ -399,7 +401,7 @@ True or False (Questions 13 to 16)
 ----
 
 
-Short Answer (Questions 17 to 20)
+Short Answer (Questions 17 to 19)
 =================================
 
 .. admonition:: Question 17
@@ -451,22 +453,3 @@ Short Answer (Questions 17 to 20)
    second fit leaves out the points that look defective (:math:`|d|` above
    the threshold), so the axis comes from the normal surface, and the
    residuals of the defect points are measured from it.
-
-
-.. admonition:: Question 20
-   :class: hint
-
-   With two lidars, the three missed defects all faced :math:`\theta` near 0
-   or :math:`\pm\pi`. Why there, and what did the four-lidar layout cost in
-   points to fix it?
-
-.. dropdown:: Answer
-   :class-container: sd-border-success
-
-   Near :math:`\theta` = 0 and :math:`\pm\pi` (the front and back of the
-   cell), each side lidar sees the surface edge-on, and almost no points land:
-   the gap on the residual map. Four lidars, turned 0.6 rad upstream and
-   downstream, see those faces. The cost: two more grade A lidars lower the
-   cost bonus by 1000 × 3000 / 9600 = 312.5 points, and the cell is last seen
-   at 2.55 s instead of 1.25 s, so the speed bonus drops from 343.75 to 181.25
-   points (162.5 fewer). Together, 475 points.

@@ -12,7 +12,7 @@ look ahead: True
   c4 3.86 V: recycle (out of range)
   c5 3.45 V: agv1 slot 3; rest must sum to 3.27 to 3.57 V
   c6 3.52 V: agv1 slot 4; kit full
-  kit total 14.50 V: complete
+  kit total 14.50 V: in range by the averages
   goal: (in-slot c1 agv1 s1)
   goal: (in-slot c2 agv1 s2)
   goal: (in-slot c5 agv1 s3)

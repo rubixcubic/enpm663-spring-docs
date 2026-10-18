@@ -115,8 +115,12 @@ Provided Resources
      - The executor, the selection step and the planner, for the
        comparison.
    * - An LLM and a VLM
-     - A hosted API or local open-weight models. See
+     - Gemini or a local open-weight model. See
        :doc:`/ariac/ai_setup`. Cost guidance is given with the project.
+   * - API keys
+     - While it develops, your team uses its own free-tier Gemini API key.
+       The course Gemini key runs only the graded GP4 and final demo
+       evaluations.
    * - GP4 trial configurations
      - Trials with each challenge GP4 tests.
 

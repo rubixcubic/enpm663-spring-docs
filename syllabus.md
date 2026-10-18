@@ -87,9 +87,10 @@ After successfully completing this course you will be able to:
 - **Editor:** Visual Studio Code: https://code.visualstudio.com/
 - **ARIAC 2025:** https://pages.nist.gov/ARIAC_docs/en/latest/ (Docker or native
   install; the final demo runs from a Dockerfile)
-- **AI access:** Either a paid LLM API account (e.g., Anthropic Claude, OpenAI, Google
-  Gemini) or local open-weight models (e.g., recent Llama or Qwen releases). Group
-  projects: cost guidance will be provided per project.
+- **AI access (from GP4 on):** Google Gemini by default. While it develops, your team uses its own
+  free-tier Gemini API key. The course Gemini key runs only the graded GP4 and final demo
+  evaluations. A team may run a local open-weight model instead, as the GP4 and final
+  demo pages allow.
 
 ---
 

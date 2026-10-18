@@ -338,9 +338,11 @@ True or False (Questions 10 to 14)
 
    **True.**
 
-   Both allow three attempts in all. With three failures, both versions of
-   the ``PlaceCell`` tree printed three ``FAILURE`` lines and
-   ``tree: FAILURE``.
+   Both allow three attempts in all: the mapping table pairs
+   ``RetryUntilSuccessful`` (port ``num_attempts``) with ``Retry``
+   (``num_failures``). With three failures, the ``PlaceCell`` tree in each
+   library prints three ``FAILURE`` lines and fails; with one failure, both
+   succeed on the second attempt.
 
 
 Short Answer (Questions 15 to 18)

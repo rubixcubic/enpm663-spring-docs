@@ -67,8 +67,8 @@ Multiple Choice (Questions 1 to 10)
 
    A. ARIAC has no robots in Task 1
 
-   B. ARIAC gives each robot only a joint trajectory action and a gripper
-      action, with no pick or place skills
+   B. ARIAC gives its robots low-level controls only (joint motion, and a
+      gripper, vacuum tools or a weld service), with no pick or place skills
 
    C. The course trains a motion policy for each team
 
@@ -79,8 +79,11 @@ Multiple Choice (Questions 1 to 10)
 
    **B**.
 
-   Picking a cell and placing it needs motion planning on top of those two
-   actions. The skills package provides it as Python ROS 2 actions built on
+   Each robot has a joint trajectory action for motion. For grasping, the
+   inspection robots and assembly robot 1 have a gripper action, assembly
+   robot 2 has vacuum tool services, and the gantry welder has a weld service.
+   Picking a cell and placing it needs motion planning on top of these. The
+   skills package provides it as Python ROS 2 actions built on
    MoveIt 2, so your team never writes motion code. **C** is out of scope:
    the course does no policy training.
 

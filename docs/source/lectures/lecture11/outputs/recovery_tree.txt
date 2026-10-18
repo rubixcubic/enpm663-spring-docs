@@ -34,9 +34,12 @@ tick 1
 tick 2
         tester 1 status is now MALFUNCTIONING
         tester_1_ok: condition false, stops its branch
-        place_on_tester_1: stopped by its parent
-        place_on_tester_2: attempt 1 starts
+        place_on_tester_1: stopped, cancel sent
+        place_on_tester_2: attempt 1 waits for robot 1
 tick 3
+        place_on_tester_1: CANCELED, robot 1 parked
+        place_on_tester_2: attempt 1 starts
+tick 4
         place_on_tester_2: attempt 1 SUCCEEDED
         place_cell: SUCCESS through place_on_tester_2
 
@@ -56,8 +59,11 @@ tick 3
         tester_1_ok: FAILURE, because its child failed
         place_on_tester_2: attempt 1 starts
 tick 4
+        place_on_tester_1: attempt 4 waits for robot 1
+        place_on_tester_2: stopped, cancel sent
+tick 5
+        place_on_tester_2: CANCELED, robot 1 parked
         place_on_tester_1: attempt 4 starts
         place_on_tester_1: attempt 4 FAILED (injected)
         retry_3: attempt failed [status: 1 failure from 3]
-        place_on_tester_2: stopped by its parent
 

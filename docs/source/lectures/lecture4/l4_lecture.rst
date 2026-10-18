@@ -77,17 +77,19 @@ One GP1 Step, Two Ways
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l4/fsm_vs_bt.svg
-   :alt: Tag 1, left: a state machine for moving one tested cell.
-         read_voltage leads to pick_from_tester, which leads to place_in_slot
-         when the cell is in range and to recycle_cell when it is out of
-         range; both lead to done. Dashed red arrows run from read_voltage,
-         pick_from_tester, place_in_slot and recycle_cell to a state named
-         stopped: one failure transition per working state. Tag 2, right: the
-         same step as a behavior tree, indented the way py_trees prints it.
-         The sequence move_cell holds read_voltage, pick_from_tester and the
-         selector place_or_recycle; the selector holds the sequence
-         place_if_good (voltage_in_range, then place_in_slot) and
-         recycle_cell.
+   :alt: Two panels. Tag 1, left: a state machine drawn as white rounded
+         boxes. read_voltage has an arrow down to pick_from_tester. From
+         pick_from_tester, an arrow labeled in range goes down left to
+         place_in_slot, and an arrow labeled out of range goes down right
+         to recycle_cell. Both have an arrow down to done. Four dashed red
+         arrows, one each from read_voltage, pick_from_tester,
+         place_in_slot and recycle_cell, end at a box named stopped on the
+         right. Tag 2, right: the same step as a behavior tree, indented
+         the way py_trees prints it. The orange box move_cell holds the
+         gray ellipses read_voltage and pick_from_tester and the cyan
+         octagon place_or_recycle. The octagon holds the orange box
+         place_if_good, which holds the gray ellipses voltage_in_range and
+         place_in_slot, and the gray ellipse recycle_cell.
    :width: 100%
    :align: center
 
@@ -171,15 +173,17 @@ Every Node Type in One GP1 Subtree
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l4/bt_node_types.svg
-   :alt: A behavior tree drawn the py_trees way, root on the left. The root
-         handle_cell is an orange box (a sequence, tag 1). Its three children
-         are wait_for_reading, a gold parallelogram (a parallel, tag 3) with
-         the leaves tester_ok and wait_for_voltage; retry_pick, a white
-         ellipse (a decorator, tag 4) above the leaf pick_from_tester; and
-         place_or_recycle, a cyan octagon (a selector, tag 2). The selector
-         has two children: the sequence place_if_good, with the leaves
-         voltage_in_range and place_in_slot, and the leaf recycle_cell.
-         Leaves are gray ellipses (tag 5).
+   :alt: A behavior tree drawn the py_trees way, root on the left and each
+         node's children in the next column to its right. The root
+         handle_cell is an orange box with tag 1. Its three children, top
+         to bottom: wait_for_reading, a gold parallelogram with tag 3,
+         whose children are the gray ellipses tester_ok and
+         wait_for_voltage; retry_pick, a white ellipse with tag 4, with the
+         gray ellipse pick_from_tester to its right; and place_or_recycle,
+         a cyan octagon with tag 2. The octagon's children are the orange
+         box place_if_good, whose children are the gray ellipses
+         voltage_in_range and place_in_slot, and the gray ellipse
+         recycle_cell, which carries tag 5.
    :width: 100%
    :align: center
 
@@ -218,7 +222,8 @@ Sequence: Every Child Must Succeed
    ``SUCCESS`` when all succeed.
 
 GP1 example: ``move_cell`` = pick from the tester, place in the slot, update
-the blackboard.
+the blackboard (the tree's shared key-value store, explained in
+:ref:`l4-blackboards`).
 
 .. literalinclude:: outputs/composite_status.txt
    :language: text
@@ -226,6 +231,7 @@ the blackboard.
 
 Cases 2 and 3: ``update`` shows ``INVALID`` because the sequence stopped
 before it. It was never ticked.
+``memory`` is explained in :ref:`l4-memory`.
 
 Selector: The First Child That Succeeds Wins
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -336,8 +342,7 @@ Decorators: Measured
    :language: text
    :lines: 9-15
 
-- ``Inverter`` leaves ``RUNNING`` alone: a running child is not yet a yes or a
-  no.
+- ``Inverter`` leaves ``RUNNING`` alone: a running child has no result yet.
 - ``Timeout`` with ``duration=0.2`` s: on tick 2, 0.3 s had passed and the
   child was still running, so the decorator stopped the child (now
   ``INVALID``) and returned ``FAILURE``.
@@ -472,29 +477,35 @@ Step 3: Tick 5, Drawn
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l4/bt_tick_path.svg
-   :alt: Two copies of the tree move_cell from the retry demonstration, on
-         tick 5. Top, memory=True: tag 1 marks move_cell and tag 2 marks
-         place_in_slot, the only two nodes the tick visits; place_in_slot
-         returns SUCCESS, so move_cell returns SUCCESS. check_tester_ok,
-         retry_pick and pick_from_tester are faded: not visited, they keep the
-         SUCCESS from ticks 1 and 4. Bottom, memory=False: tags 1 to 4 mark
-         move_cell, check_tester_ok (SUCCESS), retry_pick and
-         pick_from_tester, which starts again and returns RUNNING. move_cell
-         returns RUNNING, and the faded place_in_slot is stopped and shows
-         INVALID.
+   :alt: Two copies of the tree move_cell on tick 5, one above the other
+         and separated by a dashed line. Each has the orange root move_cell
+         on the left, the children check_tester_ok, retry_pick and
+         place_in_slot in the middle column, and pick_from_tester to the
+         right of retry_pick. A status is written beside each node and
+         under the root. Top, labeled memory=True: tag 1 on move_cell,
+         which shows SUCCESS, and tag 2 on place_in_slot, which shows
+         SUCCESS. check_tester_ok, retry_pick and pick_from_tester have a
+         white fill and a dashed outline, and so do the lines to them;
+         check_tester_ok shows SUCCESS (from tick 1) and pick_from_tester
+         shows SUCCESS (from tick 4). Bottom, labeled memory=False: tags 1
+         to 4 on move_cell (RUNNING), check_tester_ok (SUCCESS), retry_pick
+         and pick_from_tester (RUNNING (again)). place_in_slot has a white
+         fill and a dashed outline and shows INVALID (stopped).
    :width: 100%
    :align: center
 
-Tags 1 to 4: the order in which tick 5 visits the nodes. Faded nodes are not
-visited on this tick. Statuses come from the output, tick 5.
+Tags 1 to 4: the order in which tick 5 visits the nodes. A node with a white
+fill and a dashed outline is not visited on this tick; the tick in brackets is
+when it last returned that status. Statuses come from the output, tick 5.
 
 Step 4: Why the Run without Memory Never Ends
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Tick 4: the pick succeeded and the place started.
 2. Tick 5: the sequence starts again at the check, which succeeds.
-3. The ``Retry`` is not running any more (it returned ``SUCCESS`` on tick 4),
-   so it starts its child again. The pick restarts and returns ``RUNNING``.
+3. The sequence ticks the ``Retry``, which ticks the pick. The pick is not
+   running (it returned ``SUCCESS`` on tick 4), so ticking it again starts it
+   again: its ``initialise`` runs, and it returns ``RUNNING``.
 4. A running child ends the sequence's tick, so the sequence stops the place
    (``INVALID``).
 5. Tick 6 is tick 4 again: the pick succeeds, the place starts. The pattern
@@ -520,8 +531,8 @@ A Tick That Interrupts a Running Action
 
 **What your leaf must do.**
 
-- If ``terminate`` does not cancel the goal, the robot keeps moving under a
-  tree that has moved on.
+- If ``terminate`` does not cancel the goal, the robot keeps moving after the
+  tree has started another branch.
 - ``py_trees_ros`` action leaves cancel the goal. The course skills accept a
   cancel.
 - ARIAC's ``/agvN/move`` action rejects cancel requests: once the AGV leaves,
@@ -679,8 +690,9 @@ The Tree as a ROS 2 Node
 .. tip::
 
    The ticks come from a timer callback, so subscription and action callbacks
-   run between ticks. The tree never blocks the node: the problem from the L1
-   executor demonstration does not happen.
+   run between ticks. As long as no leaf waits inside a tick, the tree never
+   blocks the node, and the problem from the L1 executor demonstration does
+   not happen.
 
 Leaves That Talk to ROS 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -700,7 +712,8 @@ Leaves That Talk to ROS 2
      - Course skills; ``/agvN/move``
    * - ``service_clients.FromConstant``, ``FromBlackboard``
      - ``RUNNING`` until the reply arrives, then ``SUCCESS``, **whatever the
-       reply says**
+       reply says**; ``FAILURE`` if the request could not be sent (server not
+       ready)
      - Submit report, check kit quality, submit kit
    * - ``subscribers.ToBlackboard``
      - ``RUNNING`` until a message has arrived, then ``SUCCESS``; copies the
@@ -814,9 +827,12 @@ Output, from tick 13:
    in the same 0.1 s.
 3. Over 10 more runs (``outputs/ros_tree_repeats.txt`` on the
    :doc:`code page <l4_code>`), the timeout fired on tick 33 in 3 runs and on
-   tick 34 in 7. ``Timeout`` fails only once *more* than 2.0 s have passed,
-   and the 2.0 s mark falls on a tick, so timer jitter decides which tick sees
-   it.
+   tick 34 in 7; in five more sets of 10 (``ros_tree_repeat_sets.txt``), on
+   tick 33 in 3 to 6 runs. ``Timeout`` fails only once *more* than 2.0 s have
+   passed, and the 2.0 s mark falls on a tick, so timer jitter decides which
+   tick sees it.
+4. This run heard 35 messages in 34 ticks. In the 60 other timeout runs in
+   those two files, the counts were equal every time.
 
 .. _l4-run3:
 
@@ -855,12 +871,12 @@ The Starter Tree: One Sequence for One Cell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l4/gp1_starter_tree.svg
-   :alt: A sequence named one_cell, drawn as an orange box on the left, with
-         seven gray leaves in order from top to bottom: submit_report (tag 1,
-         a service leaf), wait_for_beam (tag 2, a subscriber leaf),
-         pick_from_conveyor (tag 3, an action leaf), place_on_tester (tag 3),
-         read_voltage (tag 2), pick_from_tester (tag 3) and place_in_slot
-         (tag 3).
+   :alt: A sequence named one_cell, an orange box on the left, with lines
+         to seven gray ellipses stacked from top to bottom: submit_report,
+         wait_for_beam, pick_from_conveyor, place_on_tester, read_voltage,
+         pick_from_tester and place_in_slot. A column of numbered tags on
+         the right gives each leaf a number, top to bottom: 1, 2, 3, 3, 2,
+         3, 3.
    :width: 55%
    :align: center
 
@@ -892,26 +908,73 @@ Pattern 2: Stop Cleanly
 - Log the reason, and do not loop forever. A ``Timeout`` turns a skill that
   never answers into a failure (:ref:`run 2 <l4-run2>`).
 
-Pattern 3: Check Before Acting
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Pattern 3: Check the Kit Before Every Place
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Put a condition before each step that cannot be undone. Cells lock to the tray
-once placed, so the voltage decision comes before the place.
+**The rule (GP1, Task 4).**
 
-Before the fourth cell, check the kit total too. L3's worked example, in
-steps:
+- Put a condition before each step that cannot be undone. Cells lock to the
+  tray once placed, so every decision comes before the place.
+- The kit window is 14.25 V to 14.55 V (L1: 4 × 3.6 = 14.4 V, plus or minus
+  0.15 V). Before every place, check that the four cells can still land in
+  it. If they cannot, recycle the cell.
+- Each cell still to come adds 3.40 V to 3.80 V. So the cells placed so far
+  must total at least 14.25 V minus 3.80 V per missing cell, and at most
+  14.55 V minus 3.40 V per missing cell.
 
-1. Three placed cells total 3.55 + 3.62 + 3.70 = 10.87 V.
-2. The Li-Ion kit window is 14.25 V to 14.55 V (L1).
-3. The fourth cell must be from 14.25 − 10.87 = 3.38 V to 14.55 − 10.87 =
+**After three cells, in steps.**
+
+1. One cell is missing. It adds at most 3.80 V, so the three cells must total
+   at least 14.25 − 3.80 = 10.45 V.
+2. It adds at least 3.40 V, so they must total at most 14.55 − 3.40 =
+   11.15 V.
+3. Two cells at 3.78 V are placed, and a third at 3.78 V arrives (values
+   chosen for this example). Each passes ``voltage_in_range``, but
+   3 × 3.78 = 11.34 V is above 11.15 V. No fourth cell could fit, so the tree
+   recycles the third cell instead of placing it.
+
+Pattern 3: The Check Before the Fourth Place
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+L3's worked example, in steps:
+
+1. Three placed cells total 3.55 + 3.62 + 3.70 = 10.87 V. That is inside
+   10.45 V to 11.15 V, so the check allowed the third place.
+2. The fourth cell must be from 14.25 − 10.87 = 3.38 V to 14.55 − 10.87 =
    3.68 V, and inside 3.40 V to 3.80 V on its own: so from 3.40 V to 3.68 V.
-4. A cell at 3.75 V passes ``voltage_in_range`` but would make the kit
-   10.87 + 3.75 = 14.62 V. A second condition, on ``/kit/total``, must catch
-   it.
+3. A cell at 3.75 V passes ``voltage_in_range``, but the kit would read
+   10.87 + 3.75 = 14.62 V, above 14.55 V. A second condition, on
+   ``/kit/total``, must catch it.
 
 The check kit quality service comes after the fourth place, when the cells are
 already locked, and its reply needs its own condition
 (:ref:`run 3 <l4-run3>`).
+
+Pattern 3: How Far Chance Moves the Kit Total
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**What is known.** ARIAC checks the cells' true voltages; the tree knows only
+averages. The tester adds noise with a standard deviation of 0.05 V to each
+reading (ARIAC's ``voltage_tester/model.sdf``). Here each value averages five
+readings, as ``wait_for_voltage`` collects.
+
+**The spread, in steps.**
+
+1. One average of five readings wanders by about 0.05 / √5 = 0.0224 V.
+2. The kit total adds four averages with separate noise, so it wanders by
+   about √4 × 0.0224 = 0.045 V.
+3. 14.62 − 14.55 = 0.07 V, and 0.07 / 0.045 is about 1.6 spreads over the edge.
+4. If the true total were exactly 14.55 V, the averages would read 14.62 V or
+   more about 6 times in 100 (``kit_spread.py`` on the
+   :doc:`code page <l4_code>`: 5.9% by formula, 5.8% in 100,000 simulated
+   kits).
+
+.. important::
+
+   So 14.62 V makes a failed kit likely, not certain, and recycling the
+   3.75 V cell is still the safe call. A total within about
+   2 × 0.045 = 0.09 V of an edge cannot be called either way. Twenty readings
+   per cell halve the spread, to about 0.022 V.
 
 Class Discussion and the GP1 Write-up
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -7,8 +7,8 @@ Lecture
    These notes follow the L5 slides shown in class, in the same order and
    with the same sections, so you can read them at home. Every program output
    below comes from the scripts on the :doc:`code page <l5_code>`, run on
-   2026-10-12 with Python 3.12.3, NumPy 1.26.4 and PyYAML 6.0.1 under ROS 2
-   Jazzy.
+   2026-10-12 (``precision_recall.py`` and ``timing.py`` on 2026-10-18) with
+   Python 3.12.3, NumPy 1.26.4 and PyYAML 6.0.1 under ROS 2 Jazzy.
 
 .. warning::
 
@@ -58,7 +58,9 @@ What Perception Gives the Rest of the System
    :class: note
 
    **Perception** turns sensor data into facts the system can use: "this cell
-   has a dent at :math:`\theta` = 0.3 rad, :math:`z` = 14 mm".
+   has a dent at :math:`\theta` = 0.3 rad, :math:`z` = 14 mm" (an angle
+   around the cell and a height on it, both defined in
+   :ref:`l5-defects`).
 
 - Those facts update the world model (L3). The behavior tree reads them from
   its blackboard (L4).
@@ -100,7 +102,9 @@ the example lidar from the ARIAC documentation (``config_files.rst``):
 - ``NAME``, ``TYPE``: break_beam, distance, camera or lidar.
 - ``POSE``: position ``XYZ`` (m) and orientation ``RPY`` (rad) in the world
   frame.
-- ``UPDATE_RATE``: 1 to 30 Hz.
+- ``UPDATE_RATE``: lidar 10 or 20 Hz; camera 30 Hz; break beam and distance
+  10 or 30 Hz (``ariac_setup/yaml_validation.py``). ARIAC does not start
+  with any other rate.
 
 **A lidar adds** :math:`H` horizontal and :math:`V` vertical samples, each
 with a minimum and a maximum angle (rad). This lidar has
@@ -146,10 +150,10 @@ Sensor Grades and Costs
 .. warning::
 
    The code that bills a lidar (``Lidar.grade`` in
-   ``ariac_setup/structures.py``) differs from the Sensors page at the edges.
-   It gives grade A only at exactly 20 Hz, grades any other rate by samples
-   alone, and bills exactly 200 samples as grade B. For grade C, use at most
-   199 samples. More than 400 samples is refused.
+   ``ariac_setup/structures.py``) differs from the Sensors page at one edge:
+   at 10 Hz it grades by samples alone and bills exactly 200 samples as
+   grade B. For grade C, use at most 199 samples. At 20 Hz it bills grade A.
+   More than 400 samples is refused.
 
 .. _l5-boxes:
 
@@ -213,69 +217,23 @@ Which Sensor Each Part of the Course Needs
 
 **Why cameras do not inspect the cells here.**
 
-- ARIAC requires lidar for inspection, and an RGB image measures no depth: a
-  2 mm dent changes only the shading of a few pixels.
-- In the final demo, Gemini Robotics ER judges defects from camera images and
-  is scored against your GP2 lidar detector on the same cells.
-
-.. _l5-budget:
-
-Worked Example: Two Sensor Setups and Their Bonus
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- ARIAC requires lidar for inspection, and an RGB image measures no depth.
+- Whether a 2 mm defect shows in a Gazebo camera image has not been
+  measured. The final demo tests it: Gemini Robotics ER judges defects from
+  camera images and is scored against your GP2 lidar detector on the same
+  cells.
 
 **The rule** (``scoring_weights.yaml``, ``ariac_db/scoring.py``):
 
 - Under the $9600 budget: a **sensor cost bonus** of
-  1000 × (1 − cost / 9600) points, only if the team submitted every kit and
-  module the trial asked for.
+  1000 × (1 − cost / 9600) points, only if the team submitted every kit,
+  module and high-priority order the trial asked for.
 - Over the budget: a penalty of 1000 × (cost / 9600 − 1) points instead,
   which is 1000 / 9600 = 0.104 points per dollar over.
 
-The two setups below are chosen for this example.
-
-.. grid:: 1 1 2 2
-   :gutter: 3
-
-   .. grid-item-card:: Setup A
-      :class-header: bg-primary text-white
-
-      1. Three grade A lidars: 3 × $1500 = $4500.
-      2. Plus a grade A break beam and a 1080p camera:
-         $4500 + $400 + $800 = $5700.
-      3. Bonus: 1000 × (1 − 5700 / 9600) = 406.25 points.
-
-   .. grid-item-card:: Setup B
-      :class-header: bg-warning
-
-      1. Three grade C lidars: 3 × $1000 = $3000.
-      2. Plus a grade B break beam and a 720p camera:
-         $3000 + $200 + $500 = $3700.
-      3. Bonus: 1000 × (1 − 3700 / 9600) = 614.6 points.
-      4. B earns 614.6 − 406.25 = 208.3 more points than A.
-
-What the Cheaper Setup Gives Up
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-**A grade C lidar:**
-
-- scans at 10 Hz instead of 20 Hz, so it gets half as many looks at each
-  passing cell;
-- has at most 199 samples instead of up to 400, so its points land farther
-  apart.
-
-**The same scale of points:**
-
-- Setup B's extra bonus: about 208 points.
-- Each good cell sent into the inspection bin costs 50 points
-  (``GOOD_CELL_IN_INSPECTION_BIN``).
-- Correct defect classification is worth up to 500 points (the
-  classification bonus).
-
-.. tip::
-
-   Five good cells wrongly rejected cost 5 × 50 = 250 points, more than setup
-   B saved. GP2 asks your team to justify its sensors with numbers like these,
-   measured on your own detector.
+:doc:`Exercise 2 <l5_exercises>` works a full trade-off between a grade A
+and a grade C sensor layout, the bonus points each earns, and what the
+cheaper layout gives up.
 
 
 .. _l5-pointclouds:
@@ -290,12 +248,12 @@ by ``synth.py``, not by ARIAC (Python 3.12.3, NumPy 1.26.4, ROS 2 Jazzy).
 What an ARIAC Lidar Publishes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Topic and frame** (``ray_sensor_plugin.cpp``):
+**Topic and frame:**
 
 - Message ``sensor_msgs/PointCloud2`` on ``/{lidar_name}/scan``, with
-  ``frame_id`` ``{lidar_name}_frame``.
-- ARIAC publishes that frame as a static transform from ``world``, so one TF2
-  lookup is enough.
+  ``frame_id`` ``{lidar_name}_frame`` (``ray_sensor_plugin.cpp``).
+- ARIAC publishes that frame as a static transform from ``world``
+  (``tf_publisher_plugin.cpp``), so one TF2 lookup is enough.
 
 .. admonition:: Definition: point cloud and PointCloud2
    :class: note
@@ -352,8 +310,12 @@ Demo: Move Every Point to the World Frame at Once
   matrix product apply the rotation and the translation together.
 - The demo's static transform is a stand-in for ARIAC's. The first point lands
   at :math:`z` = 0.422 m: the belt.
-- Measured on the instructor's PC (2026-10-12, 400 points, 200 runs): a
-  Python loop took 0.59 ms per scan, one NumPy product 0.007 ms.
+- Measured by ``timing.py`` (see :doc:`the code page <l5_code>`) on the
+  instructor's PC (Intel Core i9-14900HX), with 400 points, the best of 3
+  runs of 200, repeated 5 times: a loop with one NumPy product per point,
+  ``m @ [x, y, z, 1.0]``, took 0.78 to 0.91 ms per scan; the one product
+  above took 0.012 to 0.013 ms. A loop in plain Python floats took
+  0.096 ms: most of the cost is calling NumPy once per point.
 
 QoS, Node Layout and Latency
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -371,7 +333,7 @@ subscriber must agree on):
 - The subscriber callback only converts and stores points.
 - A timer in its own callback group, under a ``MultiThreadedExecutor``,
   analyzes a cell once all its scans are in (L1: 11 of 50 status reads on one
-  thread, 49 of 50 with two groups).
+  thread, 50 of 50 with two groups).
 
 **Latency:** log the simulation time from a scan's header stamp to the
 report. The inspection speed bonus depends on it.
@@ -410,7 +372,7 @@ Top view, to scale. 1: lidar. 2: angular step :math:`\Delta`. 3: spacing
 - **Angular step**: :math:`\Delta = (a_{\max} - a_{\min}) / (N - 1)`, the
   angle between neighboring rays. There are :math:`N - 1` gaps between
   :math:`N` rays.
-- :math:`D`: distance from the lidar to the cell.
+- :math:`D`: distance from the lidar to the cell's axis.
 - **Spacing** on the cell: :math:`s \approx \Delta \times D`.
 
 **The cell.** A cylinder of radius 10.5 mm and length 70 mm
@@ -541,10 +503,13 @@ direction of travel.
    - **Scratch**: a long, narrow area set in, usually along the cell.
    - **Bulge**: a roughly round area sticking out.
 
-**Location** (``CellDefect.msg``):
+**Location:**
 
-- :math:`\theta`: angle around the cell, 0 along the direction of travel,
-  positive counterclockwise seen from above.
+- :math:`\theta`: angle of the defect's center around the cell
+  (``CellDefect.msg``). ARIAC checks it against the ``defects.yaml`` angle
+  plus the cell's spawn yaw (``physical_inspection_plugin.cpp``), so 0 is
+  along :math:`+x`, the direction of travel, and positive is
+  counterclockwise seen from above.
 - :math:`z`: height of the defect's center above the cell's base.
 
 The Detector in Eight Steps
@@ -565,8 +530,9 @@ the world frame (TF2). Output: the inspection report.
 
 - Steps 1 to 4 find the cell and its axis. Steps 5 to 8 find what differs
   from a perfect cylinder.
-- The code: ``detector.py``, one function per step (see
-  :doc:`the code page <l5_code>`).
+- The code: ``detector.py`` (see :doc:`the code page <l5_code>`), one
+  function each for steps 1, 3, 4, 5, 7 and 8. Step 6 is one line in
+  ``detect()``. Step 2 is not coded: each demo run has one cell.
 
 Steps 1 to 3: Crop, Separate, Undo the Motion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -634,9 +600,10 @@ Steps 6 to 8: Threshold, Cluster, Classify
 
 **Location of each cluster.**
 
-- :math:`\theta` = atan2(:math:`y_c - y_0`, :math:`x_c - x_0`), where
-  (:math:`x_c`, :math:`y_c`) is the cluster's center: 0 along :math:`+x`,
-  counterclockwise positive.
+- :math:`\theta`: each point's angle is atan2(:math:`y - y_0`,
+  :math:`x - x_0`), 0 along :math:`+x`, counterclockwise positive. The demo
+  averages these angles as directions (the mean of unit vectors), so −3.1
+  and +3.1 rad average to :math:`\pi`, not 0.
 - :math:`z` = the cluster's mean height above the belt surface, which is the
   cell's base.
 - ARIAC's training set also has horizontal and diagonal scratches
@@ -703,7 +670,7 @@ Demo Setup: What Is Synthetic, and Setting the Threshold
   ``lidar/model.sdf`` sets no noise, so in simulation the spread comes from
   the meshes and from your motion correction.
 - **Defects:** dent and bulge of radius 4 mm, scratch 4 mm wide and 28 mm
-  long, close to the sizes in ARIAC's meshes; depths chosen per run.
+  long, all chosen for this example; depths chosen per run.
 
 **Step 6 on 20 good cells** (``calibrate.py``):
 
@@ -786,13 +753,19 @@ The Report and How ARIAC Matches It to a Cell
   your lidars and before :math:`x` = 1.0 m: a late report lands on the next
   cell.
 - After a passing report, the door opens at :math:`x` = 1.0 m and closes
-  after :math:`x` = 1.25 m. A failing or missing report pushes the cell into
-  the inspection bin. A good cell there costs 50 points.
+  after :math:`x` = 1.25 m. A failing or missing report keeps the door
+  closed, and the cell drops into the inspection bin. A good cell there
+  costs 50 points.
 
 .. _l5-bonuses:
 
 The Two Bonuses a Report Earns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every ARIAC bonus counts only if the team submitted every kit, module and
+high-priority order the trial asked for. Otherwise ARIAC sets each bonus to
+0 (``ariac_db/scoring.py``; ``competition_manager_plugin.cpp`` marks such a
+run as aborted).
 
 **Inspection speed: 500 × (1 − g / 4 s).**
 
@@ -845,8 +818,8 @@ What a Tester Publishes, and Why One Reading Is Not Enough
 
 1. 3.8 V is 0.02 V above it: 0.02 / 0.05 = 0.4 standard deviations for one
    reading. One reading lands above 3.8 V with probability 0.34.
-2. For the average of 10: 0.02 / 0.016 = 1.26 standard deviations,
-   probability 0.10.
+2. For the average of 10: 0.02 / 0.0158 = 1.26 standard deviations
+   (0.0158 is 0.05 / √10 before rounding), probability 0.10.
 3. A cell read above 3.8 V is recycled for nothing.
 
 The probabilities in steps 1 and 2 are the share of a normal distribution that
@@ -944,8 +917,8 @@ detector rejects 9, and 7 of those are defective.
 
 1. TP = 7, FP = 9 − 7 = 2, FN = 8 − 7 = 1, TN = 40 − 7 − 2 − 1 = 30.
 2. Precision = 7 / 9 = 0.78. Recall = 7 / 8 = 0.875.
-3. With only 9 rejections, one more error moves precision by about
-   1 / 9 = 0.11: report the counts with the ratios.
+3. With only 9 rejections, one more false alarm moves precision from
+   7 / 9 = 0.78 to 7 / 10 = 0.70: report the counts with the ratios.
 
 **The cost in ARIAC.**
 
@@ -976,54 +949,40 @@ the classification bonus.
    :language: text
    :lines: 1-12
 
+Each "missed" line gives the defect's :math:`\theta` (rad) and depth (mm),
+the number of points that landed on it, how many of those have :math:`|d|`
+above 0.9 mm, and the deepest :math:`d` on it (mm). The script takes about
+4 minutes, so in class this output was recorded beforehand.
+
 1. 0.5 mm is below the noise on good cells (0.53 to 0.79 mm): 5 false alarms.
    Precision = 55 / (55 + 5) = 0.92; recall = 55 / 56 = 0.98.
-2. 0.9 mm, from the good cells: no false alarms, 3 misses. All three face
-   :math:`\theta` near 0 or :math:`\pm\pi`: the gap on the residual map.
-3. 1.5 mm misses one more. Raising the threshold cannot fix a defect no lidar
-   sees.
+2. 0.9 mm, from the good cells: no false alarms, 3 misses. Each sits within
+   0.26 rad of :math:`\theta` = 0 or :math:`\pm\pi`, where each lidar sees
+   the surface at a grazing angle (the edges of the gap on the residual
+   map). Points land on each (33, 6 and 22), but at most one passes 0.9 mm,
+   and a cluster needs 3.
+3. 1.5 mm misses one more. A higher threshold flags fewer points, so it
+   cannot catch these.
 
 Demo: Four Lidars, and Shallower Defects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: outputs/precision_recall.txt
    :language: text
-   :lines: 13-20
+   :lines: 13-22
 
-1. On set 1, four lidars (two in each side box, turned 0.6 rad upstream and
-   downstream) see the front and back of the cell: all 56 caught.
+1. On set 1, four lidars (two in each side box, at :math:`x` = 0.7 m, turned
+   0.6 rad upstream and downstream) see the front and back of the cell: all
+   56 caught.
 2. Set 2 uses depths from 0.8 to 2.5 mm, the range measured in ARIAC's
-   meshes. The two misses are 0.8 and 0.9 mm deep: at or below the 0.9 mm
-   threshold.
+   meshes. Both misses are dents. The 0.82 mm dent is below the 0.9 mm
+   threshold: none of its 52 points passes. The 0.91 mm dent is just above
+   it, but only 2 of its 84 points pass, and a cluster needs 3.
 3. Chance: with about 55 defective cells, one miss moves recall by
    1 / 55 = 0.018. Compare layouts on the same cells, as here.
 
-.. _l5-four-lidar-cost:
-
-Worked Example: What the Four-Lidar Layout Costs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-From ``point_count.py``, when the cell is seen:
-
-.. literalinclude:: outputs/point_count.txt
-   :language: text
-   :lines: 7-8
-
-1. Sensor cost: two more grade A lidars, 2 × $1500 = $3000, lower the cost
-   bonus by 1000 × 3000 / 9600 = 312.5 points.
-2. Inspection speed, if each report goes out when the cell is last seen:
-   500 × (1 − 2.55 / 4) = 181.25 points instead of 343.75, or 162.5 fewer.
-3. Together: 312.5 + 162.5 = 475 points given up.
-4. Gained in set 1: 3 more defective cells caught out of 56, and full
-   classification (56 of 56 instead of 51 of 56: 500 × 5 / 56 = 44.6 more
-   points).
-
-.. important::
-
-   The four lidars pay off only if the missed cells would have reached kits:
-   one failed kit is about 1667 points. Your team decides with its own
-   numbers.
-
+What the four-lidar layout costs in sensor cost and inspection speed, in
+ARIAC points, is :doc:`Exercise 6 <l5_exercises>` on the exercises page.
 
 .. _l5-gp2:
 
@@ -1044,7 +1003,8 @@ GP2: Cell Inspection
 
 **Deliverables:** the perception package, the updated GP1 tree, and a results
 table: precision and recall per defect type, the number of cells tested, and
-the sensor cost. The full assignment is on the course's GP2 page.
+the sensor cost. Also the team configuration file and a 1 to 2 page
+write-up. The full list is on the :doc:`GP2 page </assignments/gp2>`.
 
 
 .. _l5-next:
@@ -1058,8 +1018,9 @@ problems, typed predicates, and running a planner from Python.
 **Before next class:**
 
 - Read the PDDL Primer pre-read on the course site.
-- Install the Unified Planning Framework with Fast Downward:
-  ``pip install unified-planning up-fast-downward``.
+- Install the Unified Planning Framework with Fast Downward in a virtual
+  environment: ``python3 -m venv ~/venvs/planning``, then
+  ``~/venvs/planning/bin/pip install unified-planning up-fast-downward``.
 - Run the L5 scripts (``run_all.sh``, see :doc:`l5_code`) and compare your
   outputs with these notes.
 - Quiz 3, at the start of Week 7, covers L5 and L6.

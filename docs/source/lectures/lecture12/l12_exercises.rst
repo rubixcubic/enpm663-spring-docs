@@ -11,7 +11,7 @@ Exercises
    work, which is the five in-class quizzes, the four group projects and
    the final demo listed in the :doc:`syllabus </syllabus/index>`.
 
-Six take-home exercises on the L12 slides and the three L12 scripts.
+Six take-home exercises on the L12 slides and three of the L12 scripts.
 Exercise 1 changes the detector's threshold in ``cells.csv`` and prices each
 error in ARIAC points. Exercise 2 is paper and arithmetic: how many runs a
 0.10 difference needs. Exercise 3 changes ``success_spread.py`` to check that
@@ -127,22 +127,27 @@ budget.
          recall    = 3/5 = 0.60
 
       **Question 6.** Each false positive is a good cell with a failing
-      report, which the inspection door pushes into the inspection bin, at
-      50 points each (``GOOD_CELL_IN_INSPECTION_BIN``):
+      report. The inspection door stays closed, and the cell drops into the
+      inspection bin, at 50 points each (``GOOD_CELL_IN_INSPECTION_BIN``):
 
       - Original: 2 × 50 = 100 points.
       - Lower threshold: 4 × 50 = 200 points.
       - Higher threshold: 0 × 50 = 0 points.
 
       **Question 7.** The false negatives pass: 1 (original), 0 (lower
-      threshold), 2 (higher threshold). A defective cell that goes into a kit
-      makes ARIAC refuse the kit at shipping. In the lecture's trial
-      (:math:`k_d = 3`) that kit is worth 5000 / 3 = 1666.7 points of base,
-      and if the kit is never accepted, the bonus gate also removes every
-      bonus (1534.58 points in Run 1). So in that trial the lower threshold
-      pays 100 more points in penalties than the original to remove a risk
-      worth far more. The higher threshold saves 100 points of penalties and
-      doubles that risk. These prices hold for this trial; another trial
+      threshold), 2 (higher threshold). GP1 requires the check kit quality
+      call before the AGV moves, so a passed defective cell that goes into a
+      kit is caught at the AGV inspection station. It costs a recycled tray,
+      with its good cells, and the time to rebuild the kit. Only if the
+      rebuild does not finish before the time limit does it cost the kit,
+      5000 / 3 = 1666.7 points of base in the lecture's trial
+      (:math:`k_d = 3`), and, through the bonus gate, every bonus (1534.58
+      points in Run 1): 3201.25 points in all. So the lower threshold pays
+      100 more points of penalties than the original, every run, to save one
+      tray rebuild and remove that risk. The higher threshold saves 100
+      points of penalties and doubles the rebuilds. Which setting wins
+      depends on how often a rebuild misses the time limit, which your own
+      runs can measure. These prices hold for this trial; another trial
       needs its own arithmetic.
 
       **Question 8.** Recall = 0 / 5 = 0. Precision is 0 / 0, which is not
@@ -159,7 +164,9 @@ budget.
    **Goal**
 
    Use the standard error formula to find how many runs the GP3 and GP4
-   comparison needs before a gap of 0.10 counts as evidence.
+   comparison needs before a gap of 0.10 counts as evidence. The lecture
+   gives the answer (:ref:`l12-runs-a-claim-needs`); work it out yourself,
+   step by step.
 
    .. raw:: html
 

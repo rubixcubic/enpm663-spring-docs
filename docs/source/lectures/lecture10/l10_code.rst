@@ -4,8 +4,9 @@ Code
 
 L10 has five short Python scripts. Three of them use ROS 2 and TF2, and two run
 in plain Python. None needs ARIAC, Gazebo or MoveIt: the ROS 2 scripts publish
-the same transforms ARIAC would, and the two plain scripts compute with numbers
-taken from ARIAC's configuration. The outputs below come from running them
+the same transforms ARIAC would. The two plain scripts compute with chosen
+numbers (the RRT-Connect toy) or with the course skills package's own numbers
+(the conveyor catch). The outputs below come from running them
 with Python 3.12.3, NumPy 1.26.4 and ROS 2 Jazzy.
 
 .. important::
@@ -14,6 +15,8 @@ with Python 3.12.3, NumPy 1.26.4 and ROS 2 Jazzy.
    ``tf_failures.py`` and ``pixel_to_table.py`` send their own transforms with
    ARIAC's frame names and offsets, then look them up. Nothing moves in a
    simulator. ``rrt_connect_toy.py`` is a teaching toy, not MoveIt or OMPL.
+   ``conveyor_intercept.py`` is a model of the course skill's conveyor catch,
+   not the skill itself.
 
 .. note::
 
@@ -65,8 +68,8 @@ with Python 3.12.3, NumPy 1.26.4 and ROS 2 Jazzy.
      - RRT-Connect for a point in a flat square: five seeds, five paths.
      - :ref:`l10-planners`
    * - :download:`conveyor_intercept.py <code/conveyor_intercept.py>`
-     - Where the arm meets a cell on the moving conveyor, in three separate
-       runs.
+     - When the course skill catches a cell on the moving conveyor, and when
+       it refuses, in four separate runs.
      - :ref:`l10-conveyor`
    * - :download:`run_all.sh <code/run_all.sh>`
      - Runs all five and writes their outputs to ``../outputs/``.
@@ -182,12 +185,17 @@ step and the sample limit.
 The Moving Conveyor: ``conveyor_intercept.py``
 ----------------------------------------------
 
-The script plays three separate runs, each with one cell. A run gives the
-belt's speed history as a list of (start time, speed) pairs, the way the
-conveyor status topic would report it, and the time the arm starts.
-``distance()`` adds up speed × time piece by piece. The reach (0.00 m to
-0.45 m past the beam) and the arm's move time (1.5 s) are chosen for this
-example.
+The script models ``pick_from_conveyor`` from the course skills package,
+v0.2.0. ``plan_catch()`` follows the skill's ``conveyor.py``: it predicts when
+the cell reaches the fixed catch point, or refuses before any motion.
+``wait()`` follows the skill's ``_belt_change``: a belt that stops or changes
+speed while the arm waits ends the goal. The numbers (beam at x = 0.60 m,
+catch point at x = 1.40 m, ``side_lead_time``, ``close_delay``,
+``max_trigger_age``) come from the package's ``team_config.yaml`` and
+``skills.yaml``; the docstring gives the file and line of each. Each run
+gives the belt's speed history as a list of (start time, speed) pairs and the
+time the goal is sent, both chosen for this example. The script plays four
+separate runs, each with one cell.
 
 .. code-block:: bash
 

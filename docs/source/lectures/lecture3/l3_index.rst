@@ -27,9 +27,11 @@ Next come two ideas from NIST's **4D/RCS** reference model, used inside L2's
 three layers: each layer keeps only the detail it decides with, and an error
 is handled where it is seen, with status passed up. Then one kit state is
 written three ways (PDDL facts, a JSON record checked by a JSON schema, and
-text), all printed by one script, with a worked example that picks the voltage
-range of the kit's fourth cell. The lecture ends with what the GP1 tree must
-know: which facts are observed, which are inferred and which are unknown.
+text), all printed by one script. A worked example picks the voltage range of
+the kit's fourth cell, then checks it against chance: the tester readings are
+noisy, so the range keeps a margin inside each limit. The lecture ends with
+what the GP1 tree must know: which facts are observed, which are inferred and
+which are unknown, and one cell tracked from events, step by step.
 
 .. important::
 
@@ -90,8 +92,8 @@ Next Steps
   writes the GP1 tree.
 - **Before next class:**
 
-  - Run ``kit_views.py`` (see :doc:`l3_code`) and compare your output with
-    the notes.
+  - Run ``kit_views.py``, ``ontology_check.py`` and ``track_cell.py`` (see
+    :doc:`l3_code`) and compare your output with the notes.
   - Work through the :doc:`L3 exercises <l3_exercises>` and the
     :doc:`self-check quiz <l3_quiz>`.
   - Continue GP1 setup, and agree on your blackboard key names.

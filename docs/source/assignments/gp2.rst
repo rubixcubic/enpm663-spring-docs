@@ -161,8 +161,9 @@ points in one scan.
 
    The ARIAC code bills a lidar with exactly 200 samples as grade B
    ($1250), although the Sensors page lists 200 under grade C. To be billed
-   as grade C, use at most 199 samples. The code also gives grade A only at
-   exactly 20 Hz.
+   as grade C, use at most 199 samples. ARIAC accepts a lidar only at 10 or
+   20 Hz (``ariac_setup/yaml_validation.py``) and bills every 20 Hz lidar as
+   grade A.
 
 The GP1 break beam counts toward the same $9600 budget. Spending less than
 the budget earns a sensor cost bonus.

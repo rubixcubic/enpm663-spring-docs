@@ -147,8 +147,8 @@ def two_lidars(x=0.65, h=(10, -0.15, 0.15), v=(40, -0.4, 0.4)):
 
 def four_lidars(x=0.7, turn=0.6, h=(10, -0.15, 0.15),
                 v=(40, -0.4, 0.4)):
-    """Two lidars in box A and two in box B, at the same spots as
-    two_lidars(), each pair turned 0.6 rad upstream and downstream so
+    """Two lidars in box A and two in box B, at x = 0.7 m (two_lidars()
+    uses 0.65 m), each pair turned 0.6 rad upstream and downstream so
     that the front and back of the cell are seen (chosen for this
     example)."""
     zc = BELT_Z + LENGTH / 2

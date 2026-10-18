@@ -4,7 +4,7 @@ from datetime import date
 project = "ENPM663 Spring 2027"
 author = "Z. Kootbally"
 copyright = f"{date.today().year}, {author}"
-release = "v0.4.16"
+release = "v0.4.17"
 
 extensions = [
     "myst_parser",
@@ -68,9 +68,9 @@ HIDE_FINAL_DEMO = False
 if HIDE_FINAL_DEMO:
     exclude_patterns += ["assignments/final_demo.rst"]
 
-# The Course Skills Package page is held back until the package's v1.0.0 is
-# published with GP1 (2027-02-03). To publish it, delete this line and add
-# "Course Skills Package <skills>" to a toctree in ariac/ariac.rst.
+# Set to True to hold back the Course Skills Package page (it is published,
+# and describes v0.2.0). Hiding it also needs its toctree entry in
+# ariac/ariac.rst removed.
 HIDE_SKILLS_PAGE = False
 if HIDE_SKILLS_PAGE:
     exclude_patterns += ["ariac/skills.rst"]

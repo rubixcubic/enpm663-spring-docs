@@ -186,7 +186,7 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          **NIST, ARIAC 2025 documentation: Scenario**
 
          The Task 1 steps the starter tree follows, and the kit tolerance used
-         in the fourth-cell example.
+         in the kit-total check before every place.
 
       .. grid-item-card:: ARIAC source
          :link: https://github.com/usnistgov/ARIAC/tree/ariac2025
@@ -195,4 +195,6 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          **usnistgov/ARIAC, branch** ``ariac2025``
 
          The code to check against when a leaf depends on how ARIAC behaves,
-         as the cancel and kit check facts above do.
+         as the cancel and kit check facts above do. The tester's reading
+         noise (0.05 V) is ``noise_std_dev`` in
+         ``ariac_gz/models/voltage_tester/model.sdf``.
