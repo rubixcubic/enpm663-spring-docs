@@ -6,18 +6,19 @@ Lecture
 
    These notes follow the L9 slides shown in class, in the same order and with
    the same sections, so you can read them at home. Every program output below
-   is copied from the files the two L9 scripts wrote when they ran with
-   Python 3.12.3 and jsonschema 4.10.3. The scripts and how to run them are on
-   the :doc:`code page <l9_code>`.
+   is copied from the files the L9 scripts wrote, the same files the slides
+   show. The scripts and how to run them are on the
+   :doc:`code page <l9_code>`.
 
 .. important::
 
-   **Both demonstrations use stand-ins, not real models.** ``stand_in_vlm()``
-   and ``stand_in_model()`` return canned replies in a fixed order, written to
-   contain the mistakes the checks must catch. A real model's answers vary
-   from run to run. The factory in the closed-loop demonstration is a
-   stand-in too: plain Python that copies the payloads of the ARIAC 2025
-   topics, with no simulator.
+   **Two kinds of output.** The closed loop and one VLM check call a real
+   model, Gemini (``gemini-3.5-flash-lite``), on ARIAC 2025 through the course
+   skills. Each of those outputs says "Recorded once, on 2026-10-17, with
+   gemini-3.5-flash-lite. A rerun gives different answers." A second VLM
+   check uses ``stand_in_vlm()``, a scripted stand-in whose canned replies
+   hold the mistakes the checker must catch. Its outputs say "Scripted model:
+   fixed replies."
 
 
 .. _l9-recap:
@@ -188,10 +189,11 @@ fact the agent needs.
 **Building the strong prompt, on an AGV tray:**
 
 1. **Say what the camera shows:** "This image is from a camera above the tray
-   of agv1. The tray has four slots, numbered 1 to 4 from the left of the
-   image." The model cannot know the slot numbers unless you tell it. The
-   order in the image depends on how the camera is mounted, so check it once
-   against ``/agvN/tray_status``.
+   of agv1. The tray has four slots in two rows of two: slots 1 and 2 are the
+   top row, left to right; slots 3 and 4 are the bottom row, left to right."
+   The model cannot know the slot numbers unless you tell it. The order in
+   the image depends on how the camera is mounted, so check it once against
+   ``/agvN/tray_status``.
 2. **Ask for one record per slot:** occupied or empty, cell type, visible
    damage, and a confidence.
 
@@ -206,7 +208,7 @@ Steps 3 and 4: A Schema with Enums, and a Way to Say UNKNOWN
 
 .. literalinclude:: code/vlm_check.py
    :language: python
-   :lines: 28-42
+   :lines: 49-63
    :caption: lecture9/code/vlm_check.py (excerpt)
 
 - ``LI_ION`` and ``NIMH`` (from ``CellTypes.msg``) and ``DENT``, ``BULGE``
@@ -269,8 +271,9 @@ range the kit's total voltage must fall in:
 Checking the VLM's Record
 -------------------------
 
-This section gives each field of the record a second source, and shows a
-demonstration with a scripted stand-in VLM.
+This section gives each field of the record a second source. The
+demonstration has two runs: a real camera image and Gemini's answer, then a
+scripted run with mistakes written in.
 
 
 Which Second Source Checks Which Field
@@ -306,26 +309,38 @@ The two types are so far apart that one tester reading settles the type.
    The agent does not act on the field until a third observation settles it.
 
 
-Demonstration Setup, and the Weak Prompt
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demonstration Setup: One Camera Over agv1's Tray
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. warning::
+.. figure:: /_static/images/l9/vlm_tray.png
+   :alt: Camera image, seen from above, of a gray kit tray with a round hole in the middle. Four blue battery cells lie left to right in four cavities, two in the top row and two in the bottom row. The top right cell shows printed text upside down: Li-Ion, 2000mAh, 3.7V. A black robot gripper covers the right edge of the image and the right end of the bottom right cell.
+   :width: 60%
+   :align: center
 
-   ``stand_in_vlm()`` is a scripted stand-in for the model: it returns canned
-   replies, written to hold mistakes for the checker to find. A real model's
-   answers vary.
+   The image Gemini saw, from sensor ``agv1_camera``
+   (``config/l9_user_config.yaml``): 1280 × 720 pixels on
+   ``/agv1_camera/image``. Slots 1 and 2 are the top row, 3 and 4 the bottom
+   row, left to right. Taken at the end of the replan recording
+   (:ref:`l9-demo`), after the fourth cell was placed.
 
-The tray status and the recorded voltages are stand-in values chosen for this
-example. To run it, see :doc:`l9_code`.
+The **record** (``record.json``) holds the voltage each cell read on a tester
+before the agent placed it.
 
-Output for the weak prompt:
+**Where the camera sits:**
 
-.. literalinclude:: outputs/vlm_check.txt
-   :language: text
-   :lines: 1-5
-
-``json.loads`` rejects the paragraph. Its hint, "one near the right", names no
-slot.
+1. The four slot centers, in the world frame (L8 smoke test): :math:`x` from
+   2.085 to 2.215 m, :math:`y` from 1.450 to 1.550 m, :math:`z` 0.383 m. The
+   camera sits above their center, (2.150, 1.500).
+2. The field of view is 0.873 rad, ARIAC's default
+   (``user_config_parser.py``). At a height :math:`h` above the slots, the
+   image is :math:`2 \times \tan(0.873 / 2) = 0.933 \times h` wide. Chosen:
+   twice the 0.130 m :math:`x` span of the slots, so
+   :math:`h = 2 \times 0.130 / 0.933 = 0.279` m and
+   :math:`z = 0.383 + 0.279 = 0.662` m.
+3. Roll, pitch and yaw (0, :math:`\pi/2`, :math:`\pi/2`): the pitch points
+   the camera down. The yaw puts slots 1 and 2 in the top row, as the prompt
+   says: in the dry run's image with only slot 1 filled, that cell is top
+   left.
 
 
 Parse, Validate, Re-prompt Once
@@ -333,17 +348,14 @@ Parse, Validate, Re-prompt Once
 
 .. literalinclude:: code/vlm_check.py
    :language: python
-   :lines: 76-84
+   :lines: 97-109
    :caption: lecture9/code/vlm_check.py (excerpt)
 
-Output for the structured prompt:
-
-.. literalinclude:: outputs/vlm_check.txt
-   :language: text
-   :lines: 6-10
-
-The first reply numbered the slots 0 to 3. The schema's ``minimum`` of 1
-caught it, and the second reply passed.
+- The schema cannot say "each slot number once", so ``check()`` tests it in
+  code.
+- ``ask()`` sends the prompt, runs ``check()`` on the reply, and re-prompts
+  once with the first error. The live prompt also carries the schema as
+  text, since the model sees only the prompt.
 
 
 The Cross-Check, Slot by Slot
@@ -351,25 +363,113 @@ The Cross-Check, Slot by Slot
 
 .. literalinclude:: code/vlm_check.py
    :language: python
-   :lines: 108-124
+   :lines: 133-147
    :caption: lecture9/code/vlm_check.py (excerpt)
 
-``type_from_volts()`` turns a recorded voltage into a type: 1.0 V to 1.4 V is
-``NIMH``, 3.4 V to 3.8 V is ``LI_ION``. Each range is the nominal voltage
-plus or minus the 0.2 V cell tolerance in ``CellTypes.msg``: for NiMH,
-:math:`1.2 - 0.2 = 1.0` V and :math:`1.2 + 0.2 = 1.4` V.
+- ``type_from_volts()`` turns a recorded voltage into a type: 1.0 V to 1.4 V
+  is ``NIMH``, 3.4 V to 3.8 V is ``LI_ION``. Each range is the nominal
+  voltage plus or minus the 0.2 V cell tolerance in ``CellTypes.msg``: for
+  NiMH, :math:`1.2 - 0.2 = 1.0` V and :math:`1.2 + 0.2 = 1.4` V. A slot with
+  no record is checked for occupancy only.
+- A slot whose verdict is not ``agree`` goes into ``flags``. ``decision()``
+  then says submit only when ``flags`` is empty and all four slots are
+  occupied, each with a record.
 
 The checks run in order. Occupancy is compared first. Only if it agrees does
 the code compare the type, and a VLM answer of ``UNKNOWN`` never counts as a
 type disagreement.
 
 
+Output: Gemini's Record, Cross-Checked
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: outputs/listings/vlm_live_attempts.txt
+   :language: text
+
+.. literalinclude:: outputs/listings/vlm_live_cross.txt
+   :language: text
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1. ``call``: the VLM call's tokens and
+time. ``record``: the voltage in ``record.json``, rounded to 0.01 V.
+
+1. Gemini's first reply passed ``check()``, so no re-prompt was sent. It
+   called all four slots occupied and ``LI_ION``; the topic and the records
+   agree on every slot.
+2. The NiMH running example used ``/submit_high_priority_order``. This Li-Ion
+   kit goes to ``/submit_kitting_order``, which ARIAC refuses unless an AGV
+   is at shipping: ``competition_manager_plugin.cpp``:249 checks first, then
+   ``agv_tray_interface_plugin.cpp``:357.
+3. ``decision()`` compares occupancy, type and the record of each slot. The
+   next part shows a check it leaves out.
+
+
+.. _l9-kit-total:
+
+The Decision Leaves Out the Kit Total
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: outputs/listings/vlm_live_kit.txt
+   :language: text
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1.
+
+**The kit total, from** ``record.json``:
+
+1. Sum: 3.540 + 3.444 = 6.984; + 3.645 = 10.629; + 3.465 = 14.094 V, about
+   14.09 V.
+2. ARIAC's window (``CellTypes.msg`` lines 7 and 11):
+   :math:`4 \times 3.6 \pm 0.15` = 14.25 to 14.55 V. The sum is
+   14.25 − 14.094 = 0.156 V short.
+3. Chance: ARIAC adds the cells' own voltages
+   (``agv_tray_interface_plugin.cpp``:416), not the tester readings. Each
+   record is the mean of 10 readings (``skill_tools.py``), each with noise of
+   standard deviation 0.05 V (``voltage_tester/model.sdf``). So chance moves
+   one record by about :math:`0.05 / \sqrt{10} = 0.016` V, and the sum of
+   four by about :math:`\sqrt{4} \times 0.016 = 0.03` V, a fifth of the
+   0.156 V.
+
+.. important::
+
+   The run reached the lecture's goal: four cells, each read at 3.4 to
+   3.8 V. The readings add to about 14.09 V, under ARIAC's 14.25 V minimum,
+   so ARIAC would refuse this kit at ``/submit_kitting_order``
+   (``agv_tray_interface_plugin.cpp``:437). The VLM "submit" compares only
+   occupancy, type and the per-slot record. The kit total is a separate
+   check, and it fails here.
+
+
+The Scripted Run: Mistakes Written In
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. warning::
+
+   ``stand_in_vlm()`` is a scripted stand-in for the model: it returns canned
+   replies, written to hold mistakes for the checker to find.
+
+.. literalinclude:: outputs/listings/vlm_weak.txt
+   :language: text
+
+.. literalinclude:: outputs/listings/vlm_attempts.txt
+   :language: text
+
+Scripted model: fixed replies. Run: ``lecture9/code/run_all.sh`` (Python
+3.12.3, jsonschema 4.10.3). To run it, see :doc:`l9_code`.
+
+``json.loads`` rejects the paragraph; its hint, "one near the right", names
+no slot. The first structured reply numbered the slots 0 to 3; the schema's
+``minimum`` of 1 caught it, and the second reply passed.
+
+
 Output: Two Disagreements Before the Submit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/vlm_check.txt
+.. literalinclude:: outputs/listings/vlm_cross.txt
    :language: text
-   :lines: 11-17
+
+Scripted model: fixed replies. The tray status and the recorded voltages are
+stand-in values for the NiMH example, chosen for this example.
 
 1. **Slot 3:** the VLM says ``LI_ION``, but the cell read 1.24 V, inside the
    NiMH range of :math:`1.2 \pm 0.2` V (1.0 V to 1.4 V).
@@ -383,20 +483,25 @@ Output: Two Disagreements Before the Submit
 What the Demonstration Shows, and What a Live Call Adds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Read from the output:**
+**The two runs:**
 
-- The confidences of the two wrong slots were 0.6 and 0.7. A confidence is
-  the model's own number, not a check.
-- For occupancy, the topic gives the answer for free. The VLM is worth its
-  cost for what no topic reports: the tray as it looks now, which shows
-  whether a cell went where your record says.
+- The scripted replies were written to get slot 3's type and slot 4's
+  occupancy wrong, at confidences 0.6 and 0.7. The cross-check caught both.
+- Gemini, on the real image, got occupancy and type right on all four slots.
+  Its "damage ``NONE``" has no second source to check it against.
+- Robot 2's gripper hides the right end of slot 4's cell. The model still
+  gave slot 4 the same 0.95 as the fully visible slots, so its "no damage"
+  answer covers a part the camera could not see. A confidence is the
+  model's own number, not a check.
 
-**A live call:**
+**What the live call cost.** Recorded once, on 2026-10-17, with
+gemini-3.5-flash-lite. A rerun gives different answers. Recording 1 of 1.
 
-- With an API key and an ARIAC camera, the same script calls a real VLM.
-  Print the time and the token count of each call next to its output: these
-  are the latency and cost columns of the GP4 comparison.
-- The stand-in has no time or token count, so these notes show none.
+From its ``call`` line: 1377 input tokens (277 text and 1100 image, in the
+raw response) and 147 output tokens, in 2.02 s. At L8's prices, $0.30 and
+$2.50 per million input and output tokens:
+(1377 × 0.30 + 147 × 2.50) / 1,000,000 = $0.000781. These are the latency
+and cost columns of the GP4 comparison.
 
 
 .. _l9-closed-loop:
@@ -437,9 +542,12 @@ What the Agent Observes, and Where the Expected State Lives
 - The orchestrator keeps the world-state record from L3: cells, testers, tray
   slots, AGV stations, orders.
 - Each action has an **expected effect**, the same idea as a PDDL effect:
-  after ``load_tester``, the tester reads 3.4 V to 3.8 V.
-- After the action, the orchestrator checks that effect against fresh
-  observations. The model never grades its own plan.
+  after ``robot1_place_on_tester``, the tester reads 3.4 V to 3.8 V for a
+  good Li-Ion cell.
+- In the demonstration, ``Record.after`` (``orchestrator.py`` lines 87 to
+  101) updates the record from each skill result, ``guard()`` checks the
+  next call against the record and a fresh observation, and the model judges
+  what to do next.
 
 
 Drift: the World Is Not What the Plan Assumed
@@ -484,8 +592,9 @@ Bound the Loop
 Retry, Wait or Replan
 ---------------------
 
-This section covers what the orchestrator does after a mismatch, applied to
-the four ARIAC 2025 challenges.
+This section covers what to do after a mismatch, applied to the four ARIAC
+2025 challenges. In the demonstration, the model chooses, and code refuses a
+call that breaks a rule.
 
 
 The Rule
@@ -571,15 +680,19 @@ Detect a Broken Tester From Its Status, Not From Silence
    (``MALFUNCTIONING`` in ``OperationStates.msg``). A check that waits for the
    topic to go quiet never fires.
 
-The demonstration's stand-in topic follows the source:
+**The replan recording shows the same:**
 
-.. literalinclude:: code/closed_loop.py
-   :language: python
-   :lines: 95-102
-   :caption: lecture9/code/closed_loop.py (excerpt)
+.. literalinclude:: outputs/listings/replan_tester1.txt
+   :language: text
 
-With no cell on it, a working tester reads 0 V plus noise (same source file),
-so a reading near 0 V means the tester is empty.
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1, from :ref:`l9-demo`.
+
+- ``obs k`` is what the orchestrator read after the model's call :math:`k`;
+  :math:`t` is the simulation time. Tester 1 read −1.00 V,
+  ``MALFUNCTIONING``, from obs 3 to obs 10, and it kept publishing.
+- With no cell on it, a working tester reads 0 V plus noise (same source
+  file), so a reading near 0 V means the tester is empty.
 
 
 The Same Two Levels as L7
@@ -604,114 +717,166 @@ The Same Two Levels as L7
 Demonstration: the Closed Loop
 ------------------------------
 
-One Li-Ion kit on agv1 meets a conveyor malfunction and a tester malfunction,
-in plain Python (``lecture9/code/closed_loop.py``).
+- Gemini (``gemini-3.5-flash-lite``) fills agv1's four slots with Li-Ion
+  cells in ARIAC, through the course skills, with the L8 orchestrator and its
+  guard (``lecture9/code/closed_loop.py``). A **cycle** is four skill calls
+  for one cell: pick from the conveyor, place on a tester, pick from the
+  tester, place in a slot.
+- Voltage tester 1 malfunctions at ``START_TIME`` 30 s for ``DURATION`` 70 s
+  of simulation time (``config/l9_trial.yaml``), chosen from a scripted dry
+  run (``outputs/closed_loop_dry.txt``):
 
-The values below are **chosen for this example**:
+  1. ``START_TIME``: cycle 1 ended at :math:`t` = 36.7 s; rounded down to
+     10 s, that is 30 s. Cycle 1's reading came at :math:`t` = 23.8 s,
+     before 30 s, so the first cell is tested before tester 1 breaks.
+  2. ``DURATION``: cycles 2 and 3 took 71.2 − 36.7 = 34.5 s and
+     105.1 − 71.2 = 33.9 s; 34.5 + 33.9 = 68.4 s, rounded up to 10 s, that
+     is 70 s: about two cycles.
 
-- Malfunction times, with the keys of an ARIAC trial file: conveyor
-  ``START_TIME`` 90 s, ``DURATION`` 30 s; tester 1 ``START_TIME`` 140 s,
-  ``DURATION`` 45 s.
-- Action times: ``load_tester`` takes 25 s, ``unload_to_tray`` 20 s,
-  ``move_agv`` 15 s.
-- Cells c1 to c4 read 3.58, 3.61, 3.55 and 3.63 V.
-- The first unload of c4 loses its grasp.
+- Two recordings on the same trial file: one with a **replan** policy, one
+  with a **wait** policy.
 
-.. warning::
-
-   The factory and the model are stand-ins. The model is scripted: it returns
-   canned JSON plans in order, and a real model's answers vary. Its calls take
-   0 s here.
-
-.. note::
-
-   **The action names are stand-ins too.** ``load_tester`` (move a cell onto
-   a voltage tester) and ``unload_to_tray`` (move a cell from a tester to a
-   tray slot) are names made up for this demonstration. They are **not** the
-   names of the course skills package's skills. ``move_agv`` stands in for
-   ARIAC's own ``/{agv_name}/move`` action, which your team calls directly.
-   In GP4, your agent's tools are the real skills and ARIAC interfaces.
+The full recordings and the commands that made them are on the
+:doc:`code page <l9_code>`.
 
 
-The Decision Chart in Code
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Policy in Code
+~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: code/closed_loop.py
    :language: python
-   :lines: 129-138
+   :lines: 110-114
    :caption: lecture9/code/closed_loop.py (excerpt)
 
-- ``before()`` checks each step's preconditions, and ``after()`` compares the
-  step's expected effect with fresh observations. Both call ``decide()`` on a
-  mismatch.
-- ``RETRY_CAP`` is 2, chosen for this example. Every plan from the model goes
-  through the schema and a check against the observed state before it runs.
+.. literalinclude:: ../lecture8/code/orchestrator.py
+   :language: python
+   :lines: 119-125
+   :caption: lecture8/code/orchestrator.py (excerpt)
 
-The ``if`` statements follow the chart from left to right: goal changed,
-device down (with or without another free device), then plan holds with
-retries left.
+- The first ``check`` is the one ``policy_guard(policy)`` returns, not
+  ``vlm_check.check``. It never fired: the wait run never named tester 2.
+- No code picks retry, wait or replan; the chart stays a concept. The model
+  chooses, and two refused calls in a row end the run (L8's
+  ``MAX_INVALID``).
+
+The tool lists differ: the replan run offers no ``wait`` tool, so it must
+replan to finish; the wait run offers ``wait`` and declares the tester
+argument as 1 only.
 
 
-Trace, Part 1: Two Cells, Then the Conveyor Stops
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace, Part 1: Tester 1 Breaks, Gemini Moves to Tester 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/closed_loop.txt
+.. literalinclude:: outputs/listings/replan_part1.txt
    :language: text
-   :lines: 1-14
 
-At t = 90 s the precondition of ``load_tester`` fails: the conveyor that
-brings the next cell is down. There is no other conveyor, so the chart says
-**wait** (tag 3). The plan resumes at 120 s, when the 30 s malfunction ends
-(:math:`90 + 30 = 120` s).
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1. ``model``: Gemini's call :math:`k`;
+``obs k``: the observation after it, cut at the slide's width. Every skill
+call succeeded on its first attempt; result lines and obs 0 are left out.
+
+- Cell 1 read 3.54 V (obs 2). Tester 1 broke while robot 2 held cell 1
+  (obs 3). Gemini put cell 2 on tester 2, which read 3.44 V (obs 6).
 
 
-Trace, Part 2: Tester 1 Breaks, the Agent Replans
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace, Part 2: Tester 1 Recovers, and the Guard Refuses a 3.39 V Cell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/closed_loop.txt
+.. literalinclude:: outputs/listings/replan_part2.txt
    :language: text
-   :lines: 15-20
 
-1. The expected effect of ``load_tester(c3, 1)`` is a reading from 3.4 V to
-   3.8 V. The topic says -1 V, ``MALFUNCTIONING``.
-2. Tester 2 is free, so the chart says **replan** (tag 2).
-3. Model call 2 still sends a cell to tester 1. The check against the observed
-   state rejects it before any robot moves, and the re-prompt gets a valid
-   plan.
-4. Cell c3 stays on tester 1 until that tester can read it.
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1: calls 9 to 17; obs 9, 13, 15 and 16
+left out. ``orch``: the orchestrator's refusal.
+
+- Cell 3 read 3.65 V on tester 2 (obs 10). Tester 1 was back by obs 11, but
+  Gemini kept using tester 2.
+- Cell 4 read 3.39 V (obs 14), 0.01 V under the 3.4 V minimum. Gemini still
+  asked to place it in slot 4; ``guard()`` refused, and Gemini dropped the
+  cell in recycling.
 
 
-Trace, Part 3: a Lost Grasp, a Retry, and the Kit Check
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace, Part 3: One More Cell Recycled, Then Slot 4
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/closed_loop.txt
+.. literalinclude:: outputs/listings/replan_part3.txt
    :language: text
-   :lines: 21-34
 
-- At 190 s the slot is empty, but tester 2 still reads 3.63 V: the cell never
-  left. The plan still holds, so the chart says **retry** (tag 4).
-- By 210 s tester 1 has recovered (:math:`140 + 45 = 185` s), and c3 reads
-  3.55 V. The kit total is checked in code before the AGV moves.
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1: calls 18 to 26; obs 18, 20, 22 and 24
+left out. ``text 'done'``: a reply with no tool call.
+
+- The next cell read 3.36 V on tester 1 (obs 19). Gemini dropped it in
+  recycling itself, with no refused call. The cell after it read 3.46 V
+  (obs 23) and went to slot 4.
+- The goal, checked in code, held at obs 25 (:math:`t` = 225.8 s), and
+  Gemini said ``done`` at call 26. The camera check of
+  :ref:`l9-checking` ran right after.
 
 
-Replan or Wait: the Same Run With a Wait-Only Policy
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Replan or Wait: The Wait Recording
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``closed_loop.py --wait`` runs the same factory, but never replans around a
-broken tester: it waits for it. Excerpt of its output (the full output is on
-the :doc:`code page <l9_code>`):
-
-.. literalinclude:: outputs/closed_loop_wait.txt
+.. literalinclude:: outputs/listings/wait_hold.txt
    :language: text
-   :lines: 16-22,36
 
-1. Replanning finished at 245 s; waiting finished at 285 s.
-   :math:`285 - 245 = 40` s.
-2. After the mismatch at 145 s, tester 1 stayed down until 185 s:
-   :math:`185 - 145 = 40` s. The replan used that time on tester 2.
-3. The replan made two model calls at 0 s each. If each real call takes
-   :math:`L` seconds, replanning still wins while :math:`2L < 40` s, that is,
-   while :math:`L < 20` s.
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1, wait policy, same trial file. Calls 5
+to 13; obs 6 to 11 left out.
+
+- The goal text said: use tester 1 only; while tester 1 is
+  ``MALFUNCTIONING``, call ``wait``, then read it again.
+- Robot 2 picked cell 1 from tester 1 (call 5), and tester 1 then read
+  ``MALFUNCTIONING`` (obs 5). Gemini waited 5, 10, 20 and 30 s while robot 2
+  held that tested cell: from obs 5 to obs 12, 112.6 − 38.2 = 74.4 s. The
+  cell already had its reading (3.56 V, obs 3), so it could have gone to
+  slot 1 at once; the goal text did not say so.
+
+
+Replan or Wait: The Two Recordings Side by Side
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 22 39 39
+   :class: compact-table
+
+   * -
+     - **Replan recording**
+     - **Wait recording**
+   * - Tools offered
+     - 10: no ``wait``
+     - 11: ``wait``; tester 1 only
+   * - Model calls
+     - 26: 24 skills, 1 refused, ``done``
+     - 26: 16 skills, 4 ``wait``, 5 tester readings, ``done``
+   * - Loop tokens
+     - 122,861 in, 477 out
+     - 116,624 in, 414 out
+   * - Goal reached at
+     - :math:`t` = 225.8 s (obs 25); kit 14.09 V
+     - :math:`t` = 224.0 s (obs 25); kit 14.01 V
+   * - Lost to the malfunction
+     - almost none: slot 3 filled at :math:`t` = 108.8 s; dry run 105.1 s
+     - 112.6 − 38.2 = 74.4 s (obs 5 to 12), holding a tested cell
+   * - Lost to recycling
+     - 39.7 s (obs 12 to 17) + 40.3 s (obs 17 to 21) = 80.0 s
+     - none
+
+.. important::
+
+   Both recordings finished at about 225 s, and one run each cannot say
+   which policy is faster. Here the fourth cell read 3.39 V, so the guard
+   refused it. The same cell read 3.41 V in the dry run and in the wait run
+   (``SEED`` 1 draws the same cells), and one record moves by about 0.016 V.
+   So chance cost this run the 80 s.
+
+- Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+  different answers. Recording 1 of 1 each; the dry run was scripted, with
+  no challenge.
+- Tokens: the two ``outputs/*_cost.txt`` files. Both recordings with the VLM
+  call, at $0.30 and $2.50 per million input and output tokens:
+  (240,862 × 0.30 + 1,038 × 2.50) / 1,000,000 = $0.074854.
 
 
 .. _l9-pddl:
@@ -787,8 +952,9 @@ Keep Numeric Work in Code
    :math:`14.4 + 0.15 = 14.55` V.
 3. Choosing four cells that fit is arithmetic. LLMs make arithmetic slips,
    and ARIAC rejects the kit on any slip, so a function does it and the agent
-   calls it as a tool. The demonstration checked 14.37 V in code
-   (:math:`3.58 + 3.61 + 3.55 + 3.63 = 14.37` V).
+   calls it as a tool. The demonstration had no kit tool, so no tool chose
+   the cells: the model placed every cell that read 3.4 to 3.8 V, and the
+   total came out 14.09 V, under the window (:ref:`l9-kit-total`).
 
 **Class discussion (5 minutes).** For each of the four challenges, would your
 GP3 domain have handled it with no change? Why or why not? The answers become
@@ -886,10 +1052,15 @@ the course skills package.
 
 **Before next class:**
 
-- Submit GP3 and its peer-review form on ELMS-Canvas.
+- Fill in the GP3 peer-review form on ELMS-Canvas (GP3 was due today).
 - Read the GP4 specification and agree on who owns the agent, the VLM module
   and the comparison.
 - Set up LLM and VLM access (a hosted API key or a local model with Ollama)
   with the course :doc:`AI Access </ariac/ai_setup>` page.
-- Run the L9 scripts (see :doc:`l9_code`) and compare your outputs with these
-  notes.
+- Rerun the scripted VLM check: on your copy, ``python3 vlm_check.py`` in
+  ``lecture9/code`` (see :doc:`l9_code`), and compare its output with these
+  notes. In class, ``run_all.sh`` reran it and checked every slide listing
+  against its source in ``lecture9/outputs/``: ``closed_loop_replan_rec1.txt``,
+  ``closed_loop_wait_rec1.txt`` or ``vlm_check.txt``; it also needs the
+  lecture's tests and the slides, which are not on this site. The Gemini runs
+  need ARIAC and an API key.

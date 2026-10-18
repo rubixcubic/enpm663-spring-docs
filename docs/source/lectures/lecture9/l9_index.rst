@@ -24,11 +24,13 @@ a mismatch it does one of three things: it **retries** the action, it
 decision chart picks among the three, and the lecture applies it to the four
 ARIAC 2025 challenges.
 
-Two demonstrations in plain Python show both ideas. One checks a VLM's tray
-record before a high-priority order is submitted. The other runs a closed loop
-through a conveyor malfunction, a voltage tester malfunction and a lost grasp.
-Both use **scripted stand-ins** for the models: they return canned replies, and
-a real model's answers vary.
+Two demonstrations show both ideas. In the first, Gemini reads a real
+camera image of agv1's tray in ARIAC, and its record is cross-checked slot by
+slot; a scripted stand-in VLM with mistakes written in then shows the checker
+catching them. In the second, Gemini fills agv1's tray in ARIAC through the
+course skills while voltage tester 1 malfunctions, once with a replan policy
+and once with a wait policy. The Gemini runs were recorded once; a rerun gives
+different answers.
 
 The lecture ends with a limit: for a fully specified task, such as the normal
 Task 1 flow, the PDDL planner from GP3 is the better tool. It costs nothing per
@@ -43,7 +45,8 @@ domain has no action for, and on recovery the domain did not plan for.
    (GP2). The agent observes the conveyor and voltage tester status topics,
    the AGV tray status and the high-priority order topic, and it reacts to
    the conveyor malfunction, the voltage tester malfunction and the
-   high-priority order.
+   high-priority order. The demonstration runs a real voltage tester
+   malfunction from an ARIAC trial file.
 
 .. important::
 
@@ -113,7 +116,8 @@ Next Steps
     module and the comparison.
   - Set up LLM and VLM access (a hosted API key or a local model with
     Ollama) with the :doc:`AI Access </ariac/ai_setup>` page.
-  - Run the two L9 scripts (see :doc:`l9_code`) and compare your outputs with
-    the ones in the notes.
+  - Rerun the scripted VLM check: on your copy, ``python3 vlm_check.py`` in
+    ``lecture9/code`` (see :doc:`l9_code`), and compare its output with the
+    notes. The Gemini runs need ARIAC and an API key.
   - Work through the :doc:`L9 exercises <l9_exercises>` and the
     :doc:`self-check quiz <l9_quiz>`.

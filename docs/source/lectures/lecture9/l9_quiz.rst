@@ -192,8 +192,8 @@ Multiple Choice (Questions 1 to 11)
 .. admonition:: Question 7
    :class: hint
 
-   The inspection conveyor reports ``MALFUNCTIONING`` before the next
-   ``load_tester``. Which exit of the decision chart does the agent take?
+   The inspection conveyor reports ``MALFUNCTIONING`` before robot 1's next
+   pick from the conveyor. Which exit of the decision chart does the agent take?
 
    A. Replan (tag 1), because the goal changed
 
@@ -202,7 +202,7 @@ Multiple Choice (Questions 1 to 11)
    C. Wait (tag 3): keep the plan and watch the status topic, because ARIAC
       has only one inspection conveyor
 
-   D. Retry (tag 4): run ``load_tester`` again at once
+   D. Retry (tag 4): run the pick again at once
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -210,36 +210,38 @@ Multiple Choice (Questions 1 to 11)
    **C**.
 
    Device down? yes. Another free? no: ARIAC has one inspection conveyor. So
-   the plan stays, and the agent waits. In the demonstration it waited from
-   90 s to 120 s, the 30 s of the malfunction, with no model call.
+   the plan stays, and the agent waits while it watches
+   ``/inspection_conveyor/status``. The L8 guard agrees: it refuses
+   ``robot1_pick_from_conveyor`` while the conveyor reports
+   ``MALFUNCTIONING``.
 
 
 .. admonition:: Question 8
    :class: hint
 
-   At t = 190 s in the closed-loop demonstration, ``unload_to_tray(2, 3)``
-   reports "grasp lost". Slot 3 is empty, and tester 2 still reads 3.63 V.
-   No retry has been used yet. What does ``decide()`` return, and why?
+   In the replan recording, cell 4 read 3.39 V on tester 2. Gemini picked it
+   up and asked to place it in agv1 slot 4. What happened?
 
-   A. ``REPLAN``, because a skill failed
+   A. The cell went into slot 4, because Gemini chose it
 
-   B. ``WAIT``, because tester 2 is down
+   B. ``guard()`` refused the call, because 3.39 V is outside 3.4 to 3.8 V;
+      no robot moved, and Gemini then dropped the cell in recycling
 
-   C. ``RETRY``, because the cell is still on the tester, so the plan still
-      holds, and retries are left
+   C. ARIAC refused the place, because the kit total was outside its window
 
-   D. ``RETRY``, because every failure gets two retries before anything else
-      is checked
+   D. The run stopped, because one refused call reaches ``MAX_INVALID``
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   **C**.
+   **B**.
 
-   The 3.63 V reading says the cell never left tester 2. Goal changed? no.
-   Device down? no. Plan holds? yes. Retries left? yes (``RETRY_CAP`` is 2).
-   The retry at 190 s succeeded at 210 s. **D** is wrong: the chart checks
-   the goal and the devices before it looks at retries.
+   The orchestrator printed ``refused: the held cell read 3.39 V, outside
+   3.4 ...``, 0.01 V under the 3.4 V minimum. The refusal went back to
+   Gemini as a message, and its next call was ``robot2_drop_in_recycling``.
+   **D** is wrong: ``MAX_INVALID`` is 2 refused calls in a row, and the next
+   call was valid. **C** is wrong: the guard refused the call before any
+   robot moved.
 
 
 .. admonition:: Question 9
@@ -295,29 +297,31 @@ Multiple Choice (Questions 1 to 11)
 .. admonition:: Question 11
    :class: hint
 
-   In the demonstration, replanning finished at 245 s and waiting at 285 s.
-   The replan made two model calls, which took 0 s in the stand-in. If each
-   real call takes :math:`L` seconds, for which :math:`L` does replanning
-   still finish first?
+   The replan recording reached its goal at :math:`t` = 225.8 s and the wait
+   recording at :math:`t` = 224.0 s. What do the two recordings say about
+   which policy is faster?
 
-   A. :math:`L < 40` s
+   A. Waiting is faster, by 1.8 s
 
-   B. :math:`L < 20` s
+   B. Replanning is faster, because it lost almost no time to the
+      malfunction
 
-   C. :math:`L < 10` s
+   C. Neither: one run each cannot say, and the replan run lost 80 s to a
+      cell that chance put 0.01 V under the minimum
 
-   D. Any :math:`L`, because replanning used the other tester
+   D. They are equal, because both made 26 model calls
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   **B**.
+   **C**.
 
-   1. Replanning saved :math:`285 - 245 = 40` s.
-   2. It made two calls, which add :math:`2L`.
-   3. It still wins while :math:`2L < 40` s, so while :math:`L < 20` s.
-
-   **A** forgets that there were two calls.
+   The replan run lost almost nothing to the malfunction, but 39.7 + 40.3 =
+   80.0 s to recycling. Its fourth cell read 3.39 V, and the guard refused
+   it. The same cell read 3.41 V in the dry run and in the wait run
+   (``SEED`` 1 draws the same cells), and one record moves by about 0.016 V
+   by chance. The wait run lost 74.4 s holding a tested cell. One run of
+   each, with chance this large, cannot rank the policies.
 
 
 True or False (Questions 12 to 15)
@@ -374,19 +378,18 @@ True or False (Questions 12 to 15)
 .. admonition:: Question 15
    :class: hint
 
-   True or false: in the closed-loop demonstration, model call 2 sent a cell
-   to the broken tester 1, and the orchestrator rejected that plan before any
-   robot moved.
+   True or false: in the replan recording, ``guard()`` refused exactly one
+   of Gemini's calls.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **True**.
 
-   The output shows "model call 2 rejected: step 1 uses tester 1,
-   MALFUNCTIONING". Every plan goes through the schema and a check against
-   the observed state before it runs. The re-prompt, model call 3, gave a
-   valid 4-step plan.
+   The recording's 26 calls were 24 skills, 1 refused call and ``done``. The
+   refused call asked to place the 3.39 V cell in slot 4. When tester 1
+   broke, Gemini moved to tester 2 on its own, so no call met the guard's
+   rule against placing a cell on a ``MALFUNCTIONING`` tester.
 
 
 Short Answer (Questions 16 to 19)
@@ -403,9 +406,12 @@ Short Answer (Questions 16 to 19)
 
    The orchestrator keeps the world-state record (cells, testers, tray slots,
    AGV stations, orders), and each action has an expected effect, like a PDDL
-   effect: after ``load_tester``, the tester reads 3.4 V to 3.8 V. After the
-   action it checks that effect against fresh observations. Keeping this
-   outside the LLM means the model never grades its own plan.
+   effect: after ``robot1_place_on_tester``, the tester reads 3.4 V to 3.8 V
+   for a good Li-Ion cell. In the demonstration, ``Record.after`` updates the
+   record from each skill result, and ``guard()`` checks the next call
+   against the record and a fresh observation, and the model judges what to
+   do next. The record and the checks are code, so a call that breaks a rule
+   is refused whatever the model believes.
 
 
 .. admonition:: Question 17

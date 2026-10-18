@@ -1,18 +1,23 @@
 """L8: how input tokens and cost grow with the number of loop steps.
 
-Every number below is an assumption chosen for this example, not a
-measurement and not a provider's price. A team reads real token counts
-from the API's usage fields and real prices from the provider's page.
+F (FIXED, tokens sent on every call), h (PER_STEP, tokens each earlier step adds)
+and the output per call (OUT) are measured in L8 Run 1 (outputs/agent_run1_usage.json,
+from the API's usage fields); the prices are quoted from the Gemini pricing page
+(gemini_prices.py).
+PLAN_OUT is chosen for this example: no plan-and-execute run was recorded.
 
 Run: python3 token_growth.py
 """
+import json
+from pathlib import Path
 
-FIXED = 2000      # sent on every call: system prompt, tools, state
-PER_STEP = 250    # added by each earlier step: a tool call + result
-OUT = 100         # output tokens per ReAct call
-PLAN_OUT = 40     # output tokens per step of a written plan
-PRICE_IN = 2.0    # dollars per million input tokens
-PRICE_OUT = 10.0  # dollars per million output tokens
+from gemini_prices import PRICE_IN, PRICE_OUT
+
+USAGE = json.loads((Path(__file__).parent / ".." / "outputs" / "agent_run1_usage.json").read_text())
+FIXED = USAGE["first_input"]                                                          # measured, call 1
+PER_STEP = round((USAGE["last_input"] - USAGE["first_input"]) / (USAGE["calls"] - 1))  # measured mean growth
+OUT = round(USAGE["billed_output_total"] / USAGE["calls"])                            # measured mean
+PLAN_OUT = 40    # output tokens per step of a written plan, chosen for this example
 
 
 def react(n):

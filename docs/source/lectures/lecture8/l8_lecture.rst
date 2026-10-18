@@ -6,18 +6,19 @@ Lecture
 
    These notes follow the L8 slides shown in class, in the same order and
    with the same sections, so you can read them at home. Every program output
-   below comes from running the L8 scripts on 2026-10-12 with Python 3.12.3
-   (``jsonschema`` 4.10.3; ``mcp`` 2.3.0 for the MCP demo). The scripts and
-   how to run them are on the :doc:`code page <l8_code>`.
+   below is copied from the files the L8 scripts wrote, the same files the
+   slides show. The scripts and how to run them are on the
+   :doc:`code page <l8_code>`.
 
 .. important::
 
-   **No LLM is called in this lecture's code.** The demonstrations use
-   ``ScriptedModel``, a stand-in that returns fixed replies, one per call. A
-   real model's answers vary from run to run. The stand-in makes the outputs
-   below repeatable, so you can compare yours with them line by line. The
-   :ref:`code page <l8-code-real-model>` shows how to put a real model in its
-   place.
+   **Two kinds of output.** Some demonstrations call a real model, Gemini
+   (``gemini-3.5-flash-lite``), and drive ARIAC through the course skills. Each
+   of those outputs says "Recorded once, on 2026-10-17, with
+   gemini-3.5-flash-lite. A rerun gives different answers." The others use
+   ``ScriptedModel``, a stand-in that returns fixed replies, one per call, to
+   show a guard or a check. Each of those says "Scripted model: fixed
+   replies." A scripted output repeats exactly; a real model's does not.
 
 
 .. _l8-recap:
@@ -154,8 +155,8 @@ The Agent Loop
 --------------
 
 This section covers the loop, its stop conditions and the orchestrator that
-runs it, then runs an orchestrator with a stand-in model and a stand-in AGV
-move action.
+runs it. A live demonstration then runs an orchestrator with Gemini driving
+the ARIAC inspection robots through the course skills.
 
 Five Steps, Run by the Orchestrator
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -251,60 +252,85 @@ The five checks, in order:
 Demonstration: The Setup
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **No LLM is called:** ``ScriptedModel`` is a scripted stand-in for the
-  model; a real model's answers vary. No simulator runs.
-- The tool ``move-agv`` (the L6 action name) is a stand-in for ARIAC's
-  ``/agvN/move`` action. It copies the action's rules from
-  ``agv_motion_plugin.cpp``: a goal to the AGV's own station is rejected, and
-  only seven paths are accepted (for example ``INSPECTION`` to ``SHIPPING``,
-  but never ``RECYCLING`` to ``SHIPPING``).
-- The factory state is chosen for this example: ``agv1`` at ``INSPECTION``
-  with 4 cells, ``agv2`` at ``INSPECTION`` with 3 cells, ``agv3`` at
-  ``RECYCLING`` with none.
-- The goal for this demo is ``agv1`` at ``SHIPPING``. A real run then calls
-  ``/submit_kitting_order``.
+- ARIAC 2025 and the course skills server run in the course container. Robot
+  1 moves a cell from the conveyor to voltage tester 1 or 2; robot 2 moves it
+  from a tester to an AGV tray slot or the recycling bin.
+- **Ten tools:** the seven skill actions of the two robots, and three
+  readings (testers, conveyor, one AGV).
+- ``robot1_pick_from_conveyor`` also feeds the cell and submits a passing
+  inspection report, since the skills do not wrap those ARIAC services. The
+  report is correct: the trial file sets ``DEFECT_RATE`` to 0.0.
+- The goal (``GOAL``): "Put one Li-Ion cell from the conveyor into agv1 slot
+  1. Test its voltage on tester 1 first."
+- **Run 1:** Gemini (``gemini-3.5-flash-lite``) chooses every call. **Run
+  2:** a scripted model, to show the guard.
 
-The seven paths, from ``stub_agv.py``:
+.. note::
 
-.. literalinclude:: code/stub_agv.py
-   :language: python
-   :lines: 11-19
-   :caption: lecture8/code/stub_agv.py (excerpt)
+   Every output in this section comes from ``lecture8/code/orchestrator.py``,
+   recorded once on 2026-10-17 (``outputs/agent_rec1.txt``). The full
+   recording, with its header, is on the :doc:`code page <l8_code>`.
 
 Demonstration: The Tool List the Model Sees
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: code/orchestrator.py
+.. literalinclude:: code/skill_tools.py
    :language: python
-   :lines: 22-35
-   :caption: lecture8/code/orchestrator.py (excerpt)
+   :lines: 84-93
+   :caption: lecture8/code/skill_tools.py (excerpt)
 
-A name, a description and an input schema: the same three fields a provider's
-tool definition has (see :ref:`l8-tool-calling`).
+- ``_int(1, 3, ...)`` writes an integer from 1 to 3 with a description.
+  ``_args`` lists the arguments and the required ones, and allows no others.
+  ``check_call()`` enforces that rule, because Gemini's ``parameters`` schema
+  has no ``additionalProperties``
+  (`Gemini API reference <https://ai.google.dev/api/generate-content>`_, read
+  2026-10-17).
+- The other skill tools: ``robot1_move_home``, ``robot1_pick_from_conveyor``,
+  ``robot1_place_on_tester``, ``robot2_move_home``,
+  ``robot2_pick_from_tester``, ``robot2_drop_in_recycling``. The readings:
+  ``read_testers``, ``read_conveyor``, ``read_agv``.
+
+A tool is a name, a description and an input schema (see
+:ref:`l8-tool-calling`). The description says what the tool needs and what
+each failure leaves behind, because that text is all the model knows about
+the tool.
 
 Demonstration: The Guard
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+Two excerpts of ``guard()``:
+
 .. literalinclude:: code/orchestrator.py
    :language: python
-   :lines: 48-58
-   :caption: lecture8/code/orchestrator.py (excerpt)
+   :lines: 110-116
+   :caption: lecture8/code/orchestrator.py, guard() (excerpt 1)
 
-- The guard returns an error text, or ``None`` when the call may run.
-- The kit rule lives here, in code: an AGV goes to ``SHIPPING`` only with all
-  4 slots filled.
+.. literalinclude:: code/orchestrator.py
+   :language: python
+   :lines: 130-131
+   :caption: lecture8/code/orchestrator.py, guard() (excerpt 2)
+
+- ``rec`` is the orchestrator's **record** of what each robot holds. ARIAC
+  publishes none (L3). A pick needs ``NOTHING``, a place needs ``CELL``.
+- ``n`` is the tester argument, and ``t`` is that tester's reading in
+  ``snap``, the observation before the call. Empty means below 0.5 V
+  (``EMPTY_TESTER_V``, chosen in the skills tests).
+- The guard also refuses an occupied slot, an AGV not at ``INSPECTION``, or a
+  cell outside 3.4 to 3.8 V.
+
+The guard returns an error text, or ``None`` when the call may run.
 
 Demonstration: The Loop, Part 1 (Send and Receive)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: code/orchestrator.py
    :language: python
-   :lines: 61-74
-   :caption: lecture8/code/orchestrator.py (excerpt)
+   :lines: 208-219
+   :caption: lecture8/code/orchestrator.py, run() (excerpt)
 
-- Each call sends the system message, the tool list and every message so
-  far. The script prints how many characters that is.
-- ``MAX_STEPS`` = 6 is the step limit for this demo (chosen for this
+- ``snap`` is the first **observation** and ``rec`` the record. Each call
+  sends ``SYSTEM``, the ten tool declarations and every message so far.
+- ``max_steps`` is ``MAX_STEPS`` = 15, the step limit (chosen for this
   example).
 
 Demonstration: The Loop, Part 2 (Check, Run, Record)
@@ -312,52 +338,62 @@ Demonstration: The Loop, Part 2 (Check, Run, Record)
 
 .. literalinclude:: code/orchestrator.py
    :language: python
-   :lines: 75-90
-   :caption: lecture8/code/orchestrator.py (excerpt)
+   :lines: 241-254
+   :caption: lecture8/code/orchestrator.py, run() (excerpt)
 
-- A reply with no tool call means the model says it is finished. The
-  orchestrator then checks the goal in code, and sends "goal not reached"
-  back if the check fails.
-- ``MAX_INVALID`` = 2 invalid outputs in a row stop the run (chosen for this
-  example).
+- ``error`` comes from ``check_call()``: an unknown tool, then the schema,
+  then ``guard()``.
+- ``max_invalid`` is ``MAX_INVALID`` = 2 invalid outputs in a row (chosen
+  for this example). The result, the new observation and the record go back
+  to the model.
 
-Run 1: The Model Picks the Wrong AGV, Then the Right One
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run 1: Gemini Fills agv1 Slot 1 in Five Calls
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Output (scripted stand-in model):
-
-.. literalinclude:: outputs/orchestrator.txt
+.. literalinclude:: outputs/listings/run1_calls.txt
    :language: text
-   :lines: 1-11
 
-``user`` is the first message, ``model`` is the stand-in's reply, and
-``orch`` is what the orchestrator sends back.
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1. Run 2 ran first in the same session
+(``--runs 2,1``).
 
-**Reading Run 1:**
+``model`` is Gemini's call and ``result`` the skill's answer, cut at the
+slide's width. The next listing shows two of the observations.
 
-1. Call 1: the model asks to ship ``agv2``. The guard sees 3 of 4 cells and
-   refuses. No robot moved; the error went back as a message.
-2. Call 2: the model asks to ship ``agv1``. The guard passes, and the
-   stand-in action accepts ``INSPECTION`` to ``SHIPPING``, one of the seven
-   ARIAC paths.
-3. Call 3: the model replies "done". The orchestrator checks the state in
-   code (``agv1`` is at ``SHIPPING``) and stops: goal reached.
-4. The characters sent grow on every call: 666, then 839, then 1025. That is
-   839 − 666 = 173 more, then 1025 − 839 = 186 more, because each call sends
-   the whole history again.
+Reading Run 1
+~~~~~~~~~~~~~
 
-Run 2: The Model Repeats a Bad Call
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Output (scripted stand-in model):
-
-.. literalinclude:: outputs/orchestrator.txt
+.. literalinclude:: outputs/listings/run1_obs24.txt
    :language: text
-   :lines: 12-20
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. ``obs k`` is read after call :math:`k`; ``slots 1---``
+means slot 1 is occupied.
+
+1. Calls 1 and 2: robot 1 catches a cell and places it on tester 1. ``obs 2``
+   reads 3.54 V on tester 1, inside 3.4 to 3.8 V.
+2. Calls 3 and 4: robot 2 moves the cell from tester 1 to agv1 slot 1.
+   ``obs 4`` shows ``slots 1---``.
+3. Call 5: Gemini replies "done". The orchestrator checks in code that slot
+   1 is occupied and that the record holds a voltage from 3.4 to 3.8 V, then
+   stops: goal reached.
+4. The input grows on every call: 1535 − 1264 = 271, 1788 − 1535 = 253,
+   2045 − 1788 = 257 and 2309 − 2045 = 264 tokens more, because each call
+   sends the whole history again.
+
+Run 2: The Scripted Model Repeats a Refused Call
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. literalinclude:: outputs/listings/run2.txt
+   :language: text
+
+Scripted model: fixed replies. The replies ran against ARIAC, so the
+readings are real.
 
 **Reading Run 2:**
 
-1. The model asks twice to ship ``agv2``, and the guard refuses twice.
+1. Twice the model asks robot 2 to pick from tester 1. Tester 1 reads
+   0.00 V, then 0.04 V: below 0.5 V, so the guard refuses. No robot moves.
 2. Two invalid outputs in a row reach ``MAX_INVALID``, so the orchestrator
    stops. In GP4 it would then stop safely or hand the decision to the GP3
    planner.
@@ -510,17 +546,11 @@ The Li-Ion kit rule, from ``CellTypes.msg``:
 An Example System Message, and the User Message
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-System message (written for this lecture; not tested with a model):
+System message (written for this lecture; tested once in the
+:ref:`Structured Output <l8-structured-live>` section):
 
-.. code-block:: text
-
-   Role: you plan the next action for the ARIAC inspection and kitting cell.
-   Facts: three AGVs (agv1 to agv3); stations INSPECTION, ASSEMBLY,
-   SHIPPING, RECYCLING. A Li-Ion kit holds 4 cells; the orchestrator gives
-   you each cell's measured voltage and the window the next cell must fit.
-   Rules: use only the listed tools. Never invent a cell ID. If no action
-   is safe, call no tool and explain why in one sentence.
-   Output: one tool call whose arguments fit the tool's input schema.
+.. literalinclude:: outputs/listings/system_message.txt
+   :language: text
 
 - The system message is the same on every call of a run. The facts match the
   ARIAC sources: three AGVs (``ariac.world``), four stations
@@ -560,7 +590,8 @@ Structured Output
 
 This section covers JSON Schema and how ARIAC itself uses it, then validation
 in five steps with semantic checks and a bounded retry. A demonstration runs a
-validator on seven outputs and two retry runs.
+validator on seven scripted outputs, two retry runs and one real model
+output.
 
 JSON Schema, and ARIAC Uses It Too
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -627,16 +658,25 @@ Demonstration: Steps 1 to 3 in One Function
    :caption: lecture8/code/validator.py (excerpt)
 
 ``PATHS`` holds the seven AGV paths ARIAC accepts (``agv_motion_plugin.cpp``).
-The factory is the one from the orchestrator demo.
+The factory is the stub of ``stub_agv.py``, chosen for this example.
+
+The seven paths, from ``stub_agv.py``:
+
+.. literalinclude:: code/stub_agv.py
+   :language: python
+   :lines: 11-19
+   :caption: lecture8/code/stub_agv.py (excerpt)
 
 Demonstration: Seven Outputs, One Check Each
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Output (system Python 3.12.3, ``jsonschema`` 4.10.3):
 
-.. literalinclude:: outputs/validator.txt
+.. literalinclude:: outputs/listings/validator_seven.txt
    :language: text
-   :lines: 1-15
+
+Scripted model: fixed replies. The seven outputs are texts chosen for this
+example.
 
 **Reading the seven results:**
 
@@ -664,16 +704,17 @@ Demonstration: Steps 4 and 5, the Bounded Retry
    :caption: lecture8/code/validator.py (excerpt)
 
 ``MAX_RETRIES`` = 2 gives 3 attempts in all (chosen for this example). The
-model is the scripted stand-in.
+model is ``ScriptedModel``, which returns fixed replies.
 
 Retry Run 1: Accepted on the Third Attempt
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Output (scripted stand-in model):
+Output of ``lecture8/code/validator.py``:
 
-.. literalinclude:: outputs/validator.txt
+.. literalinclude:: outputs/listings/validator_retry1.txt
    :language: text
-   :lines: 16-22
+
+Scripted model: fixed replies.
 
 1. Attempt 1 fails the schema; the exact error text goes back to the model.
 2. Attempt 2 fails a semantic check; that error goes back too.
@@ -682,15 +723,42 @@ Output (scripted stand-in model):
 Retry Run 2: The Cap Is Reached
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Output (scripted stand-in model):
+Output of ``lecture8/code/validator.py``:
 
-.. literalinclude:: outputs/validator.txt
+.. literalinclude:: outputs/listings/validator_retry2.txt
    :language: text
-   :lines: 23-30
+
+Scripted model: fixed replies.
 
 1. Three attempts fail, each for a different reason.
 2. After the third failure nothing is sent back: the cap is reached, and the
    orchestrator falls back.
+
+.. _l8-structured-live:
+
+One Real Output, Through the Same Check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Output of ``lecture8/code/structured_live.py``:
+
+.. literalinclude:: outputs/listings/structured_live.txt
+   :language: text
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers.
+
+**Reading the output:**
+
+1. Gemini got the example system message of the
+   :ref:`Prompt Structure <l8-prompt-structure>` section, the user message
+   above (the state of the stub factory, chosen for this example), and one
+   tool, ``move_agv``, whose parameters are ``SCHEMA``. It is L6's
+   ``move-agv`` without the dash; :ref:`l8-what-a-tool-is` says why.
+2. It called ``move_agv`` with ``agv`` 1 and ``SHIPPING``. The script turns
+   the arguments back into JSON text, and ``check()`` runs steps 1 to 3 on
+   it: valid.
+3. One valid output says nothing about the next one, so the check runs on
+   every output.
 
 Constrained Output Removes Some Errors, Not All
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -721,7 +789,10 @@ Tool Calling and MCP
 
 This section says what a tool is and how to design tools for the factory,
 then introduces the Model Context Protocol (MCP): hosts, clients and servers.
-A demonstration lists and calls a one-tool MCP server from a client.
+A demonstration serves ten tools (7 skills and 3 readings) from an MCP server, and a client
+lists them and calls three against ARIAC.
+
+.. _l8-what-a-tool-is:
 
 What a Tool Is
 ~~~~~~~~~~~~~~
@@ -729,37 +800,50 @@ What a Tool Is
 .. admonition:: Definition: tool and tool call
    :class: note
 
-   1. A **tool** is a **name**, a **description** and an **input schema**.
-   2. The model returns a **tool call**: the tool's name and its arguments as
-      JSON. In Anthropic's API it is a ``tool_use`` block with an ``id``, a
-      ``name`` and an ``input``.
-   3. The orchestrator runs the call and sends the result back as a message
-      (a ``tool_result`` block).
+   1. A **tool** is a **name**, a **description** and an **input schema**. In
+      the Gemini API it is a **function declaration** with ``name``,
+      ``description`` and ``parameters``.
+   2. The model returns a **tool call**: a ``function_call`` part with an
+      ``id``, a ``name`` and ``args``, the arguments as JSON.
+   3. The orchestrator runs the call and sends the result back as a function
+      response part, with the call's ``name`` and ``id``.
 
-Anthropic's tool use overview says where such tools run: "Client tools
-(including user-defined tools ...) run in your application."
-(`Anthropic tool use overview <https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview>`_,
-read 2026-10-12)
+The Gemini API reference describes the three fields of a declaration:
+``name``: "The name of the function." ``description``: "A brief description
+of the function." ``parameters``: "Describes the parameters to this
+function."
+(`Gemini API reference, generateContent <https://ai.google.dev/api/generate-content>`_,
+read 2026-10-17)
 
-The name, the description and the schema are all the model knows about a
-tool. So the description states what the tool does, its preconditions and its
-failure results.
+- The name, the description and the schema are all the model knows about a
+  tool. So the description states what the tool does, its preconditions and
+  its failure results.
+- The Gemini guide says to name functions "without spaces, periods, or
+  dashes"
+  (`function calling guide <https://ai.google.dev/gemini-api/docs/generate-content/function-calling>`_,
+  read 2026-10-17). So the L6 action ``move-agv`` is the tool ``move_agv`` in
+  this lecture.
 
 Designing Tools for the Factory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. One tool per executor action, with the same names as the L6 domain and the
-   L7 factory (``move-agv``, ``place-in-slot``, ...).
-2. Narrow arguments: enums for stations, testers and tools; integer ranges for
-   AGVs and slots.
-3. Structured results: success, or a failure with its reason (the skill's
-   failure report, or the ARIAC service's ``message`` field).
+1. One tool per skill action, named for the robot and the action:
+   ``robot2_place_in_slot``, ``robot1_place_on_tester``, ...
+2. Narrow arguments: integer ranges, such as ``tester`` 1 to 2, ``agv`` 1 to
+   3 and ``slot`` 1 to 4.
+3. Structured results: the skill's result code, what the robot holds, and a
+   message.
 4. No catch-all tool that runs arbitrary commands.
 
 .. tip::
 
    Each rule shrinks what a wrong answer can do. A model that can only call
-   ``move-agv`` with ``agv`` 1 to 3 cannot send a joint command.
+   ``robot2_place_in_slot`` with ``agv`` 1 to 3 and ``slot`` 1 to 4 cannot
+   send a joint command.
+
+The result codes of ``SkillResult.msg``: ``SUCCESS``, ``PLANNING_FAILED``,
+``EXECUTION_FAILED``, ``GRASP_FAILED``, ``PRECONDITION_FAILED``,
+``PLACE_NOT_FOUND``, ``ZONE_BUSY_TIMEOUT`` and ``CANCELED``.
 
 MCP: Hosts, Clients and Servers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -771,11 +855,12 @@ MCP: Hosts, Clients and Servers
    applications and the servers that provide tools.
 
 .. figure:: /_static/images/l8/mcp_client_server.svg
-   :alt: A dashed blue frame, tag 1, holds an orange LLM block, a blue Orchestrator block and, below them, a blue MCP client block, tag 2. Arrows labeled tools/list and tools/call go right from the client to an MCP server frame, tag 3, and an arrow labeled results comes back. The server holds three blocks: Tool: move-agv, Resources and Prompts. An arrow goes from the tool to a green block, tag 4, labeled /agvN/move.
+   :alt: A dashed blue frame, tag 1, holds an orange LLM block, a blue Orchestrator block and, below them, a blue MCP client block, tag 2. Arrows labeled tools/list and tools/call go right from the client to an MCP server frame, tag 3, and an arrow labeled results comes back. The server holds three blocks: 10 tools: robot1_..., robot2_..., read_...; Resources; and Prompts. An arrow goes from the tools block to a green block, tag 4, labeled Skill actions, ARIAC topics.
    :width: 90%
    :align: center
 
-   An MCP host, client and server, and the robot action behind the tool.
+   An MCP host, client and server, and the skill actions and ARIAC topics
+   behind the tools.
 
 The tags, with the definitions quoted from the
 `MCP architecture overview <https://modelcontextprotocol.io/docs/learn/architecture>`_
@@ -785,7 +870,7 @@ The tags, with the definitions quoted from the
    multiple MCP clients".
 2. **MCP client:** keeps a connection to one server.
 3. **MCP server:** "A program that provides context to MCP clients".
-4. The robot action behind the tool.
+4. The skill actions and ARIAC topics behind the tools.
 
 What a Server Offers, and How a Client Asks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -809,64 +894,71 @@ Messages:
 - Write the robot tools once as an MCP server, and any agent framework that
   speaks MCP can use them.
 
-Demonstration: A Server with One Tool
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demonstration: A Server for the Skill Tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: code/agv_mcp_server.py
+.. literalinclude:: code/skills_mcp_server.py
    :language: python
-   :lines: 14-27
-   :caption: lecture8/code/agv_mcp_server.py (excerpt)
+   :lines: 10-21
+   :caption: lecture8/code/skills_mcp_server.py (excerpt)
 
-The server uses the Python ``mcp`` package 2.3.0 in a virtual environment.
-In ``mcp`` 2.x, the class that 1.x tutorials call ``FastMCP`` is
-``MCPServer``. The 1.x import ``from mcp.server.fastmcp import FastMCP``
-fails with "FastMCP was renamed to MCPServer". The full error is on the
-:ref:`code page <l8-code-fastmcp>`.
+- The loop serves each of the ten L8 tools: the name and the description
+  from ``DECLARATIONS``, the function from ``SkillTools``. MCP writes each
+  input schema from the function's type hints.
+- The server uses the Python ``mcp`` package 2.3.0, in the lecture's virtual
+  environment. ``MCPServer`` is the class that 1.x tutorials call
+  ``FastMCP``. In 2.3.0, ``mcp/server/fastmcp.py`` holds only a message
+  (read 2026-10-17): its docstring says "``FastMCP`` is now
+  ``mcp.server.mcpserver.MCPServer``", and importing it raises
+  ``ModuleNotFoundError``.
 
-Demonstration: A Client That Lists and Calls
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demonstration: A Client That Calls Three Tools
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: code/agv_mcp_client.py
+.. literalinclude:: code/skills_mcp_client.py
    :language: python
-   :lines: 19-33
-   :caption: lecture8/code/agv_mcp_client.py (excerpt)
+   :lines: 25-34
+   :caption: lecture8/code/skills_mcp_client.py (excerpt)
 
-- ``SERVER`` names the command that starts ``agv_mcp_server.py``; the client
-  starts it as a process and talks to it over stdio (the server calls
-  ``server.run("stdio")``).
-- No LLM is involved: the client makes the calls a model would ask for.
+- ``client`` is connected to ``skills_mcp_server.py``, which the client
+  started as a process; they talk over stdio. Before this loop, the client
+  lists the tools: each one's name, and one line per argument.
+- ``CALLS`` holds three calls. No LLM is involved: the client makes the calls
+  a model would ask for.
 
 Output: The Tool List
 ~~~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/mcp_demo.txt
+.. literalinclude:: outputs/listings/mcp_tools.txt
    :language: text
-   :lines: 1-6
 
-**Reading the tool list:**
-
-1. The description is the function's docstring.
-2. The server wrote the input schema from the Python type hints:
-   ``Field(ge=1, le=3)`` became ``minimum`` 1 and ``maximum`` 3, and the
-   ``Literal`` became an ``enum``.
-3. The schema has no ``additionalProperties``. The hand-written schema in
-   ``validator.py`` is stricter; check what your server generates.
+A real run of the MCP client against ARIAC, on 2026-10-17. No model runs.
+Recording 2 of 2; recording 1 used a client that printed 3 lines per result.
 
 Output: Three Calls
 ~~~~~~~~~~~~~~~~~~~
 
-.. literalinclude:: outputs/mcp_demo.txt
+.. literalinclude:: outputs/listings/mcp_calls.txt
    :language: text
-   :lines: 7-16
 
-**Reading the calls:**
+A real run of the MCP client against ARIAC, on 2026-10-17. No model runs.
+Recording 2 of 2; recording 1 used a client that printed 3 lines per result.
 
-1. ``agv1`` moves from ``INSPECTION`` to ``SHIPPING``.
-2. ``agv1`` is now at ``SHIPPING``, and ARIAC has no path to ``ASSEMBLY``. The
-   tool ran and reported the failure in its result, so ``is_error`` is
-   ``False``.
-3. AGV 4 fails the server's own argument check, so the tool never ran and
-   ``is_error`` is ``True``.
+Reading the Tool List and the Calls
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. The server lists the ten L8 tools. A tool with arguments shows one line
+   per argument.
+2. MCP wrote each schema from the type hints: ``Literal[1, 2]`` became an
+   integer ``enum``. The Gemini declarations use ``minimum`` and ``maximum``
+   instead, because Gemini's ``parameters`` schema allows ``enum`` for strings
+   only.
+3. ``read_testers`` returns both testers: 0.024 V and −0.005 V, both
+   ``OPERATIONAL``. Both are below 0.5 V, so both are empty.
+4. ``robot2_move_home`` ran and parked robot 2: ``SUCCESS``, holding
+   ``NOTHING``. The tool ran, so ``is_error`` is ``False``.
+5. AGV 4 fails the server's own argument check ("Input should be 1, 2 or
+   3"), so the tool never ran and ``is_error`` is ``True``.
 
 Raw ROS Access, and the GP4 Choice
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -919,24 +1011,43 @@ agent sits in the deliberative layer.
 
    A smaller context costs fewer tokens and gives the model less to misread.
 
+Measuring F and h in Run 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Symbols:
+
+- :math:`F`: the tokens sent on every call: the system message, the tool
+  list, the goal, the first observation and the record. ``FIXED`` in
+  ``token_growth.py``.
+- :math:`h`: the tokens each earlier step adds: the model's call, then its
+  result with the new observation and the record. ``PER_STEP`` in
+  ``token_growth.py``.
+
+The arithmetic, from Run 1's token counts:
+
+1. Call 1 sends no history, so :math:`F` is call 1's input: :math:`F` = 1264
+   tokens (``outputs/agent_run1_usage.json``).
+2. Call 5 sent 2309 tokens: 2309 − 1264 = 1045 tokens more than call 1.
+3. Call 5 carries 4 earlier steps: 1045 / 4 = 261.25, rounded to :math:`h` =
+   261 tokens.
+4. Output per call: 79 tokens over 5 calls is 15.8, rounded to 16 tokens
+   (``OUT``).
+
 Why the Input Grows with Each Step
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Symbols (values chosen for this example):
+Symbols:
 
-- :math:`F` = 2000 tokens sent on every call: the system message, the tool
-  list and the current state.
-- :math:`h` = 250 tokens added by each earlier step: one tool call and its
-  result.
+- :math:`F` = 1264 and :math:`h` = 261 tokens, measured in Run 1 (above).
 - :math:`n`: the number of steps in a ReAct run, one call per step.
 
 The arithmetic:
 
 1. Call :math:`k` sends :math:`F` plus the :math:`k - 1` earlier steps:
    :math:`F + (k - 1)\,h` tokens.
-2. Call 20 sends 2000 + 19 × 250 = 6750 tokens.
+2. A call 20 would send 1264 + 19 × 261 = 1264 + 4959 = 6223 tokens.
 3. Over :math:`n` calls: :math:`nF + h\,n(n - 1)/2`. For :math:`n` = 20:
-   20 × 2000 + 250 × 20 × 19 / 2 = 40,000 + 47,500 = 87,500 tokens.
+   20 × 1264 + 261 × 20 × 19 / 2 = 25,280 + 49,590 = 74,870 tokens.
 4. The :math:`n(n - 1)/2` term grows with the square of :math:`n`: twice the
    steps gives about four times the history.
 
@@ -944,44 +1055,66 @@ Input Tokens over a Run
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l8/token_growth.svg
-   :alt: A plot. The x axis is the number of steps in the run, 0 to 40; the y axis is the total input tokens over the run, in thousands, 0 to 300. A solid curve for ReAct rises faster and faster, with dots at 10 steps (31,250), 20 steps (87,500) and 40 steps (275,000). A dashed line for plan-and-execute with one replan stays flat at 4,000 near the x axis. All inputs are chosen for this example.
+   :alt: A plot. The x axis is the number of steps in the run, 0 to 40; the y axis is the total input tokens over the run, in thousands, 0 to 300. A solid curve for ReAct rises faster and faster, with dots at 10 steps (24,385), 20 steps (74,870) and 40 steps (254,140). A dashed line for plan-and-execute with one replan stays flat near the x axis.
    :width: 80%
    :align: center
 
-   Total input tokens over a run, against the number of steps. All inputs
-   are chosen for this example.
+   Total input tokens over a run, against the number of steps, with
+   :math:`F` and :math:`h` measured in Run 1.
 
 - This is a graph of token counts, not a picture of the factory.
-- ReAct: the formula above.
-- Plan-and-execute: one plan and one replan, each sending :math:`F` = 2000
-  tokens, so 2 × 2000 = 4000 tokens for any :math:`n`. A replan sends the
-  current state, not the history.
-- The values come from ``lecture8/code/token_growth.py``, all chosen for this
-  example.
+- ReAct: the formula above, with :math:`F` and :math:`h` from Run 1.
+- Plan-and-execute: one plan and one replan, each sending :math:`F` = 1264
+  tokens, so 2 × 1264 = 2528 tokens for any :math:`n`. A replan sends the
+  current state, not the history. Its output, 40 tokens per plan step
+  (``PLAN_OUT``), is chosen: no plan-and-execute run was recorded.
+- The values come from ``lecture8/code/token_growth.py``.
 
-The Cost of a Run
+The Cost of Run 1
 ~~~~~~~~~~~~~~~~~
 
-Cost of a run = the sum over calls of (input tokens × input price + output
-tokens × output price).
+Output of ``lecture8/code/run_cost.py``, from Run 1's raw API responses:
 
-The prices are chosen for this example, not a provider's: $2 per million input
-tokens, $10 per million output tokens. Output: 100 tokens per ReAct call, 40
-per plan step.
+.. literalinclude:: outputs/listings/run1_cost.txt
+   :language: text
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. ``billed``: output plus thinking tokens (none in Run 1).
+``wall s``: each call's time, measured by the client.
+
+The arithmetic, at the prices of ``gemini_prices.py``:
+
+1. Input: 8941 × 0.30 / 1,000,000 = $0.0026823.
+2. Output: 79 × 2.50 / 1,000,000 = $0.0001975.
+3. Run 1: $0.0026823 + $0.0001975 = $0.0028798, shown as 0.002880.
+
+The Cost Table: A Straight-Line Model of Run 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Output of ``lecture8/code/token_growth.py``:
 
-.. literalinclude:: outputs/token_growth.txt
+.. literalinclude:: outputs/listings/token_growth.txt
    :language: text
+
+Each row is computed from :math:`F`, :math:`h` and 16 output tokens per call,
+not run. At 5 steps the model gives 8930 tokens in and 80 out; Run 1
+measured 8941 in and 79 out. Where the 11 tokens come from:
+
+1. Run 1's four steps added 271, 253, 257 and 264 tokens: 10 more, 8 less,
+   4 less and 3 more than :math:`h` = 261.
+2. Calls 2 to 5 send step 1 again 4 times, step 2 three times, step 3 twice,
+   step 4 once.
+3. 4 × 10 = 40 more, 3 × 8 = 24 less, 2 × 4 = 8 less, 1 × 3 = 3 more:
+   40 − 24 − 8 + 3 = 11 tokens more than the model.
 
 Reading the Cost Table, and Keeping the History Short
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. ReAct, 20 steps: 87,500 × 2 / 1,000,000 = $0.175 for input, plus
-   2000 × 10 / 1,000,000 = $0.020 for output: $0.195.
-2. From 20 to 40 steps the ReAct cost goes from $0.195 to $0.59, about three
-   times, because the history term grows with the square of the steps.
-3. Plan-and-execute stays under $0.05 at every length in the table.
+1. ReAct, 20 steps: 74,870 × 0.30 / 1,000,000 = $0.022461 for input, plus
+   320 × 2.50 / 1,000,000 = $0.0008 for output: $0.023261, shown as 0.0233.
+2. From 20 to 40 steps the ReAct cost goes from $0.0233 to $0.0778, about
+   3.3 times, because the history term grows with the square of the steps.
+3. Plan-and-execute stays under $0.01 at every length in the table.
 
 Keeping the history short:
 
@@ -1032,9 +1165,11 @@ Next Class
 
 **Before next class:**
 
-- Set up LLM access (a hosted API account or a local open-weight model).
-- Run the L8 scripts in ``lecture8/code/`` and compare your outputs with the
-  ones above. The MCP demo needs the ``mcp`` package in a virtual
-  environment; install version 2.3.0, the one the outputs come from (see the
+- Set up LLM access (a hosted API account or a local open-weight model, as
+  the course's :doc:`AI Access </ariac/ai_setup>` page describes).
+- Run the offline L8 scripts in ``lecture8/code/``: ``validator.py`` and
+  ``token_growth.py`` print the tables above, and
+  ``python3 orchestrator.py --fake --runs 2`` runs the loop without ARIAC.
+  The ARIAC and Gemini demos need the course container (see the
   :doc:`code page <l8_code>`).
 - Finish GP3: the executor and the replanning demo.

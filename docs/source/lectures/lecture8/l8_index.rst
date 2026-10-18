@@ -20,28 +20,30 @@ check every output before anything moves, and limit the cost.
 That program is the **orchestrator**. It runs the **agent loop**: read the
 state, ask the LLM, check and run the tool call it returns, record the
 result, and stop when a stop condition fires. A live demonstration runs an
-orchestrator with a scripted stand-in model and a stand-in for ARIAC's AGV
-move action. The lecture then compares **plan-and-execute** with **ReAct**
+orchestrator with Gemini driving the ARIAC inspection robots through the
+course skills, and a scripted model shows the guard refusing a call. The
+lecture then compares **plan-and-execute** with **ReAct**
 on ARIAC situations, shows how to write a system message for a planner, and
 keeps the arithmetic (the kit voltage window) in code.
 
 The second half covers **structured output**: a JSON schema for one AGV
 move, validation in five steps with semantic checks and a bounded retry, and
-what constrained output from a provider does and does not remove. Next comes
-**tool calling** and the **Model Context Protocol (MCP)**, with a one-tool
-MCP server listed and called from a client. The last section measures how the
-input grows with each loop step, what a run costs, and how a model's latency
-compares with the factory's clocks.
+what constrained output from a provider does and does not remove, with one
+real model output run through the same check. Next comes **tool calling**
+and the **Model Context Protocol (MCP)**, with ten tools (7 skills and 3 readings) served
+from an MCP server, listed and called from a client against ARIAC. The last
+section measures how the input grows with each loop step, from the Gemini
+run's token counts, what a run costs, and how a model's latency compares with
+the factory's clocks.
 
 .. important::
 
-   **ARIAC tie-in.** The agent's tools are the actions GP3's executor already
-   runs, with the same names as the L6 domain (``move-agv``,
-   ``place-in-slot``). The demonstrations copy the rules of ARIAC's
-   ``/agvN/move`` action from the ARIAC source: a goal to the AGV's own
-   station is rejected, and only seven paths are accepted. The factory's
-   clocks (the conveyor at up to 0.1 m/s, a 4 s target for each inspection
-   report) decide which loops stay classical.
+   **ARIAC tie-in.** The agent's tools are the course skills of the two
+   inspection robots and three ARIAC readings, and the demonstration runs
+   them in ARIAC 2025. The guard checks what each robot holds, the tester
+   readings and the AGV's tray before any call runs. The factory's clocks
+   (the conveyor at up to 0.1 m/s, a 4 s target for each inspection report)
+   decide which loops stay classical.
 
 .. important::
 
@@ -104,9 +106,10 @@ Next Steps
 - **Before next class:**
 
   - Set up LLM access: a hosted API account or a local open-weight model.
-  - Run the L8 scripts (see :doc:`l8_code`) and compare your outputs with the
-    ones in the notes. The MCP demo needs the ``mcp`` package in a virtual
-    environment; the code page gives the commands.
+  - Run the offline L8 scripts (see :doc:`l8_code`): ``validator.py`` and
+    ``token_growth.py`` print the tables of the notes, and
+    ``python3 orchestrator.py --fake --runs 2`` runs the loop without ARIAC.
+    The ARIAC and Gemini demos need the course container.
   - Work through the :doc:`L8 exercises <l8_exercises>` and the
     :doc:`self-check quiz <l8_quiz>`.
   - Finish GP3: the executor and the replanning demo.

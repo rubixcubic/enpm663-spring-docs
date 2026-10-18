@@ -4,10 +4,10 @@ References
 
 These are the sources the L8 slides cite or take their facts from, in the
 order of the slides, grouped by section. A last dropdown lists the
-documentation behind the :ref:`code page's real-model section
-<l8-code-real-model>`, which no slide cites. Every link was checked on
-2026-10-12. Provider documentation changes often; read it again on the day
-you build on it.
+documentation behind the Gemini client on the :doc:`code page <l8_code>`.
+The links were checked on 2026-10-12, and the Gemini links on 2026-10-17.
+Provider documentation changes often; read it again on the day you build on
+it.
 
 
 .. dropdown:: Where the LLM Goes
@@ -195,8 +195,8 @@ you build on it.
 
          **Pydantic documentation**
 
-         The other validation library named in step 2. The MCP server
-         uses Pydantic's ``Field`` to write the tool's argument limits.
+         The other validation library named in step 2. The MCP server of
+         Exercise 4 uses Pydantic's ``Field`` to write its argument limits.
 
       .. grid-item-card:: Structured outputs (OpenAI)
          :link: https://developers.openai.com/api/docs/guides/structured-outputs
@@ -224,14 +224,26 @@ you build on it.
    .. grid:: 1 1 2 2
       :gutter: 2
 
-      .. grid-item-card:: Tool use
-         :link: https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview
+      .. grid-item-card:: Gemini API reference
+         :link: https://ai.google.dev/api/generate-content
          :class-card: sd-border-secondary
 
-         **Anthropic, Tool use with Claude**
+         **Google, Gemini API reference: generateContent**
 
-         Client tools "run in your application"; the ``tool_use`` and
-         ``tool_result`` blocks of the What a Tool Is slide.
+         The fields of a function declaration (``name``, ``description``,
+         ``parameters``) quoted on the What a Tool Is slide, and the schema
+         subset ``parameters`` takes, which has no ``additionalProperties``
+         and allows ``enum`` for strings only.
+
+      .. grid-item-card:: Gemini function calling
+         :link: https://ai.google.dev/gemini-api/docs/generate-content/function-calling
+         :class-card: sd-border-secondary
+
+         **Google, Function calling with the Gemini API**
+
+         The ``function_call`` part, the function response sent back with
+         the call's ID, and the advice to name functions "without spaces,
+         periods, or dashes".
 
       .. grid-item-card:: MCP architecture
          :link: https://modelcontextprotocol.io/docs/learn/architecture
@@ -254,7 +266,8 @@ you build on it.
          (`PyPI <https://pypi.org/project/mcp/2.3.0/>`_, released
          2026-10-02, Python 3.10 or newer). Its
          `v2 migration guide <https://py.sdk.modelcontextprotocol.io/v2/migration/>`_
-         covers the rename of ``FastMCP`` to ``MCPServer``.
+         covers the rename of ``FastMCP`` to ``MCPServer``, which
+         ``mcp/server/fastmcp.py`` in 2.3.0 also names.
 
       .. grid-item-card:: ros-mcp-server
          :link: https://github.com/robotmcp/ros-mcp-server
@@ -297,65 +310,21 @@ you build on it.
          order, 4 s for an inspection report) can change.
 
 
-.. dropdown:: Using a Real Model (Code Page)
+.. dropdown:: The Gemini Client (Code Page)
    :class-container: sd-border-secondary
 
    .. grid:: 1 1 2 2
       :gutter: 2
 
-      .. grid-item-card:: Anthropic Python SDK
-         :link: https://github.com/anthropics/anthropic-sdk-python
+      .. grid-item-card:: Gemini pricing
+         :link: https://ai.google.dev/gemini-api/docs/pricing
          :class-card: sd-border-secondary
 
-         **anthropics/anthropic-sdk-python**
+         **Google, Gemini API pricing page**
 
-         Install with ``pip install anthropic``; Python 3.10 or newer; the
-         client reads ``ANTHROPIC_API_KEY``.
-
-      .. grid-item-card:: Handle tool calls
-         :link: https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls
-         :class-card: sd-border-secondary
-
-         **Anthropic, Handle tool calls**
-
-         The ``tool_use`` block's ``id``, ``name`` and ``input``, and the
-         ``tool_result`` block with ``tool_use_id``, ``content`` and
-         ``is_error``.
-
-      .. grid-item-card:: Define tools
-         :link: https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools
-         :class-card: sd-border-secondary
-
-         **Anthropic, Define tools**
-
-         The fields of a tool definition (``name``, ``description``,
-         ``input_schema``) and the ``tool_choice`` options.
-
-      .. grid-item-card:: Models
-         :link: https://platform.claude.com/docs/en/about-claude/models/overview
-         :class-card: sd-border-secondary
-
-         **Anthropic, Models overview**
-
-         Model IDs and prices on the day you read it.
-
-      .. grid-item-card:: Gemini function calling
-         :link: https://ai.google.dev/gemini-api/docs/function-calling?lang=python
-         :class-card: sd-border-secondary
-
-         **Google, Function calling with the Gemini API**
-
-         Function declarations (``name``, ``description``, ``parameters``),
-         the model's function calls and the function results sent back.
-
-      .. grid-item-card:: Gemini Interactions API
-         :link: https://ai.google.dev/api/interactions-api
-         :class-card: sd-border-secondary
-
-         **Google, Interactions API reference**
-
-         The API the Gemini example uses: ``system_instruction``,
-         ``function_result`` steps with ``call_id``, and ``store``.
+         The prices in ``gemini_prices.py`` and on The Cost of Run 1 slide:
+         $0.30 per million input tokens and $2.50 per million output tokens
+         for ``gemini-3.5-flash-lite``, read 2026-10-17.
 
       .. grid-item-card:: Google GenAI SDK for Python
          :link: https://googleapis.github.io/python-genai/
@@ -363,8 +332,8 @@ you build on it.
 
          **googleapis/python-genai**
 
-         Install with ``pip install google-genai``; the client the Gemini
-         example builds on.
+         The ``google-genai`` package (2.31.0 in the lecture's virtual
+         environment) that ``gemini_model.py`` uses.
 
       .. grid-item-card:: Gemini API keys
          :link: https://ai.google.dev/gemini-api/docs/api-key
@@ -372,5 +341,5 @@ you build on it.
 
          **Google, Using Gemini API keys**
 
-         The ``GEMINI_API_KEY`` environment variable, and "Never check API
-         keys into source control systems like Git."
+         How the key reaches the client, and "Never check API keys into
+         source control systems like Git."

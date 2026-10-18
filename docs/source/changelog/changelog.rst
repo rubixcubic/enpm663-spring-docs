@@ -6,10 +6,45 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.15: Agentic Physical AI Defined (2026-10-17)
+.. dropdown:: v0.4.16: L8 and L9 Run a Real Gemini Agent on ARIAC (2026-10-17)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   .. rubric:: Lecture 8
+
+   - **Real agent:** Run 1 is now Google's Gemini (``gemini-3.5-flash-lite``)
+     running the course skills on ARIAC. It filled AGV 1 slot 1 in five
+     calls. Run 2 and the validator stay scripted, so you can see each
+     guard refuse a bad call.
+   - **MCP:** the server serves ten tools (7 skills and 3 readings) against
+     ARIAC, and the client lists them and calls three.
+   - **Numbers:** the token growth and the cost table use the tokens Run 1
+     measured. Every real output says when it was recorded and with which
+     model; a rerun gives different answers.
+   - **Code page:** how the demonstrations run (the key file, the container,
+     ``run_sim_demo.sh``), every script, and a section on using another model.
+   - New exercises 2 and 4; the quiz follows the new slides.
+
+   .. rubric:: Lecture 9
+
+   - **Real VLM check:** Gemini reads a real camera image of the kit tray. Its
+     answer is checked against the schema, then compared with the tray sensor
+     and the agent's own voltage record.
+   - **Closed loop:** two recordings on ARIAC with tester 1 malfunctioning, one
+     that replans and one that waits. Both fill the tray. The cells add to
+     about 14.09 V, under ARIAC's kit minimum of 14.25 V, and the page shows
+     why the VLM check alone does not catch it.
+   - New exercises 2, 3 and 5; the quiz follows the new slides.
+
+   .. rubric:: Pre-reads
+
+   - **MCP** and **LLM Prompting** say what the L8 demonstrations use.
+
+
+.. dropdown:: v0.4.15: Agentic Physical AI Defined (2026-10-17)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lecture 1
 

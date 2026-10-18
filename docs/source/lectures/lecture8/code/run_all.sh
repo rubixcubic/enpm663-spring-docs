@@ -1,26 +1,45 @@
 #!/usr/bin/env bash
-# Runs every L8 example and writes its output to ../outputs/.
-# env -i drops this shell's ROS and Python paths. The orchestrator,
-# validator and token examples use the system Python (jsonschema
-# 4.10.3). The MCP example needs the mcp package, which is not
-# installed system-wide: set VENV to a virtualenv that has it
-# (python3 -m venv venv && venv/bin/pip install mcp).
+# Runs the offline L8 parts and writes their outputs to ../outputs/:
+# the validator, the token growth table, the system message, the tests and the slide listings.
+# env -i drops this shell's ROS and Python paths; the system Python has jsonschema 4.10.3.
+# The demos that need ARIAC or the Gemini API run through run_sim_demo.sh (see l8_code docs).
 set -euo pipefail
 cd "$(dirname "$0")"
-VENV=${VENV:-$HOME/l8-venv}
-SYS=(env -i HOME="$HOME" PATH=/usr/bin:/bin /usr/bin/python3)
-MCP=(env -i HOME="$HOME" PATH=/usr/bin:/bin "$VENV/bin/python")
+SYS=(env -i HOME="$HOME" PATH=/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3)
 OUT=../outputs
+
+# write OUTPUT_FILE from a command: to a .tmp file first, moved into place only on
+# success, so a failed run keeps the last good output and set -e stops the script
+write() {
+  local file=$1; shift
+  "$@" > "$file.tmp" 2>&1 || { cat "$file.tmp" >&2; rm -f "$file.tmp"; return 1; }
+  mv "$file.tmp" "$file"
+}
+
+# versions.txt: the venv line comes from the container. When docker exec fails,
+# print its error, keep the last recorded venv line, and say on which day it was read.
+VENV_CMD="import sys; from importlib.metadata import version; print('lecture venv Python', sys.version.split()[0], 'google-genai', version('google-genai'), 'mcp', version('mcp'))"
+kept=""
+if ! venv_line=$(docker exec enpm663_skills_dev /opt/enpm663_lecture_venv/bin/python -c "$VENV_CMD" 2>&1); then
+  echo "lecture venv not read, docker exec failed: $venv_line" >&2
+  venv_line=$(grep '^lecture venv Python ' $OUT/versions.txt || echo "lecture venv: never recorded")
+  read_on=$(sed -n 's/^lecture venv line kept from the run of \([0-9-]*\).*/\1/p' $OUT/versions.txt)
+  [ -n "$read_on" ] || read_on=$(sed -n 's/^run on //p' $OUT/versions.txt)
+  kept="lecture venv line kept from the run of $read_on: the container was not reached"
+fi
 {
   "${SYS[@]}" -c "import sys; from importlib.metadata import version; print('system Python', sys.version.split()[0], 'jsonschema', version('jsonschema'))"
-  "${MCP[@]}" -c "import sys; from importlib.metadata import version; print('venv Python', sys.version.split()[0], 'mcp', version('mcp'), 'pydantic', version('pydantic'))"
+  echo "$venv_line"
   echo "run on $(date +%Y-%m-%d)"
-} > $OUT/versions.txt
-"${SYS[@]}" orchestrator.py > $OUT/orchestrator.txt 2>&1
-"${SYS[@]}" validator.py > $OUT/validator.txt 2>&1
-"${SYS[@]}" token_growth.py > $OUT/token_growth.txt 2>&1
-# The server's log lines go to stderr; keep them apart from the output.
-"${MCP[@]}" agv_mcp_client.py > $OUT/mcp_demo.txt 2> $OUT/mcp_demo_stderr.txt
-"${MCP[@]}" -c "from mcp.server.fastmcp import FastMCP" \
-  > $OUT/fastmcp_import.txt 2>&1 || true
+  [ -z "$kept" ] || echo "$kept"
+} > $OUT/versions.txt.tmp
+mv $OUT/versions.txt.tmp $OUT/versions.txt
+
+write $OUT/validator.txt "${SYS[@]}" validator.py
+write $OUT/token_growth.txt "${SYS[@]}" token_growth.py
+write $OUT/system_message.txt "${SYS[@]}" -c "from structured_live import SYSTEM; print(SYSTEM)"
+"${SYS[@]}" -m pytest -q -p no:cacheprovider tests
+bash tests/test_run_sim_demo.sh
+"${SYS[@]}" listings.py build listings_l8.json
+"${SYS[@]}" listings.py check ../ENPM663-L8-v1.0.tex $OUT/listings
 cat $OUT/versions.txt

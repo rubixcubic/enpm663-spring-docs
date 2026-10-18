@@ -11,8 +11,9 @@ Model Context Protocol (MCP)
    have. It answers four questions: why a standard protocol for tools, who
    talks to whom, what a server can offer, and how the messages travel.
 
-   L8 builds an MCP server for an AGV move, calls it from a client, and
-   discusses what GP4 should expose this way. This page does not.
+   L8 builds an MCP server for ten tools (7 skills and 3 readings), with a client that calls
+   three of them against ARIAC, and discusses what GP4 should expose this way.
+   This page does not.
 
 Read the :doc:`LLM Prompting and Structured Output <llm-prompting>` pre-read
 first: this page uses JSON and JSON Schema from it.
@@ -322,9 +323,9 @@ Where L8 Takes Over
 
 L8's :ref:`Tool calling and MCP <l8-tool-calling>` section starts from this
 picture. It shows what a tool is in an LLM API, how to design tools for the
-factory, a one-tool MCP server for an AGV move written with ``mcp`` 2.3.0, a
-client that lists and calls it, and why GP4 exposes task-level tools behind
-the executor's guards instead of raw ROS topics. Whether to use MCP in GP4
+factory, an MCP server for ten tools (7 skills and 3 readings) written with ``mcp`` 2.3.0,
+a client that lists them and calls three against ARIAC, and why GP4 exposes
+task-level tools behind the executor's guards instead of raw ROS topics. Whether to use MCP in GP4
 is each team's choice.
 
 

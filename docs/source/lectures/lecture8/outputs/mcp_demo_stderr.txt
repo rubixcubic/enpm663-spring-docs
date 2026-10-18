@@ -1,1 +1,1 @@
-Tool 'move-agv' rejected arguments: ['agv']
+Tool 'robot2_place_in_slot' rejected arguments: ['agv']

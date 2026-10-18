@@ -15,9 +15,9 @@ LLM Prompting and Structured Output
    planner, validating the model's output against a schema with a bounded
    retry, and tool calling. This page does not cover those.
 
-The examples on this page use Anthropic's Python SDK, because the
-:doc:`L8 code page </lectures/lecture8/l8_code>` uses it too. **The course has
-not chosen an LLM provider.** Every idea here holds for the other providers
+The examples on this page use Anthropic's Python SDK. The L8 demonstrations
+use Google's Gemini (see the :doc:`L8 code page </lectures/lecture8/l8_code>`).
+**The course has not chosen an LLM provider.** Every idea here holds for the other providers
 on the :doc:`AI Access </ariac/ai_setup>` page; only the field names change.
 
 **What you need to run the examples.** Python 3.10 or newer and a virtual
@@ -363,8 +363,9 @@ account. Anyone who has your key can make calls that you pay for.
 variable** is a name and a value that your shell hands to every program it
 starts. Programs read it at run time, so the key never appears in your code.
 The SDK looks for ``ANTHROPIC_API_KEY`` by itself; other providers use their
-own names (the :doc:`L8 code page </lectures/lecture8/l8_code>` lists
-Gemini's).
+own names. (The L8 demonstrations keep the Gemini key in a file that only
+its owner can read; the :doc:`L8 code page </lectures/lecture8/l8_code>` shows
+how.)
 
 .. code-block:: bash
 

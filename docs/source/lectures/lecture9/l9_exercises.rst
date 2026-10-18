@@ -13,23 +13,27 @@ Exercises
 
 Five take-home exercises built on the L9 slides and on the two demonstrations.
 Exercises 1 and 2 are paper and arithmetic: the kit windows and the decision
-chart. Exercises 3 and 4 change the scripts: the closed-loop timings, and a new
-mismatch in the VLM checker. Exercise 5 extends the retry, wait or replan
-chart to the high-priority order, on paper and then in ``closed_loop.py``.
+chart. Exercises 3 and 4 change the scripts: the closed loop on a stand-in
+factory, and a new mismatch in the VLM checker. Exercise 5 extends the retry,
+wait or replan chart to the high-priority order, on paper and against the
+replan recording.
 
 .. note::
 
-   The scripts are on the :doc:`code page <l9_code>`. They need Python 3 and
-   ``jsonschema`` (on Ubuntu 24.04: ``sudo apt install python3-jsonschema``).
-   Work on a copy, for example ``cp closed_loop.py my_loop.py``, so the
-   original still matches the notes. Every number in the solutions below
-   comes from the arithmetic shown, or from running the changed script with
-   Python 3.12.3 and jsonschema 4.10.3.
+   The scripts are on the :doc:`code page <l9_code>`. Exercises 3 and 4 run
+   offline, with Python 3 and ``jsonschema`` (on Ubuntu 24.04:
+   ``sudo apt install python3-jsonschema``), no ARIAC and no API key. Keep
+   the course layout, ``lecture9/code`` next to ``lecture8/code``, and work
+   on a copy, for example ``cp vlm_check.py my_check.py``, so the original
+   still matches the notes. Every number in the solutions below comes from
+   the arithmetic shown, from the recordings in the notes, or from running
+   the changed script with Python 3.12.3 and jsonschema 4.10.3 on
+   2026-10-17.
 
-   The models in both scripts are scripted stand-ins. When you change the
-   factory, the canned replies do not change, so a run that needs a reply the
-   script does not hold stops early. Exercise 3 stays within the replies the
-   script has.
+   The model in Exercises 3 and 4 is scripted: it returns fixed replies, so
+   your outputs should match these exactly. When you change the factory, the
+   replies do not change, so a run that needs a reply the list does not hold
+   stops early.
 
 
 .. dropdown:: Exercise 1. Kit Windows and the Type Check
@@ -54,9 +58,12 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
    1. In ``vlm_check.py``, the four cells on the high-priority tray read 1.21,
       1.18, 1.24 and 1.22 V on a tester. Compute the kit total and say whether
       it is inside the NiMH kit window.
-   2. In ``closed_loop.py``, cells c1, c2 and c3 read 3.58, 3.61 and 3.55 V.
-      What readings of c4 give a valid Li-Ion kit? Use both the kit window
-      and the single-cell range in the script (``CELL_MIN`` and ``CELL_MAX``).
+   2. In the replan recording, the first three cells in agv1's tray have the
+      records 3.540, 3.444 and 3.645 V (``record.json``). What readings of the
+      fourth cell would have given a kit inside ARIAC's window? Use both the
+      kit window and the single-cell range in the code (``CELL_MIN`` and
+      ``CELL_MAX`` in ``orchestrator.py``). The fourth cell placed read
+      3.465 V: was it inside?
    3. A cell on the high-priority tray reads 2.40 V. What does
       ``type_from_volts()`` return? What verdict does ``cross_check()`` give
       if the VLM says ``NIMH`` for that slot, and what if the VLM says
@@ -72,17 +79,21 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
       4.95 V. 4.85 V is inside it: :math:`4.85 - 4.65 = 0.20` V above the
       bottom and :math:`4.95 - 4.85 = 0.10` V below the top.
 
-      **2.** The three known cells add to
-      :math:`3.58 + 3.61 + 3.55 = 10.74` V. The Li-Ion window is 14.25 V to
-      14.55 V.
+      **2.** The three cells add to
+      :math:`3.540 + 3.444 + 3.645 = 10.629` V. The Li-Ion window is
+      14.25 V to 14.55 V.
 
-      1. Lowest c4: :math:`14.25 - 10.74 = 3.51` V.
-      2. Highest c4 for the kit: :math:`14.55 - 10.74 = 3.81` V.
-      3. The single-cell range is 3.4 V to 3.8 V (``3.6 +/- 0.2``), so c4
-         must also be at most 3.80 V.
+      1. Lowest fourth cell: :math:`14.25 - 10.629 = 3.621` V.
+      2. Highest fourth cell for the kit: :math:`14.55 - 10.629 = 3.921` V.
+      3. The single-cell range is 3.4 V to 3.8 V (``3.6 +/- 0.2``), so the
+         fourth cell must also be at most 3.80 V.
 
-      So c4 must read from **3.51 V to 3.80 V**. The real c4 read 3.63 V,
-      inside, and the kit totals 14.37 V, as the demonstration printed.
+      So the fourth cell had to read from **3.621 V to 3.80 V**. The cell
+      placed read 3.465 V: inside the cell range, so the guard let it in,
+      but 3.621 − 3.465 = 0.156 V under the lowest value for the kit. The
+      total came out 14.094 V, the 0.156 V short of 14.25 V that the
+      lecture shows. The agent had no kit tool, so nothing chose the fourth
+      cell for the kit.
 
       **3.** 2.40 V is above the NiMH range (1.0 V to 1.4 V) and below the
       Li-Ion range (3.4 V to 3.8 V), so ``type_from_volts()`` returns
@@ -111,7 +122,8 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
    **Goal**
 
    Use the retry, wait or replan chart on cases the lecture did not show,
-   and check each answer against ``decide()`` in ``closed_loop.py``.
+   and compare the answers with what the demonstration's code and Gemini
+   did.
 
    .. raw:: html
 
@@ -121,66 +133,110 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
 
    For each case, follow the chart from "Goal changed?" and name the exit:
    retry, wait or replan (and the tag, if the exit has one). Give the
-   question that decides it.
+   question that decides it. Your team's retry cap is 2 (chosen for this
+   exercise).
 
-   1. ``unload_to_tray(2, 3)`` reports a lost grasp. Slot 3 is empty and
-      tester 2 still reads 3.63 V. It is the first failure of this step.
-   2. Same step, slot 3 empty, but tester 2 now reads 0.00 V.
-   3. Same as case 1, but it is the third failure in a row of this step
-      (``RETRY_CAP`` is 2).
+   1. ``robot2_pick_from_tester(2)`` returns ``GRASP_FAILED``, and robot 2
+      holds ``NOTHING``. Tester 2 still reads 3.63 V. It is the first failure
+      of this step.
+   2. Same step, but tester 2 now reads 0.00 V, and no slot has the cell.
+   3. Same as case 1, but it is the third failure in a row of this step.
    4. Both voltage testers report ``MALFUNCTIONING`` at once. (The
       challenges page says one or both testers can fail.)
-   5. Tester 1 reports ``MALFUNCTIONING`` right after a ``load_tester`` to
-      it, while a tested cell still waits on tester 2 to be moved to the
-      tray.
+   5. Tester 1 reports ``MALFUNCTIONING`` while robot 2 holds the cell it
+      just picked from tester 1, and tester 2 is empty. This happened in the
+      replan recording at obs 3. What did Gemini do next?
    6. A high-priority order arrives while tester 1 is down.
+   7. Tester 1 reports ``MALFUNCTIONING``. Which of these calls does the L8
+      ``guard()`` refuse: ``robot1_place_on_tester(1)``, and
+      ``robot2_pick_from_tester(1)``?
 
    .. dropdown:: Solution
       :color: success
 
       **1. Retry (tag 4).** Goal changed? no. Device down? no. Plan holds?
       yes: the 3.63 V reading says the cell is still on tester 2, as the
-      plan assumes. Retries left? yes (0 of 2 used). This is the case at
-      t = 190 s in the demonstration.
+      plan assumes. Retries left? yes (0 of 2 used).
 
       **2. Replan (the blue box above "Plan holds?").** A reading of
-      0.00 V means the tester is empty, and the slot is empty too: the cell
+      0.00 V means the tester is empty, and no slot has the cell: the cell
       left the tester but did not reach the tray. The plan assumed the cell
-      was on tester 2, so the plan no longer holds. In the code, ``after()``
-      sets ``on_tester`` to ``False`` because 0.00 V is outside 3.4 V to
-      3.8 V, and ``decide(False, False, False, False, retries)`` returns
-      ``"REPLAN"``.
+      was on tester 2, so the plan no longer holds.
 
       **3. Replan (the blue box left of "Retries left?").** The plan still
-      holds, but two retries are used up. In the code,
-      ``retries < RETRY_CAP`` is ``2 < 2``, false, so ``decide()`` returns
-      ``"REPLAN"``. The cap stops the loop from retrying forever.
+      holds, but two retries are used up. The cap stops the loop from
+      retrying forever.
 
       **4. Wait (tag 3).** Device down? yes. Another free? no: the other
       tester is down too. Keep the plan and watch both status topics.
 
-      **5. Wait (tag 3).** Device down? yes. Another free? no: tester 2
-      holds a cell, so it is not free. The code makes the same call:
-      ``free = f.on_tester[other] is None ...`` is ``False``, and
-      ``decide(False, True, False, ...)`` returns ``"WAIT"``.
+      **5. Replan (tag 2).** Device down? yes. Another free? yes: tester 2 is
+      empty and working. In the recording, Gemini put robot 2's cell in
+      slot 1 (call 4), then placed the next cell on tester 2 (call 6), which
+      read 3.44 V (obs 6). The cell robot 2 held already had its reading
+      (3.54 V, obs 2), so the broken tester did not stop it.
 
       **6. Replan (tag 1).** "Goal changed?" is the first question, so a new
       goal wins over a device that is down. The new plan must still avoid
-      tester 1: in the code, ``problems()`` rejects any plan step that loads
-      a tester reporting ``MALFUNCTIONING``, as it rejected model call 2 in
-      the demonstration.
+      tester 1 while it is down.
+
+      **7.** ``guard()`` refuses ``robot1_place_on_tester(1)`` with "tester 1
+      is MALFUNCTIONING", and allows ``robot2_pick_from_tester(1)``
+      (``orchestrator.py`` lines 119 to 125). Placing a new cell on a broken
+      tester gives no reading; taking a cell off it moves the cell to where
+      it can still be used, as in case 5.
 
 
-.. dropdown:: Exercise 3. Change the Closed-Loop Timings: Wait or Replan?
+.. dropdown:: Exercise 3. Replan or Wait on a Stand-in Factory
    :icon: number
    :class-container: sd-border-primary
    :class-title: sd-font-weight-bold
 
    **Goal**
 
-   Predict, on paper, how the replan policy and the wait policy finish when
-   the malfunctions move, then run both and check. Find the rule behind the
-   time difference.
+   Run the L9 closed loop offline, on L8's stand-in factory ``FakeTools``,
+   with a scripted model that replans and one that waits. Predict the finish
+   time of each on paper, run both, and find the rule behind the
+   difference.
+
+   ``FakeTools`` adds 20 s of simulation time per skill call, and a
+   ``wait(seconds)`` call adds its seconds. Its cells read 3.61, 3.55, 3.66
+   and 3.58 V. These values are chosen for the example. Save this as
+   ``my_closed_loop.py`` in ``lecture9/code``:
+
+   .. code-block:: python
+
+      """Exercise 3: the L9 closed loop on the stand-in factory, with scripted replies. No ARIAC."""
+      import sys
+
+      import closed_loop as cl          # first: it puts ../../lecture8/code on the import path
+      from fake_tools import FakeTools
+      from orchestrator import ScriptedModel, run
+
+      DOWN = (50, 120)   # tester 1 MALFUNCTIONING from 50 s to 120 s of simulation time, chosen here
+      WAIT_S = 20        # simulation s robot 1 waits before tester 1 is back, chosen here
+
+
+      def cycle(tester, slot):
+          return [cl.act("robot1_pick_from_conveyor"), cl.act("robot1_place_on_tester", tester=tester),
+                  cl.act("robot2_pick_from_tester", tester=tester), cl.act("robot2_place_in_slot", agv=1, slot=slot)]
+
+
+      REPLAN = cycle(1, 1) + cycle(2, 2) + cycle(2, 3) + cycle(2, 4) + [{"text": "done"}]
+      WAIT = (cycle(1, 1) + [cl.act("robot1_pick_from_conveyor"), cl.act("wait", seconds=WAIT_S)]
+              + cycle(1, 2)[1:] + cycle(1, 3) + cycle(1, 4) + [{"text": "done"}])
+
+      policy = sys.argv[1]
+      fake = FakeTools(tester_down={1: DOWN})
+      tools = cl.PolicyTools(fake, policy)
+      stop = run(ScriptedModel(REPLAN if policy == "replan" else WAIT), tools,
+                 f"{cl.GOAL} {cl.POLICY[policy]}", cl.four_slots, cl.tool_names(policy),
+                 max_steps=cl.MAX_STEPS, extra_guard=cl.policy_guard(policy), out=lambda line: None)
+      print(f"policy {policy}: stop: {stop}; t = {fake.t:.0f} s; {len(fake.calls)} tool calls")
+
+   It uses the same loop, guard, policies and goal check as the
+   demonstration. ``out=lambda line: None`` hides the trace; use
+   ``out=print`` to see it.
 
    .. raw:: html
 
@@ -188,148 +244,99 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
 
    **Parts**
 
-   Each part changes one line at the top of a copy of ``closed_loop.py``
-   and keeps every other value. The actions take 25 s (``load_tester``),
-   20 s (``unload_to_tray``) and 15 s (``move_agv``); a wait polls every
-   5 s. For each part, predict the finish time and the number of model calls
-   of both runs (``python3 my_loop.py`` and ``python3 my_loop.py --wait``),
-   then run them. Compute the time saved by replanning and the largest model
-   latency :math:`L` for which replanning still wins, as the lecture did
-   (replanning made two model calls).
-
-   1. Tester 1 ``DURATION`` 20 s instead of 45 s.
-   2. Tester 1 ``START_TIME`` 200 s instead of 140 s.
-   3. Tester 1 ``DURATION`` 90 s instead of 45 s.
-   4. Conveyor ``DURATION`` 60 s instead of 30 s (tester back to the
-      original values).
-   5. From parts 1, 3 and 4 and the original run, state a rule for the time
-      replanning saves.
+   1. Predict the finish time and the number of tool calls of the replan
+      list. When does it first need tester 1 after the break?
+   2. The wait list picks the second cell at 80 s to 100 s. Why does it wait
+      20 s before it places the cell on tester 1? Predict its finish time.
+   3. Run both: ``python3 my_closed_loop.py replan`` and
+      ``python3 my_closed_loop.py wait``.
+   4. Set ``WAIT_S = 10``. Predict what the guard does, and how the run
+      ends.
+   5. Set ``DOWN = (50, 200)``. Which list must change, and how? (The
+      ``wait`` tool takes 5 to 60 s.) Predict both finish times.
+   6. State a rule for the time replanning saves here. Then say why the two
+      Gemini recordings of the lecture, which finished at about 225 s each,
+      do not show it.
 
    .. dropdown:: Solution
       :color: success
 
-      **1. Tester down from 140 s to 160 s.** Until 145 s nothing changes.
+      **1. 320 s, 16 tool calls.** Sixteen skill calls at 20 s each:
+      :math:`16 \times 20 = 320` s. Cycle 1 places its cell on tester 1 from
+      20 s to 40 s, before the break at 50 s, and robot 2 picks it from 40 s
+      to 60 s: the guard checks the observation at 40 s, when tester 1 still
+      works. After that the list uses tester 2 only, so it never needs
+      tester 1 again.
 
-      - *Replan:* the run is the same as the original. Tester 1 is checked
-        again at 210 s, long after it recovered at 160 s. Finish at
-        **245 s**, **3 model calls**.
-      - *Wait:* polls at 150, 155 and 160 s; at 160 s the tester is back.
-        Then ``unload_to_tray(1, 3)`` 160 to 180 s, ``load_tester(c4, 2)``
-        180 to 205 s, the lost grasp 205 to 225 s, the retry 225 to 245 s,
-        ``move_agv`` 245 to 260 s. Finish at **260 s**, **1 model call**.
-      - Saved: :math:`260 - 245 = 15` s. Replanning wins while
-        :math:`2L < 15` s, so while :math:`L < 7.5` s.
+      **2. 340 s.** After cycle 1 and the second pick, the time is
+      :math:`5 \times 20 = 100` s. Tester 1 is down until 120 s, and the
+      guard refuses a place on a ``MALFUNCTIONING`` tester, so robot 1 waits
+      :math:`120 - 100 = 20` s. Then 11 more skill calls:
+      :math:`120 + 11 \times 20 = 340` s. The wait run makes 17 tool calls:
+      16 skills and 1 ``wait``.
 
-      The last lines of the two runs:
-
-      .. code-block:: text
-
-         t=245  done: agv1 at SHIPPING after 3 model calls
+      **3.** The two runs print:
 
       .. code-block:: text
 
-         t=160  check again: OPERATIONAL -> resume the plan
-         t=160  check tester 1: 3.55 V -> match
-         t=160  act unload_to_tray(1, 3)
-         ...
-         t=260  done: agv1 at SHIPPING after 1 model call
-
-      **2. Tester down from 200 s to 245 s.** At 145 s tester 1 still works,
-      so c3 reads 3.55 V, and its unload ends at 165 s. After that, the plan
-      uses only tester 2. No step ever meets the broken tester, so there is
-      no mismatch and no replan. Both runs are the same: ``load_tester(c4,
-      2)`` 165 to 190 s, the lost grasp 190 to 210 s, the retry 210 to 230 s,
-      ``move_agv`` 230 to 245 s. Both finish at **245 s** with **1 model
-      call**. Saved: 0 s.
+         policy replan: stop: goal reached; t = 320 s; 16 tool calls
 
       .. code-block:: text
 
-         t=145  observe tester 1: 3.55 V, OPERATIONAL -> match
-         t=145  act unload_to_tray(1, 3)
-         t=165  result success; slot 3 occupied, tester 1 0.00 V -> match
-         ...
-         t=245  done: agv1 at SHIPPING after 1 model call
+         policy wait: stop: goal reached; t = 340 s; 17 tool calls
 
-      A malfunction on a device the plan no longer needs triggers nothing.
-      The loop reacts to what it observes, not to what the trial file says.
-
-      **3. Tester down from 140 s to 230 s.**
-
-      - *Replan:* the same as the original until 210 s. Then the step
-        ``unload_to_tray(1, 4)`` needs tester 1, which is still down, and
-        tester 2 has nothing left to do: the chart says **wait**. Polls
-        until 230 s, unload 230 to 250 s, ``move_agv`` 250 to 265 s.
-        Finish at **265 s**, **3 model calls**.
-      - *Wait:* waits from 145 s to 230 s. Unload c3 230 to 250 s, load c4
-        250 to 275 s, the lost grasp 275 to 295 s, the retry 295 to 315 s,
-        ``move_agv`` 315 to 330 s. Finish at **330 s**, **1 model call**.
-      - Saved: :math:`330 - 265 = 65` s. Replanning wins while
-        :math:`2L < 65` s, so while :math:`L < 32.5` s.
+      **4.** After a 10 s wait the time is 110 s, and tester 1 is still
+      down. With ``out=print``, the call lines at the end of the trace are
+      (the ``obs`` lines are left out here):
 
       .. code-block:: text
 
-         t=210  check tester 1: MALFUNCTIONING -> MISMATCH
-         t=210        expected OPERATIONAL; the cell is on it
-         t=210  decision WAIT: keep the plan, watch the status
-         t=230  check again: OPERATIONAL -> resume the plan
-         ...
-         t=265  done: agv1 at SHIPPING after 3 model calls
+         call 6: 11 messages; scripted
+           model:  wait({"seconds": 10})
+           result: {"waited_sim_s": 10.0}
+         call 7: 13 messages; scripted
+           model:  robot1_place_on_tester({"tester": 1})
+           orch:   {"error": "refused: tester 1 is MALFUNCTIONING"}
+         call 8: 15 messages; scripted
+           model:  robot2_pick_from_tester({"tester": 1})
+           result: {"code": "GRASP_FAILED", "holding": "NOTHING", "message": "nothing on the tester", "attempts": 1, "wall_s": 0.0}
+         call 9: 17 messages; scripted
+           model:  robot2_place_in_slot({"agv": 1, "slot": 2})
+           orch:   {"error": "refused: robot 2 holds NOTHING, needs CELL"}
+         call 10: 19 messages; scripted
+           model:  robot1_pick_from_conveyor({})
+           orch:   {"error": "refused: robot 1 holds CELL, needs NOTHING"}
+         policy wait: stop: 2 invalid outputs in a row; t = 130 s; 7 tool calls
 
-      .. code-block:: text
+      The guard refused the place, but the scripted list did not change its
+      plan: it went on as if the cell were on tester 1. The pick ran and
+      failed (``GRASP_FAILED``; a failed skill is not an invalid output), and
+      the next two calls broke the guard's holding rule, which ended the run
+      on ``MAX_INVALID``. A real model reads the refusal and can choose
+      again; a fixed list cannot.
 
-         t=330  done: agv1 at SHIPPING after 1 model call
+      **5.** The replan list does not change: it never needs tester 1 after
+      the break, so it still finishes at **320 s**. The wait list must wait
+      :math:`200 - 100 = 100` s, more than one ``wait`` call allows, so
+      replace the single ``wait`` with
+      ``cl.act("wait", seconds=60), cl.act("wait", seconds=40)``. It
+      finishes at :math:`200 + 11 \times 20 =` **420 s**, with 18 tool calls.
+      (With the 20 s wait left in, the run ends on
+      ``2 invalid outputs in a row`` at 140 s.)
 
-      **4. Conveyor down from 90 s to 150 s.** Both runs wait at 90 s and
-      resume at 150 s. ``load_tester(c3, 1)`` runs 150 to 175 s, and tester
-      1 is down (140 to 185 s), so the mismatch comes at 175 s instead of
-      145 s.
+      **6. The rule.** Here replanning saves the time tester 1 is still down
+      when the wait run next needs it: :math:`120 - 100 = 20` s in parts 1
+      to 3, and :math:`200 - 100 = 100` s in part 5. It saves nothing if the
+      other tester has no free time, or if the broken tester comes back
+      before the plan needs it. In ARIAC each model call also costs time,
+      which this factory does not count.
 
-      - *Replan:* load c4 on tester 2 175 to 200 s, the lost grasp 200 to
-        220 s, the retry 220 to 240 s, tester 1 (back since 185 s) reads
-        3.55 V, unload 240 to 260 s, ``move_agv`` 260 to 275 s. Finish at
-        **275 s**, **3 model calls**.
-      - *Wait:* polls at 180 and 185 s; back at 185 s. Unload c3 185 to
-        205 s, load c4 205 to 230 s, the lost grasp 230 to 250 s, the retry
-        250 to 270 s, ``move_agv`` 270 to 285 s. Finish at **285 s**,
-        **1 model call**.
-      - Saved: :math:`285 - 275 = 10` s. Replanning wins while
-        :math:`2L < 10` s, so while :math:`L < 5` s.
-
-      **5. The rule.** Replanning saves the time the tester stays down after
-      the mismatch, minus any time the replanned run still has to wait:
-
-      .. list-table::
-         :header-rows: 1
-         :widths: 22 26 26 26
-         :class: compact-table
-
-         * - **Run**
-           - **Down after the mismatch**
-           - **Replan still waits**
-           - **Saved**
-         * - Original
-           - :math:`185 - 145 = 40` s
-           - 0 s
-           - 40 s
-         * - Part 1
-           - :math:`160 - 145 = 15` s
-           - 0 s
-           - 15 s
-         * - Part 3
-           - :math:`230 - 145 = 85` s
-           - :math:`230 - 210 = 20` s
-           - :math:`85 - 20 = 65` s
-         * - Part 4
-           - :math:`185 - 175 = 10` s
-           - 0 s
-           - 10 s
-
-      The replan fills the down time with work on the other tester. Here
-      that work (load c4, the lost grasp and the retry) takes
-      :math:`25 + 20 + 20 = 65` s, so it can hide at most 65 s of down time.
-      Whether replanning pays depends on how long the device stays down,
-      which the agent does not know when it decides, and on the model's
-      latency.
+      The lecture's recordings do not show this saving because other things
+      cost more. The replan run lost 80.0 s to two cells under 3.4 V, one of
+      them by 0.01 V, which chance alone moves. The wait run held a tested
+      cell for 74.4 s, because the goal text did not say it could go to the
+      tray. One run of each cannot say which policy is faster, as the
+      lecture says.
 
 
 .. dropdown:: Exercise 4. Add a New Mismatch to the VLM Checker
@@ -340,7 +347,9 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
    **Goal**
 
    Find a mistake that the slot-by-slot cross-check in ``vlm_check.py``
-   misses, and add the checks that catch it.
+   misses, and add the checks that catch it. The lecture's live run showed
+   one already: ``decision()`` said "submit" for a kit whose total was under
+   ARIAC's window.
 
    .. raw:: html
 
@@ -348,7 +357,8 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
 
    **Parts**
 
-   Work on a copy, ``my_check.py``.
+   Work on a copy, ``my_check.py``, and run the scripted check with
+   ``python3 my_check.py``.
 
    1. Change ``RECORD`` so slot 3 holds a Li-Ion cell that read 3.62 V:
       ``RECORD = {1: 1.21, 2: 1.18, 3: 3.62, 4: 1.22}``. The stand-in VLM
@@ -359,8 +369,8 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
       checks, flag a slot whose recorded type is not the order's type
       (``ORDER_TYPE = "NIMH"``) with the verdict
       ``WRONG TYPE: order needs NIMH``.
-   3. Add a kit check at the end of ``cross_check()``: sum ``RECORD``, compare
-      the total with the NiMH kit window, print one line, and flag
+   3. Add a kit check at the end of ``cross_check()``: sum the record,
+      compare the total with the NiMH kit window, print one line, and flag
       ``"kit"`` if the total is outside it. Predict the total, then run.
    4. Run your version with the original ``RECORD``. Does anything change?
    5. Neither new check uses the VLM's reply. What does that say about
@@ -379,36 +389,37 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
          slot  vlm (conf.)       tray_status  record        verdict
          1     NIMH (0.9)        occupied     NIMH 1.21 V   agree
          2     NIMH (0.85)       occupied     NIMH 1.18 V   agree
-         3     LI_ION (0.6)      occupied     LI_ION 3.62 V   agree
+         3     LI_ION (0.6)      occupied     LI_ION 3.62 V agree
          4     empty (0.7)       occupied     NIMH 1.22 V   DISAGREE: occupancy
          decision: do not submit; slots 4 disagree
 
       The script still does not submit, but only because of slot 4. If the
       VLM had seen slot 4 correctly, it would have submitted a kit with a
       Li-Ion cell in it. Two sources agreeing with each other does not mean
-      the world matches the goal. (The column shifts and "slots 4" come from
-      the script's print format.)
+      the world matches the goal. ("slots 4" comes from the script's print
+      format.)
 
-      **2 and 3.** The changes (three blocks):
+      **2 and 3.** The changes (three blocks). Above ``RECORD``:
 
       .. code-block:: python
 
          ORDER_TYPE = "NIMH"                 # the high-priority order's cells
          KIT_MIN, KIT_MAX = 4.65, 4.95       # 4 x 1.2 V +/- 0.15 V, CellTypes.msg
 
+      In ``cross_check()``, after the type check:
+
       .. code-block:: python
 
-         elif r["cell_type"] not in ("UNKNOWN", kind):
-             verdict = "DISAGREE: type"
-         elif kind != ORDER_TYPE:
+         elif kind is not None and kind != ORDER_TYPE:
              verdict = f"WRONG TYPE: order needs {ORDER_TYPE}"
 
+      At the end of ``cross_check()``, after the loop:
+
       .. code-block:: python
 
-             total = sum(RECORD.values())
+             total = sum(v for v in record.values() if v is not None)
              ok = KIT_MIN <= total <= KIT_MAX
-             print(f"kit total {total:.2f} V, window {KIT_MIN} to {KIT_MAX} V -> "
-                   f"{'match' if ok else 'MISMATCH'}")
+             print(f"kit total {total:.2f} V, window {KIT_MIN} to {KIT_MAX} V -> {'match' if ok else 'MISMATCH'}")
              if not ok:
                  flags.append("kit")
              return flags
@@ -422,7 +433,7 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
          slot  vlm (conf.)       tray_status  record        verdict
          1     NIMH (0.9)        occupied     NIMH 1.21 V   agree
          2     NIMH (0.85)       occupied     NIMH 1.18 V   agree
-         3     LI_ION (0.6)      occupied     LI_ION 3.62 V   WRONG TYPE: order needs NIMH
+         3     LI_ION (0.6)      occupied     LI_ION 3.62 V WRONG TYPE: order needs NIMH
          4     empty (0.7)       occupied     NIMH 1.22 V   DISAGREE: occupancy
          kit total 7.23 V, window 4.65 to 4.95 V -> MISMATCH
          decision: do not submit; slots 3 and 4 and kit disagree
@@ -437,6 +448,10 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
          4     empty (0.7)       occupied     NIMH 1.22 V   DISAGREE: occupancy
          kit total 4.85 V, window 4.65 to 4.95 V -> match
          decision: do not submit; slots 3 and 4 disagree
+
+      With the Li-Ion window (14.25 V to 14.55 V) in place of the NiMH one,
+      the same kit check would have flagged the lecture's live run: its
+      total was 14.09 V.
 
       **5.** The order-type check and the kit check use only the tester
       readings your team recorded. That is the lecture's point about
@@ -454,8 +469,8 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
    **Goal**
 
    Extend the retry, wait or replan chart to the high-priority order: what
-   the new plan holds, which mismatches it can meet, and how the closed loop
-   detects the order.
+   the new plan holds, which mismatches it can meet, and when the closed
+   loop of the demonstration could notice the order.
 
    .. raw:: html
 
@@ -471,17 +486,14 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
       the step's expected effect.
    3. During the NiMH kit, a cell placed on tester 2 reads 3.59 V. Where
       does this land on the chart, and why can it happen?
-   4. In a copy of ``closed_loop.py``, add the order:
-      ``HIGH_PRIORITY_ORDER = {"START_TIME": 60, "ID": "HP1"}`` (keys as in
-      an ARIAC trial file; the time is chosen for this exercise). Add a
-      check at the top of ``before()`` that calls ``decide()`` with
-      ``goal_changed=True`` the first time the order is seen. In ``main()``,
-      when ``before()`` returns ``"REPLAN"``, log the decision and stop: the
-      stand-in model holds no NiMH plan, and building one is GP4's work.
-      Predict the time at which the run detects the order, then run it.
-   5. Move the order to ``START_TIME`` 100 s, during the conveyor wait. What
-      must your ``main()`` do so that the wait loop does not print "resume
-      the plan"? At what time is the order detected?
+   4. The orchestrator's observation, ``snapshot()`` in ``skill_tools.py``,
+      reads the simulation time, the testers, the conveyor and the three
+      AGVs. Could the demonstration's agent notice a high-priority order?
+      What would you add?
+   5. Suppose you add the order to the observation. In the replan recording,
+      obs 4 came at :math:`t` = 37.1 s and obs 5 at :math:`t` = 48.2 s. An
+      order arrives at :math:`t` = 40 s. When does the loop first see it,
+      and what share of the 150 s high-priority target is gone by then?
 
    .. dropdown:: Solution
       :color: success
@@ -489,8 +501,7 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
       **1. Replan (tag 1).** "Goal changed?" is the first question on the
       chart. A new goal makes the whole current plan the wrong plan, so
       retrying a step of it or waiting for a device it needs would spend
-      time on work that may no longer be wanted. In ``decide()``, the
-      ``if goal_changed`` test comes first for the same reason.
+      time on work that may no longer be wanted.
 
       **2.** The steps come from the challenges page. The checks use ARIAC
       interfaces named in the lecture and on the ARIAC API page.
@@ -530,87 +541,18 @@ chart to the high-priority order, on paper and then in ``closed_loop.py``.
       kit. So the exit is **replan** (the blue box above "Plan holds?"). The
       new plan must keep the Li-Ion cell out of the NiMH kit.
 
-      **4.** The order arrives at 60 s, but the run detects it at **70 s**.
-      The orchestrator checks the topic in ``before()``, between steps, and
-      ``load_tester(c2, 2)`` runs from 45 s to 70 s. So 10 s of the 150 s
-      high-priority target (``NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION``)
-      are gone before the agent reacts.
+      **4.** No. ``snapshot()`` returns ``sim_time_s``, ``testers``,
+      ``conveyor`` and ``agvs``, and no tool reads ``/high_priority_orders``,
+      so neither the model nor the guard ever sees an order. Add a reading
+      of that topic to ``snapshot()``, so every observation carries the
+      latest order, or add a tool that reads it. The first is safer: the
+      model cannot forget to call it, and the goal check in code can see the
+      order too.
 
-      One way to write it (the lines added or changed):
-
-      .. code-block:: python
-
-         HIGH_PRIORITY_ORDER = {"START_TIME": 60, "ID": "HP1"}   # chosen here
-
-      In ``Factory``, after ``self.grasp_fails``:
-
-      .. code-block:: python
-
-                 self.order_seen = False
-
-             def high_priority(self):          # /high_priority_orders
-                 if self.t >= HIGH_PRIORITY_ORDER["START_TIME"]:
-                     return HIGH_PRIORITY_ORDER["ID"]
-                 return None
-
-      At the top of ``before()``, after the ``say = ...`` line:
-
-      .. code-block:: python
-
-             order = f.high_priority()
-             if order and not f.order_seen:    # first on the chart: the goal
-                 f.order_seen = True
-                 log(f, f"check /high_priority_orders: {order} -> MISMATCH")
-                 log(f, "      expected the Li-Ion kit to stay the goal")
-                 return decide(True, False, alternative=False,
-                               world_matches=True, retries=0)
-
-      In ``main()``, in place of the first ``if before(f, step) == "WAIT":``
-      block:
-
-      .. code-block:: python
-
-                 decision = before(f, step)
-                 if decision == "WAIT":
-                     log(f, "decision WAIT: keep the plan, watch the status")
-                     while (decision := before(f, step, quiet=True)) == "WAIT":
-                         f.t += 5                  # poll every 5 s
-                     if decision is None:
-                         log(f, "check again: OPERATIONAL -> resume the plan")
-                         continue
-                 if decision == "REPLAN":          # only a goal change gets here
-                     log(f, "decision REPLAN: the goal changed (tag 1)")
-                     raise SystemExit("stop: the NiMH kit plan is GP4's work")
-
-      The order check logs even in quiet mode, so the wait loop shows it.
-      Output with ``START_TIME`` 60:
-
-      .. code-block:: text
-
-         t= 45  act load_tester(c2, 2)
-         t= 70  observe tester 2: 3.61 V, OPERATIONAL -> match
-         t= 70  check /high_priority_orders: HP1 -> MISMATCH
-         t= 70        expected the Li-Ion kit to stay the goal
-         t= 70  decision REPLAN: the goal changed (tag 1)
-         stop: the NiMH kit plan is GP4's work
-
-      **5.** The wait loop calls ``before()`` every 5 s. In the original
-      code, the loop ends on any result other than ``"WAIT"`` and then prints
-      "check again: OPERATIONAL -> resume the plan", which would be false
-      here: the conveyor is still down. The code above keeps the result in
-      ``decision`` and prints "resume" only when it is ``None``. The loop
-      polls at 90, 95 and 100 s, so the order is detected at **100 s**, the
-      time it arrives:
-
-      .. code-block:: text
-
-         t= 90  check /inspection_conveyor/status: MALFUNCTIONING -> MISMATCH
-         t= 90        expected OPERATIONAL; no other conveyor
-         t= 90  decision WAIT: keep the plan, watch the status
-         t=100  check /high_priority_orders: HP1 -> MISMATCH
-         t=100        expected the Li-Ion kit to stay the goal
-         t=100  decision REPLAN: the goal changed (tag 1)
-         stop: the NiMH kit plan is GP4's work
-
-      With ``START_TIME`` set past the end of the run, the changed script
-      prints the same output as the original, line for line.
+      **5.** The loop observes only after each tool call. The call in
+      progress at 40 s ends with obs 5, so the loop first sees the order at
+      **48.2 s**, :math:`48.2 - 40 = 8.2` s after it arrived. That is
+      :math:`8.2 / 150 = 5.5\%` of the 150 s target
+      (``NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION``), before the model has
+      even been asked. The model's call then adds its own latency: 0.61 to
+      0.85 s of wall time per call in L8's Run 1.

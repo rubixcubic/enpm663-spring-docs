@@ -14,17 +14,19 @@ Exercises
 Five take-home exercises on the L8 slides and scripts. Exercises 1 and 5 are
 paper and arithmetic: token growth for other run lengths, and model latency
 against the factory's clocks. Exercises 2 to 4 change one script each: the
-stand-in model's script, the validator and the MCP server. Predict the result
-first, write the prediction down, then run the script.
+scripted model's replies in the orchestrator, the validator and an MCP
+server. Predict the result first, write the prediction down, then run the
+script.
 
 .. note::
 
    The scripts are on the :doc:`code page <l8_code>`. Work on a copy of each
-   script, so the original still gives the outputs in the notes. Every run
-   below was made on 2026-10-12 with Python 3.12.3 (``jsonschema`` 4.10.3;
-   ``mcp`` 2.3.0 for Exercise 4). The scripted stand-in model makes every
-   output repeatable, so your outputs should match these exactly, except in
-   Exercise 2, Part D, which depends on timing.
+   script, so the original still gives the outputs in the notes. Exercises 1
+   to 3 run offline with the system Python 3.12.3 and ``jsonschema`` 4.10.3,
+   with no ARIAC and no API key. Exercise 4 runs with ``mcp`` 2.3.0 from the
+   lecture's virtual environment, and needs no ARIAC either. Every output
+   below was made on 2026-10-17. They all use scripted replies or plain code,
+   so your outputs should match these exactly.
 
 
 .. dropdown:: Exercise 1. Token Growth for Other Run Lengths
@@ -38,10 +40,11 @@ first, write the prediction down, then run the script.
    lengths the slides did not show, then check your numbers with
    ``token_growth.py``.
 
-   Use the lecture's values (all chosen for that example): :math:`F` = 2000
-   tokens sent on every call, :math:`h` = 250 tokens added by each earlier
-   step, 100 output tokens per ReAct call, $2 per million input tokens and
-   $10 per million output tokens.
+   Use the lecture's values: :math:`F` = 1264 tokens sent on every call and
+   :math:`h` = 261 tokens added by each earlier step (both measured in Run
+   1), 16 output tokens per ReAct call (Run 1's mean, rounded), and the
+   Gemini prices of ``gemini_prices.py``, $0.30 per million input tokens and
+   $2.50 per million output tokens.
 
    .. raw:: html
 
@@ -69,7 +72,7 @@ first, write the prediction down, then run the script.
    of any summary).
 
    5. For :math:`n` = 20, compute the total input tokens, and compare with the
-      87,500 of the full history.
+      74,870 of the full history.
    6. Compute the cost of that run.
 
    .. raw:: html
@@ -79,7 +82,7 @@ first, write the prediction down, then run the script.
    **Part C. Check with the script**
 
    7. In a copy of ``token_growth.py``, change both loops to
-      ``for n in (8, 21, 22, 30):`` and run it. Compare with Part A.
+      ``for n in (8, 23, 24, 30):`` and run it. Compare with Part A.
 
    .. dropdown:: Solution
       :color: success
@@ -87,48 +90,50 @@ first, write the prediction down, then run the script.
       **Question 1.** Call :math:`k` sends :math:`F + (k - 1)\,h`; the run
       sends :math:`nF + h\,n(n - 1)/2`.
 
-      - :math:`n` = 8: last call 2000 + 7 × 250 = 3750 tokens. Total
-        8 × 2000 + 250 × 8 × 7 / 2 = 16,000 + 7000 = 23,000 tokens.
-      - :math:`n` = 30: last call 2000 + 29 × 250 = 9250 tokens. Total
-        30 × 2000 + 250 × 30 × 29 / 2 = 60,000 + 108,750 = 168,750 tokens.
+      - :math:`n` = 8: last call 1264 + 7 × 261 = 1264 + 1827 = 3091 tokens.
+        Total 8 × 1264 + 261 × 8 × 7 / 2 = 10,112 + 7308 = 17,420 tokens.
+      - :math:`n` = 30: last call 1264 + 29 × 261 = 1264 + 7569 = 8833
+        tokens. Total 30 × 1264 + 261 × 30 × 29 / 2 = 37,920 + 113,535 =
+        151,455 tokens.
 
       **Question 2.**
 
-      - :math:`n` = 8: input 23,000 × 2 / 1,000,000 = $0.046. Output
-        8 × 100 = 800 tokens, 800 × 10 / 1,000,000 = $0.008. Total $0.054.
-      - :math:`n` = 30: input 168,750 × 2 / 1,000,000 = $0.3375. Output
-        30 × 100 = 3000 tokens, 3000 × 10 / 1,000,000 = $0.030. Total
-        $0.3675.
+      - :math:`n` = 8: input 17,420 × 0.30 / 1,000,000 = $0.005226. Output
+        8 × 16 = 128 tokens, 128 × 2.50 / 1,000,000 = $0.00032. Total
+        $0.005546.
+      - :math:`n` = 30: input 151,455 × 0.30 / 1,000,000 = $0.0454365.
+        Output 30 × 16 = 480 tokens, 480 × 2.50 / 1,000,000 = $0.0012. Total
+        $0.0466365.
 
-      **Question 3.** **22 steps.**
+      **Question 3.** **24 steps.**
 
-      1. :math:`n` = 21: 21 × 2000 + 250 × 21 × 20 / 2 = 42,000 + 52,500
-         = 94,500 tokens, below 100,000.
-      2. :math:`n` = 22: 22 × 2000 + 250 × 22 × 21 / 2 = 44,000 + 57,750
-         = 101,750 tokens, above 100,000.
+      1. :math:`n` = 23: 23 × 1264 + 261 × 23 × 22 / 2 = 29,072 + 66,033 =
+         95,105 tokens, below 100,000.
+      2. :math:`n` = 24: 24 × 1264 + 261 × 24 × 23 / 2 = 30,336 + 72,036 =
+         102,372 tokens, above 100,000.
 
-      **Question 4.** For :math:`n` = 20: 250 × 20 × 19 / 2 = 47,500. For
-      :math:`n` = 40: 250 × 40 × 39 / 2 = 195,000. The ratio is
-      195,000 / 47,500 = 4.1, so "about four times" holds. It is not exactly
+      **Question 4.** For :math:`n` = 20: 261 × 20 × 19 / 2 = 49,590. For
+      :math:`n` = 40: 261 × 40 × 39 / 2 = 203,580. The ratio is
+      203,580 / 49,590 = 4.1, so "about four times" holds. It is not exactly
       4 because :math:`n(n - 1)` is not exactly :math:`n^2`.
 
       **Question 5.**
 
       1. Calls 1 to 6 still send all earlier steps (at most 5):
-         6 × 2000 + 250 × (0 + 1 + 2 + 3 + 4 + 5) = 12,000 + 3750
-         = 15,750 tokens.
+         6 × 1264 + 261 × (0 + 1 + 2 + 3 + 4 + 5) = 7584 + 3915 = 11,499
+         tokens.
       2. Calls 7 to 20, 14 calls, each send :math:`F + 5h`
-         = 2000 + 5 × 250 = 3250 tokens: 14 × 3250 = 45,500 tokens.
-      3. Total 15,750 + 45,500 = **61,250 tokens**, which is
-         87,500 − 61,250 = 26,250 fewer, or 26,250 / 87,500 = 30% less.
+         = 1264 + 5 × 261 = 2569 tokens: 14 × 2569 = 35,966 tokens.
+      3. Total 11,499 + 35,966 = **47,465 tokens**, which is
+         74,870 − 47,465 = 27,405 fewer, or 27,405 / 74,870 = 37% less.
 
       With a fixed window the input of each call stops growing after step 6,
       so the total grows in a straight line with :math:`n`, not with its
       square.
 
-      **Question 6.** Input 61,250 × 2 / 1,000,000 = $0.1225, plus the same
-      $0.020 of output (2000 tokens): **$0.1425**, against $0.195 with the
-      full history.
+      **Question 6.** Input 47,465 × 0.30 / 1,000,000 = $0.0142395, plus the
+      same $0.0008 of output (320 tokens): **$0.0150395**, against $0.023261
+      with the full history.
 
       **Question 7.** The output of the edited script:
 
@@ -136,20 +141,21 @@ first, write the prediction down, then run the script.
 
          ReAct, one call per step
          steps last call   input output  cost $
-             8      3750   23000    800  0.0540
-            21      7000   94500   2100  0.2100
-            22      7250  101750   2200  0.2255
-            30      9250  168750   3000  0.3675
+             8      3091   17420    128  0.0055
+            23      7006   95105    368  0.0295
+            24      7267  102372    384  0.0317
+            30      8833  151455    480  0.0466
          Plan-and-execute, one plan and one replan
          steps     calls   input output  cost $
-             8         2    4000    640  0.0144
-            21         2    4000   1680  0.0248
-            22         2    4000   1760  0.0256
-            30         2    4000   2400  0.0320
+             8         2    2528    640  0.0024
+            23         2    2528   1840  0.0054
+            24         2    2528   1920  0.0056
+            30         2    2528   2400  0.0068
 
-      The ReAct rows match Part A. Plan-and-execute still sends 4000 input
-      tokens at every length; only its output (2 calls × :math:`n` steps ×
-      40 tokens) grows.
+      The ReAct rows match Part A; the script rounds the cost to four
+      decimals. Plan-and-execute still sends 2528 input tokens at every
+      length; only its output (2 calls × :math:`n` steps × 40 tokens, the
+      chosen ``PLAN_OUT``) grows.
 
 
 .. dropdown:: Exercise 2. Make the Loop Hit Each Stop Condition
@@ -159,15 +165,24 @@ first, write the prediction down, then run the script.
 
    **Goal**
 
-   Change the stand-in model's script in ``orchestrator.py`` so that the loop
-   ends for each reason it checks, and find a case where the stop reason is
-   not the one you expect.
+   Change the scripted model's replies in ``orchestrator.py`` so that the
+   loop ends for each reason it checks, and find a case where the stop
+   reason is not the one you expect.
 
-   In a copy of ``orchestrator.py``, replace the two runs in the
-   ``__main__`` block with your own ``ScriptedModel([...])`` lists. Use the
-   helper ``move(agv, station)`` for tool calls, ``{"text": "done"}`` for a
-   reply with no tool call, and keep ``MAX_STEPS`` = 6 and ``MAX_INVALID``
-   = 2. Give each script at least as many replies as the loop will ask for.
+   The loop runs offline on the stand-in factory, ``FakeTools``: each skill
+   call adds 20 s of simulation time, and the first cell reads 3.61 V
+   (chosen for this example). In a copy, ``my_loop.py``, replace the line
+   ``RUN2_REPLIES = ...`` with your own list, and run it as Run 2:
+
+   .. code-block:: bash
+
+      python3 my_loop.py --fake --runs 2
+
+   Use the helper ``act(name, **args)`` for a tool call, ``{"text":
+   "done"}`` for a reply with no tool call, and keep ``MAX_STEPS`` = 15 and
+   ``MAX_INVALID`` = 2. ``DRY_REPLIES`` holds the five replies that do the
+   whole task. Give each list at least as many replies as the loop will ask
+   for: ``ScriptedModel`` raises ``IndexError`` when it runs out.
 
    .. raw:: html
 
@@ -175,13 +190,16 @@ first, write the prediction down, then run the script.
 
    **Part A. Each stop reason**
 
-   1. Write a script that ends with ``stop: step limit``. How many calls does
+   1. Write a list that ends with ``stop: step limit``. How many calls does
       the loop make?
-   2. Write a script that ends with ``2 invalid outputs in a row`` because of
-      a tool name that does not exist, for example ``submit-kit``.
-   3. Write a script whose first reply is ``{"text": "done"}``, before any
-      move. What does the orchestrator send back? Does that reply count as an
-      invalid output?
+   2. Write a list that ends with ``2 invalid outputs in a row`` because of
+      a tool name that does not exist, for example ``submit_kit``.
+   3. Write a list whose first reply is ``{"text": "done"}``, followed by
+      ``DRY_REPLIES``. ``RUN2_REPLIES`` is defined above ``DRY_REPLIES``, so
+      delete the old ``RUN2_REPLIES`` line and put yours right after the
+      ``DRY_REPLIES`` definition; otherwise Python raises ``NameError``. What
+      does the orchestrator send back? Does that reply
+      count as an invalid output?
 
    .. raw:: html
 
@@ -189,12 +207,14 @@ first, write the prediction down, then run the script.
 
    **Part B. Invalid, valid, invalid**
 
-   4. Run this script: ship ``agv2``, move ``agv1`` to ``ASSEMBLY``, ship
-      ``agv2``, move ``agv1`` to ``INSPECTION``, ship ``agv2``, ship
-      ``agv1``. Three calls are refused. Why does the run not stop on
-      ``MAX_INVALID``?
-   5. After call 6, ``agv1`` is at ``SHIPPING``. What is the stop reason, and
-      why?
+   4. Run this list: robot 2 picks from tester 1, robot 1 picks from the
+      conveyor, robot 2 picks from tester 1, robot 1 places on tester 1,
+      robot 2 places in agv1 slot 1, robot 2 picks from tester 1, robot 2
+      places in agv1 slot 1, ``done``. Three calls are refused. Why does the
+      run not stop on ``MAX_INVALID``?
+   5. Run ``DRY_REPLIES[:4] + [act("robot1_move_home")] * 11`` (again on a
+      line after the ``DRY_REPLIES`` definition): the task, then no "done". After call 4, agv1 slot 1 holds the tested cell. What
+      is the stop reason, and why?
 
    .. raw:: html
 
@@ -202,8 +222,8 @@ first, write the prediction down, then run the script.
 
    **Part C. Check the goal after every result**
 
-   6. Change ``run()`` so it checks ``goal_check(factory)`` right after it
-      prints each result. Rerun question 4's script and Run 1. What changes?
+   6. Change ``run()`` so it checks ``goal_check(snap, rec)`` right after it
+      prints each ``obs`` line. Rerun question 5's list. What changes?
 
    .. raw:: html
 
@@ -211,146 +231,182 @@ first, write the prediction down, then run the script.
 
    **Part D. A time limit**
 
-   7. The lecture lists a fourth stop condition that the demo does not check:
-      the time limit. Add one: record ``start = time.monotonic()`` before the
-      loop, and at the top of each step return ``"time limit"`` once more than
-      ``TIME_LIMIT`` = 0.5 s has passed (chosen for this exercise). Make the
-      stand-in slow with ``time.sleep(0.2)`` in ``ScriptedModel.__call__``,
-      and give it question 1's script. How many calls run?
+   7. The lecture lists a stop condition that the demo does not check: the
+      trial's time limit. Add one in simulation time, as ARIAC counts it: at
+      the top of each step, return ``"time limit"`` once
+      ``snap["sim_time_s"]`` is above ``TIME_LIMIT_S`` = 50 s (chosen for
+      this exercise). Run the whole task with ``--runs dry``. How many calls
+      run?
 
    .. dropdown:: Solution
       :color: success
 
-      **Question 1.** Six valid moves that never ship ``agv1``, and no
+      **Question 1.** Fifteen valid calls that never place a cell, and no
       "done":
 
       .. code-block:: python
 
-         ScriptedModel([move(1, "ASSEMBLY"), move(1, "INSPECTION")] * 3)
+         RUN2_REPLIES = [act("robot1_move_home")] * 15
 
-      The loop makes **6 calls**, all ``SUCCEEDED``, then stops. The last
+      The loop makes **15 calls**, all ``SUCCESS``, then stops. The last
       lines of the output:
 
       .. code-block:: text
 
-         call 6: 11 messages, 1604 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "INSPECTION"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "INSPECTION"}
+         call 15: 29 messages; scripted
+           model:  robot1_move_home({})
+           result: {"code": "SUCCESS", "holding": "NOTHING", "message": "parked", "attempts": 1, "wall_s": 0.0}
+         obs 15:  t=300.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots ---- | robot 1 NOTHING, robot 2 NOTHING
          stop: step limit
 
-      **Question 2.** ``ScriptedModel([{"tool": "submit-kit", "args": {}}] * 2)``.
-      The guard's first check refuses any tool that is not ``move-agv``:
+      **Question 2.** ``RUN2_REPLIES = [act("submit_kit")] * 2``. The first
+      step of ``check_call()`` refuses a tool that is not declared:
 
       .. code-block:: text
 
-           user:   {"goal": "ship the kit on agv1", "state": {"agv1": "INSPECTION, 4 cells", "agv2": "INSPECTION, 3 cells", "agv3": "RECYCLING, 0 cells"}}
-         call 1: 1 messages, 666 chars
-           model:  {"tool": "submit-kit", "args": {}}
-           orch:   {"error": "guard: unknown tool 'submit-kit'"}
-         call 2: 3 messages, 812 chars
-           model:  {"tool": "submit-kit", "args": {}}
-           orch:   {"error": "guard: unknown tool 'submit-kit'"}
+         === Run 2 (scripted model: fixed replies) ===
+         goal:   Put one Li-Ion cell from the conveyor into agv1 slot 1. Test its voltage on tester 1 first.
+         obs 0:  t=0.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots ---- | robot 1 NOTHING, robot 2 NOTHING
+         call 1: 1 messages; scripted
+           model:  submit_kit({})
+           orch:   {"error": "refused: unknown tool 'submit_kit'"}
+         obs 1:  t=0.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots ---- | robot 1 NOTHING, robot 2 NOTHING
+         call 2: 3 messages; scripted
+           model:  submit_kit({})
+           orch:   {"error": "refused: unknown tool 'submit_kit'"}
          stop: 2 invalid outputs in a row
 
-      **Question 3.** With
-      ``ScriptedModel([{"text": "done"}, move(1, "SHIPPING"), {"text": "done"}])``:
+      No robot moved, so the simulation time stays at 0.0 s.
+
+      **Question 3.** With ``RUN2_REPLIES = [{"text": "done"}] +
+      DRY_REPLIES`` after the ``DRY_REPLIES`` definition, the first lines of
+      the output:
 
       .. code-block:: text
 
-           user:   {"goal": "ship the kit on agv1", "state": {"agv1": "INSPECTION, 4 cells", "agv2": "INSPECTION, 3 cells", "agv3": "RECYCLING, 0 cells"}}
-         call 1: 1 messages, 666 chars
-           model:  {"text": "done"}
-           orch:   {"error": "goal not reached"}
-         call 2: 3 messages, 778 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "SHIPPING"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "SHIPPING"}
-         call 3: 5 messages, 964 chars
-           model:  {"text": "done"}
-         stop: goal reached
+         call 1: 1 messages; scripted
+           model:  text 'done'
+           orch:   goal not reached (checked in code)
+         call 2: 3 messages; scripted
+           model:  robot1_pick_from_conveyor({})
 
-      The orchestrator checks the goal in code, finds ``agv1`` still at
-      ``INSPECTION``, and sends back ``{"error": "goal not reached"}``. It is
-      **not** counted as invalid: ``invalid`` goes up only when the guard
-      refuses a tool call. This is the warning from the slides in action: the
-      model said "done", and the code decided it was not.
+      and the run ends ``call 6: ... model: text 'done'``, then
+      ``stop: goal reached``. The orchestrator checks the goal in code, finds
+      slot 1 empty, and sends back ``"error": "goal not reached"`` with the
+      observation and the record. It is **not** counted as invalid:
+      ``invalid`` goes up only when ``check_call()`` refuses a tool call.
+      This is the warning from the slides in action: the model said "done",
+      and the code decided it was not.
 
-      **Question 4.** The output:
-
-      .. code-block:: text
-
-           user:   {"goal": "ship the kit on agv1", "state": {"agv1": "INSPECTION, 4 cells", "agv2": "INSPECTION, 3 cells", "agv3": "RECYCLING, 0 cells"}}
-         call 1: 1 messages, 666 chars
-           model:  {"tool": "move-agv", "args": {"agv": 2, "station": "SHIPPING"}}
-           orch:   {"error": "guard: agv2 holds 3 of 4 cells"}
-         call 2: 3 messages, 839 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "ASSEMBLY"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "ASSEMBLY"}
-         call 3: 5 messages, 1025 chars
-           model:  {"tool": "move-agv", "args": {"agv": 2, "station": "SHIPPING"}}
-           orch:   {"error": "guard: agv2 holds 3 of 4 cells"}
-         call 4: 7 messages, 1198 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "INSPECTION"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "INSPECTION"}
-         call 5: 9 messages, 1388 chars
-           model:  {"tool": "move-agv", "args": {"agv": 2, "station": "SHIPPING"}}
-           orch:   {"error": "guard: agv2 holds 3 of 4 cells"}
-         call 6: 11 messages, 1561 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "SHIPPING"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "SHIPPING"}
-         stop: step limit
-
-      ``MAX_INVALID`` counts invalid outputs **in a row**. Each valid call
-      runs ``invalid = 0``, so the count never gets past 1. Half of this
-      run's calls were refused, and the limit never fired. A team that wants
-      to catch this pattern needs a second limit on the total number of
-      invalid outputs.
-
-      **Question 5.** ``step limit``, even though ``agv1`` reached
-      ``SHIPPING`` at call 6. The demo checks the goal only when the model
-      replies with no tool call, and this model never said "done" before the
-      sixth step ended the loop.
-
-      **Question 6.** The change, after the line that prints ``orch``:
+      **Question 4.** The list:
 
       .. code-block:: python
 
-         if goal_check(factory):
-             return "goal reached"
+         RUN2_REPLIES = [act("robot2_pick_from_tester", tester=1), act("robot1_pick_from_conveyor"),
+                         act("robot2_pick_from_tester", tester=1), act("robot1_place_on_tester", tester=1),
+                         act("robot2_place_in_slot", agv=1, slot=1), act("robot2_pick_from_tester", tester=1),
+                         act("robot2_place_in_slot", agv=1, slot=1), {"text": "done"}]
 
-      Question 4's script now ends with ``stop: goal reached`` after call 6
-      (the same six calls as above). Run 1 now ends after call 2:
+      The model and orchestrator lines of the output:
 
       .. code-block:: text
 
-           user:   {"goal": "ship the kit on agv1", "state": {"agv1": "INSPECTION, 4 cells", "agv2": "INSPECTION, 3 cells", "agv3": "RECYCLING, 0 cells"}}
-         call 1: 1 messages, 666 chars
-           model:  {"tool": "move-agv", "args": {"agv": 2, "station": "SHIPPING"}}
-           orch:   {"error": "guard: agv2 holds 3 of 4 cells"}
-         call 2: 3 messages, 839 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "SHIPPING"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "SHIPPING"}
+         call 1: 1 messages; scripted
+           model:  robot2_pick_from_tester({"tester": 1})
+           orch:   {"error": "refused: tester 1 is empty (0.00 V)"}
+         call 2: 3 messages; scripted
+           model:  robot1_pick_from_conveyor({})
+           result: {"code": "SUCCESS", "holding": "CELL", "message": "", "attempts": 1, "wall_s": 0.0}
+         call 3: 5 messages; scripted
+           model:  robot2_pick_from_tester({"tester": 1})
+           orch:   {"error": "refused: tester 1 is empty (0.00 V)"}
+         call 4: 7 messages; scripted
+           model:  robot1_place_on_tester({"tester": 1})
+           result: {"code": "SUCCESS", "holding": "NOTHING", "message": "", "attempts": 1, "wall_s": 0.0}
+         call 5: 9 messages; scripted
+           model:  robot2_place_in_slot({"agv": 1, "slot": 1})
+           orch:   {"error": "refused: robot 2 holds NOTHING, needs CELL"}
+         call 6: 11 messages; scripted
+           model:  robot2_pick_from_tester({"tester": 1})
+           result: {"code": "SUCCESS", "holding": "CELL", "message": "", "attempts": 1, "wall_s": 0.0}
+         call 7: 13 messages; scripted
+           model:  robot2_place_in_slot({"agv": 1, "slot": 1})
+           result: {"code": "SUCCESS", "holding": "NOTHING", "message": "", "attempts": 1, "wall_s": 0.0}
+         call 8: 15 messages; scripted
+           model:  text 'done'
          stop: goal reached
 
-      The run saves the third call, and with a real model the cost and the
-      wait of that call. Either design is valid; what matters is that the
-      goal check is code, not the model's word.
+      ``MAX_INVALID`` counts invalid outputs **in a row**. Each valid call
+      sets ``invalid = 0``, so the count never gets past 1. Three of this
+      run's eight calls were refused, and the limit never fired. A team that
+      wants to catch this pattern needs a second limit on the total number
+      of invalid outputs.
 
-      **Question 7.** **3 calls**, then ``stop: time limit``. Each call
-      sleeps 0.2 s. At the top of step 4, about 3 × 0.2 = 0.6 s have passed,
-      more than 0.5 s, so the loop stops before the fourth call. The output
-      ends with:
+      **Question 5.** ``stop: step limit``, after 15 calls, even though
+      ``obs 4`` already shows ``slots 1---``. The demo checks the goal only
+      when the model replies with no tool call, and this model never said
+      "done". Its last eleven calls parked robot 1 again and again:
 
       .. code-block:: text
 
-         call 3: 5 messages, 1042 chars
-           model:  {"tool": "move-agv", "args": {"agv": 1, "station": "ASSEMBLY"}}
-           orch:   {"status": "SUCCEEDED", "agv": 1, "station": "ASSEMBLY"}
+         obs 4:  t=80.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots 1--- | robot 1 NOTHING, robot 2 NOTHING
+         call 5: 9 messages; scripted
+           model:  robot1_move_home({})
+         ...
+         call 15: 29 messages; scripted
+           model:  robot1_move_home({})
+           result: {"code": "SUCCESS", "holding": "NOTHING", "message": "parked", "attempts": 1, "wall_s": 0.0}
+         obs 15:  t=300.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots 1--- | robot 1 NOTHING, robot 2 NOTHING
+         stop: step limit
+
+      **Question 6.** The change, right after the line that prints ``obs``:
+
+      .. code-block:: python
+
+         if goal_check(snap, rec):
+             return "goal reached"
+
+      Question 5's list now ends after call 4:
+
+      .. code-block:: text
+
+         call 4: 7 messages; scripted
+           model:  robot2_place_in_slot({"agv": 1, "slot": 1})
+           result: {"code": "SUCCESS", "holding": "NOTHING", "message": "", "attempts": 1, "wall_s": 0.0}
+         obs 4:  t=80.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots 1--- | robot 1 NOTHING, robot 2 NOTHING
+         stop: goal reached
+
+      The run saves eleven calls, and with a real model the cost and the
+      wait of each. Either design is valid; what matters is that the goal
+      check is code, not the model's word.
+
+      **Question 7.** **3 calls**, then ``stop: time limit``. The change:
+
+      .. code-block:: python
+
+         TIME_LIMIT_S = 50    # simulation s, chosen for this exercise
+
+      and, as the first lines inside ``for step in range(...)``:
+
+      .. code-block:: python
+
+         if snap["sim_time_s"] > TIME_LIMIT_S:
+             return "time limit"
+
+      Each skill call adds 20 s. After call 2 the time is 40 s, under 50 s,
+      so call 3 runs; after call 3 it is 60 s, so the loop stops before call
+      4. The output ends with:
+
+      .. code-block:: text
+
+         call 3: 5 messages; scripted
+           model:  robot2_pick_from_tester({"tester": 1})
+           result: {"code": "SUCCESS", "holding": "CELL", "message": "", "attempts": 1, "wall_s": 0.0}
+         obs 3:  t=60.0 s | tester 1 0.00 V OPERATIONAL | tester 2 0.00 V OPERATIONAL | conveyor OPERATIONAL | agv1 INSPECTION slots ---- | robot 1 NOTHING, robot 2 CELL
          stop: time limit
 
-      Three runs on the course machine gave 3 calls each time. The count
-      depends on timing, so a machine that is much slower could differ; the
-      margin here is 0.1 s on each side. In GP4 the time to compare against
-      is ARIAC's simulation time (``TIME_LIMIT``), not the wall clock.
+      Robot 2 still holds the cell when the loop stops. In GP4 the time to
+      compare against is ARIAC's simulation time (``TIME_LIMIT``).
 
 
 .. dropdown:: Exercise 3. Extend the Validator with a New Semantic Rule
@@ -517,7 +573,7 @@ first, write the prediction down, then run the script.
       already holds. The same lesson as the seven outputs in class.
 
 
-.. dropdown:: Exercise 4. Add a Tool to the MCP Server
+.. dropdown:: Exercise 4. Serve a Kit Tool Through MCP
    :icon: number
    :class-container: sd-border-primary
    :class-title: sd-font-weight-bold
@@ -525,8 +581,13 @@ first, write the prediction down, then run the script.
    **Goal**
 
    The lecture says the orchestrator should do the voltage sums, and that "a
-   tool that computes the window is the other option". Add that tool to
-   ``agv_mcp_server.py``, then list it and call it from the client.
+   tool that computes the window is the other option". Write that tool, serve
+   it through MCP the way ``skills_mcp_server.py`` serves the skill tools,
+   then list it and call it from a client.
+
+   The skill tools need ARIAC, so this server holds only the new tool. Run it
+   with the ``mcp`` package 2.3.0, for example from the lecture's virtual
+   environment, ``/opt/enpm663_lecture_venv``, in the course container.
 
    .. raw:: html
 
@@ -534,13 +595,15 @@ first, write the prediction down, then run the script.
 
    **Part A. The tool**
 
-   1. In a copy of ``agv_mcp_server.py``, add a tool named ``kit-window``.
-      It takes ``voltages``, a list of exactly three floats, and returns the
-      kit total and the range the fourth Li-Ion cell must be in (the kit
-      window, clipped to the cell range). Use ``Annotated`` and ``Field`` as
-      ``move`` does to require exactly three values.
-   2. Before you run anything, predict the input schema the server will
-      generate for ``voltages``.
+   1. Write ``kit_mcp_server.py``. Define ``kit_window(voltages)``: it takes a
+      list of exactly three floats, and returns the kit total and the range
+      the fourth Li-Ion cell must read (the kit window, clipped to the cell
+      range). Use ``Annotated`` and pydantic's ``Field`` to require exactly
+      three values. Register it as ``skills_mcp_server.py`` registers each
+      skill tool: ``server.tool(name=..., description=...)(function)``.
+   2. Name the tool ``kit_window``, not ``kit-window``. Why?
+   3. Before you run anything, predict the input schema MCP will write for
+      ``voltages``.
 
    .. raw:: html
 
@@ -548,94 +611,92 @@ first, write the prediction down, then run the script.
 
    **Part B. The calls**
 
-   3. In a copy of ``agv_mcp_client.py``, call ``kit-window`` with
-      ``[3.55, 3.62, 3.70]`` and with ``[3.55, 3.62]``. Predict
-      ``is_error`` and the result of each call.
-   4. Why is a tool for this sum better than writing the three voltages into
+   4. Write ``kit_mcp_client.py`` from ``skills_mcp_client.py``: start
+      ``kit_mcp_server.py`` in place of the skills server, drop the
+      ``sim_session`` lines (no ARIAC here), and call ``kit_window`` with
+      ``[3.55, 3.62, 3.70]`` and with ``[3.55, 3.62]``. Predict ``is_error``
+      and the result of each call.
+   5. Why is a tool for this sum better than writing the three voltages into
       the prompt?
 
    .. dropdown:: Solution
       :color: success
 
-      **Question 1.** Add this after the ``move`` tool in the server:
+      **Question 1.** The server:
 
       .. code-block:: python
 
-         @server.tool(name="kit-window")
-         def kit_window(voltages: Annotated[list[float],
-                                            Field(min_length=3, max_length=3)]) -> dict:
-             """Range the fourth Li-Ion cell must be in, given three cell voltages."""
+         """Exercise 4: one tool, kit_window, served through MCP over stdio. No ARIAC."""
+         from typing import Annotated
+
+         from mcp.server.mcpserver import MCPServer
+         from pydantic import Field
+
+         KIT_MIN, KIT_MAX = 14.25, 14.55    # 4 x 3.6 V +/- 0.15 V (CellTypes.msg)
+         CELL_MIN, CELL_MAX = 3.4, 3.8      # 3.6 V +/- 0.2 V (CellTypes.msg)
+
+
+         def kit_window(voltages: Annotated[list[float], Field(min_length=3, max_length=3)]) -> dict:
              total = sum(voltages)
-             low = max(14.25 - total, 3.4)     # kit minimum, raised to the cell minimum
-             high = min(14.55 - total, 3.8)    # kit maximum, capped at the cell maximum
-             return {"total": round(total, 2), "low": round(low, 2),
-                     "high": round(high, 2)}
+             low = max(KIT_MIN - total, CELL_MIN)     # kit minimum, raised to the cell minimum
+             high = min(KIT_MAX - total, CELL_MAX)    # kit maximum, capped at the cell maximum
+             return {"total": round(total, 2), "low": round(low, 2), "high": round(high, 2)}
 
-      **Question 3, client change.** Add a list next to ``CALLS``:
 
-      .. code-block:: python
+         server = MCPServer("kit-tools")
+         server.tool(name="kit_window",
+                     description="The range of voltages the fourth Li-Ion cell must read, "
+                                 "given the three cells already in the kit.")(kit_window)
 
-         KIT_CALLS = [[3.55, 3.62, 3.70], [3.55, 3.62]]
+         if __name__ == "__main__":
+             server.run("stdio")
 
-      and, after the ``move-agv`` loop, a second loop that does the same for
-      ``kit-window``:
+      **Question 2.** The same tool may also go to Gemini as a function
+      declaration, and the Gemini guide says to name functions "without
+      spaces, periods, or dashes". That is why L6's ``move-agv`` is the tool
+      ``move_agv`` in this lecture.
 
-      .. code-block:: python
-
-         for volts in KIT_CALLS:
-             args = {"voltages": volts}
-             result = await client.call_tool("kit-window", args)
-             print("call:", json.dumps(args))
-             text = result.content[0].text
-             print("  is_error:", result.is_error)
-             if result.is_error:
-                 lines = text.splitlines()
-                 print("  result:", lines[0])
-                 print("   ", lines[2].split("[")[0].strip())
-             else:
-                 print("  result:", json.dumps(json.loads(text)))
-
-      Run it with ``python3 agv_mcp_client.py`` in the virtual environment.
-      The output (``mcp`` 2.3.0):
-
-      .. code-block:: text
-
-         tool: move-agv
-           description: Move one AGV to a station (ARIAC /agvN/move).
-           input_schema, type: object
-             agv: {"maximum": 3, "minimum": 1, "title": "Agv", "type": "integer"}
-             station: {"enum": ["INSPECTION", "ASSEMBLY", "SHIPPING", "RECYCLING"], "title": "Station", "type": "string"}
-             required: ["agv", "station"]
-         tool: kit-window
-           description: Range the fourth Li-Ion cell must be in, given three cell voltages.
-           input_schema, type: object
-             voltages: {"items": {"type": "number"}, "maxItems": 3, "minItems": 3, "title": "Voltages", "type": "array"}
-             required: ["voltages"]
-         call: {"agv": 1, "station": "SHIPPING"}
-           is_error: False
-           result: {"status": "SUCCEEDED", "agv": 1, "station": "SHIPPING"}
-         call: {"agv": 1, "station": "ASSEMBLY"}
-           is_error: False
-           result: {"status": "REJECTED", "reason": "no ARIAC path SHIPPING to ASSEMBLY"}
-         call: {"agv": 4, "station": "SHIPPING"}
-           is_error: True
-           result: Error executing tool move-agv: 1 validation error for moveArguments
-             Input should be less than or equal to 3
-         call: {"voltages": [3.55, 3.62, 3.7]}
-           is_error: False
-           result: {"total": 10.87, "low": 3.4, "high": 3.68}
-         call: {"voltages": [3.55, 3.62]}
-           is_error: True
-           result: Error executing tool kit-window: 1 validation error for kit_windowArguments
-             List should have at least 3 items after validation, not 2
-
-      **Question 2.** As with ``move``, the server wrote the schema from the
+      **Question 3.** As for the skill tools, MCP wrote the schema from the
       type hints: ``list[float]`` became ``"type": "array"`` with
       ``"items": {"type": "number"}``, and ``Field(min_length=3,
       max_length=3)`` became ``minItems`` 3 and ``maxItems`` 3. The
-      description is the docstring.
+      ``tool:`` line of the output under Question 4 shows it.
 
-      **Question 3.**
+      **Question 4, the client.** The lines that differ from
+      ``skills_mcp_client.py``:
+
+      .. code-block:: python
+
+         SERVER = StdioServerParameters(command=sys.executable, args=["kit_mcp_server.py"], env=dict(os.environ))
+         CALLS = [("kit_window", {"voltages": [3.55, 3.62, 3.70]}),
+                  ("kit_window", {"voltages": [3.55, 3.62]})]
+
+      and the ``__main__`` block is only ``asyncio.run(main())``. Run it from
+      the folder that holds both files:
+
+      .. code-block:: bash
+
+         /opt/enpm663_lecture_venv/bin/python kit_mcp_client.py
+
+      The output (``mcp`` 2.3.0, run on 2026-10-17):
+
+      .. code-block:: text
+
+         tool: kit_window
+             voltages: {"items": {"type": "number"}, "maxItems": 3, "minItems": 3, "title": "Voltages", "type": "array"}
+         call: kit_window({"voltages": [3.55, 3.62, 3.7]})
+           is_error: False
+           result: {"total": 10.87, "low": 3.4, "high": 3.68}
+         call: kit_window({"voltages": [3.55, 3.62]})
+           is_error: True
+           result: Error executing tool kit_window: 1 validation error for kit_windowArguments
+           result: voltages
+           result:   List should have at least 3 items after validation, not 2 [type=too_short, input_value=[3.55, 3.62], input_type=list]
+
+      The server also wrote one line to standard error:
+      ``Tool 'kit_window' rejected arguments: ['voltages']``.
+
+      **Question 4, the two calls.**
 
       1. Three voltages: the tool runs, ``is_error`` is ``False``. The total
          is 3.55 + 3.62 + 3.70 = 10.87 V. Low: 14.25 − 10.87 = 3.38 V,
@@ -644,12 +705,11 @@ first, write the prediction down, then run the script.
          lecture's numbers.
       2. Two voltages: the server's argument check refuses the call before
          the function runs, so ``is_error`` is ``True``, as for AGV 4 in the
-         lecture. The error names ``kit_windowArguments``: the server names
-         the check after the Python function, not after the tool.
+         lecture.
 
       ``json.dumps`` prints the input 3.70 as ``3.7``; it is the same number.
 
-      **Question 4.** The model chooses; code does the sums. A tool returns a
+      **Question 5.** The model chooses; code does the sums. A tool returns a
       number the code computed, so a model's arithmetic slip cannot put a bad
       cell in the kit. The model only has to read "3.4 to 3.68" and pick a
       cell, and the orchestrator's semantic check (Exercise 3) still checks

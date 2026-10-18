@@ -2,132 +2,222 @@
 Code
 ====================================================
 
-L9 has two short Python scripts. Neither one needs ROS, a simulator or a
-model: both run in plain Python and print a trace. The outputs below come from
-running them with Python 3.12.3 and jsonschema 4.10.3.
+L9 has two Python scripts. They build on the L8 code, so keep the course
+layout: ``lecture9/code/`` next to ``lecture8/code/``, with the outputs in
+``lecture9/outputs/``. ``closed_loop.py`` and ``vlm_check.py`` import the L8
+files from ``../../lecture8/code``.
+
+- **Offline**, with the system Python and no ARIAC: the scripted VLM check,
+  ``python3 vlm_check.py``. Its output repeats exactly.
+- **Against ARIAC**, in the course container, with Gemini
+  (``gemini-3.5-flash-lite``): the closed loop, with the replan policy and
+  with the wait policy, and the live VLM check at the end of the replan run.
+  These outputs were recorded once, on 2026-10-17. A rerun gives different
+  answers.
+
+Every output on this page is copied from the files the scripts wrote, the
+same files the slides show.
 
 .. important::
 
-   **Both scripts use scripted stand-ins.** ``stand_in_vlm()`` in
-   ``vlm_check.py`` and ``stand_in_model()`` in ``closed_loop.py`` ignore the
-   prompt and return canned replies in a fixed order. The replies were written
-   to contain the mistakes the checks must catch. A real model's answers vary.
-   The ``Factory`` class in ``closed_loop.py`` stands in for the ARIAC topics
-   and the robot skills. Its payloads copy ARIAC 2025, but nothing moves.
-
-.. note::
-
-   **What you need.** Python 3 and the ``jsonschema`` package. On Ubuntu 24.04:
-   ``sudo apt install python3-jsonschema``. No ROS 2 setup is needed for these
-   two scripts. Go to the folder that holds them:
-
-   .. code-block:: bash
-
-      cd lecture9/code
+   **Two kinds of model.** ``stand_in_vlm()`` in ``vlm_check.py`` is a
+   scripted stand-in that ignores the prompt and returns canned replies in a
+   fixed order, written to hold the mistakes the checks must catch. Its
+   ``TRAY_STATUS`` and ``RECORD`` are stand-in values, chosen for this
+   example. The closed loop and the live VLM check call Gemini, a real
+   model, on the real ARIAC camera image and topics.
 
 
 .. list-table::
    :header-rows: 1
-   :widths: 30 45 25
+   :widths: 30 50 20
    :class: compact-table
 
-   * - **Script**
-     - **What it shows**
-     - **Notes section**
+   * - **File**
+     - **What it does**
+     - **Runs**
    * - :download:`vlm_check.py <code/vlm_check.py>`
-     - A weak prompt, a structured prompt with a schema and one re-prompt, and
-       a slot-by-slot cross-check of the VLM's record before a high-priority
-       submit.
-     - :ref:`l9-checking`
+     - The prompts, the schema, ``check()`` and ``cross_check()``. Run on its
+       own, it plays the scripted run: a weak prompt, a structured prompt with
+       one re-prompt, and a cross-check before a high-priority submit.
+       ``live()`` is the live check that ``closed_loop.py`` calls.
+     - offline; ``live()`` on ARIAC
    * - :download:`closed_loop.py <code/closed_loop.py>`
-     - A closed agent loop that waits through a conveyor malfunction, replans
-       around a broken tester and retries a lost grasp. ``--wait`` waits for
-       the tester instead.
-     - :ref:`l9-demo`
+     - The L8 orchestrator with Gemini fills agv1's four slots while voltage
+       tester 1 malfunctions, under a replan or a wait policy, then prints
+       the kit total.
+     - ARIAC
+   * - :download:`run_sim_demo.sh <code/run_sim_demo.sh>`
+     - The L8 ``run_sim_demo.sh`` with ``--lecture 9``. It refuses a trial
+       file that still holds ``UNSET_`` placeholders.
+     - host
+   * - :download:`l9_trial.yaml <code/config/l9_trial.yaml>`,
+       :download:`l9_trial_dry.yaml <code/config/l9_trial_dry.yaml>` and
+       :download:`l9_user_config.yaml <code/config/l9_user_config.yaml>`
+     - The trial file with the tester malfunction, the dry run's trial file
+       with no challenge, and the team file with the camera over agv1's tray.
+     - ARIAC
    * - :download:`run_all.sh <code/run_all.sh>`
-     - Runs both scripts and writes their outputs to ``../outputs/``.
-     - See the last section
+     - Runs the scripted VLM check and writes its output to ``../outputs/``.
+     - offline
+   * - :download:`listings_l9.json <code/listings_l9.json>`
+     - Which lines of each output the slides show (read by L8's
+       ``listings.py``).
+     - offline
+
+The L8 files these scripts use (``orchestrator.py``, ``skill_tools.py``,
+``gemini_model.py``, ``run_sim_demo.sh`` and the rest) are on the
+:doc:`L8 code page </lectures/lecture8/l8_code>`, with the lecture's virtual
+environment and where the API key goes.
 
 
-Checking a VLM's Record: ``vlm_check.py``
------------------------------------------
+The Scripted VLM Check: ``vlm_check.py``
+----------------------------------------
 
-The script plays one high-priority order check. The stand-in VLM answers three
-times: a paragraph for the weak prompt, a reply that numbers the slots 0 to 3,
-and a valid reply with two mistakes. ``TRAY_STATUS`` stands in for one
-``/agv1/tray_status`` message. ``RECORD`` stands in for the orchestrator's own
-record: the voltage each cell read on a tester before it was placed. These
-values are chosen for this example.
+.. note::
+
+   **What you need.** Python 3 and the ``jsonschema`` package. On Ubuntu
+   24.04: ``sudo apt install python3-jsonschema``. No ROS 2 setup is needed
+   for the scripted run.
+
+The scripted run plays one high-priority order check. The stand-in VLM
+answers three times: a paragraph for the weak prompt, a reply that numbers
+the slots 0 to 3, and a valid reply with two mistakes. ``TRAY_STATUS`` stands
+in for one ``/agv1/tray_status`` message. ``RECORD`` stands in for the
+orchestrator's own record: the voltage each cell read on a tester before it
+was placed.
 
 .. code-block:: bash
 
+   cd lecture9/code
    python3 vlm_check.py
 
 .. literalinclude:: code/vlm_check.py
    :language: python
    :caption: vlm_check.py
 
-Output:
+Output (scripted model: fixed replies):
 
 .. literalinclude:: outputs/vlm_check.txt
    :language: text
 
 
-The Closed Loop: ``closed_loop.py``
------------------------------------
+The Closed Loop on ARIAC: ``closed_loop.py``
+--------------------------------------------
 
-The script builds one Li-Ion kit on agv1. The conveyor malfunction, the tester
-malfunction, the action times, the cell voltages and the lost grasp are chosen
-for this example; the malfunction keys (``START_TIME``, ``DURATION``,
-``TESTER``) are those of an ARIAC trial file. You can change them at the top of
-the script: Exercise 3 on the :doc:`exercises page <l9_exercises>` does.
+The script runs the L8 loop (``orchestrator.run``) with Gemini and the L9
+tools: the ten L8 tools and ``wait``. ``--policy replan`` offers every tool
+but ``wait``, so a run must replan around the broken tester to finish.
+``--policy wait`` declares the tester argument as 1 only, adds one line to
+the goal, and keeps a guard in code that refuses tester 2. The goal, checked
+in code, is all four slots of agv1 filled, each cell with a recorded voltage
+from 3.4 to 3.8 V. After the loop, the script prints the kit total against
+14.25 to 14.55 V as a fact; it does not stop the run. ``--vlm-after`` then
+runs the live VLM check on the camera image.
 
-.. note::
-
-   **The action names are stand-ins.** ``load_tester`` and
-   ``unload_to_tray`` are names made up for this demonstration, not the names
-   of the course skills package's skills. ``move_agv`` stands in for ARIAC's
-   own ``/{agv_name}/move`` action. ``Factory.run()`` only advances a clock and
-   updates a few Python variables.
-
-.. code-block:: bash
-
-   python3 closed_loop.py           # replan around a broken tester
-   python3 closed_loop.py --wait    # wait for a broken tester instead
+With no key file, the script runs the scripted model instead of Gemini and
+skips the live VLM check. ``--scripted --image-only`` is the dry run that
+timed the cycles.
 
 .. literalinclude:: code/closed_loop.py
    :language: python
    :caption: closed_loop.py
 
-Output without ``--wait``:
+The commands that made the L9 recordings, run on the host from
+``lecture9/code`` (the steps before them, the virtual environment and the
+key, are on the :doc:`L8 code page </lectures/lecture8/l8_code>`):
 
-.. literalinclude:: outputs/closed_loop.txt
+.. code-block:: bash
+
+   # the dry run: scripted model, no challenge, one image with the first cell
+   bash run_sim_demo.sh --name closed_loop_dry --sim config/l9_trial_dry.yaml \
+       config/l9_user_config.yaml 3600 -- closed_loop.py --policy replan --scripted --image-only
+   # the replan recording, then the live VLM check
+   bash run_sim_demo.sh --name closed_loop_replan_rec1 --sim config/l9_trial.yaml \
+       config/l9_user_config.yaml 3600 --key -- closed_loop.py --policy replan --vlm-after
+   # the wait recording
+   bash run_sim_demo.sh --name closed_loop_wait_rec1 --sim config/l9_trial.yaml \
+       config/l9_user_config.yaml 3600 --key -- closed_loop.py --policy wait
+
+.. literalinclude:: code/run_sim_demo.sh
+   :language: bash
+   :caption: run_sim_demo.sh
+
+.. literalinclude:: code/config/l9_trial.yaml
+   :language: yaml
+   :caption: config/l9_trial.yaml
+
+.. literalinclude:: code/config/l9_trial_dry.yaml
+   :language: yaml
+   :caption: config/l9_trial_dry.yaml
+
+.. literalinclude:: code/config/l9_user_config.yaml
+   :language: yaml
+   :caption: config/l9_user_config.yaml
+
+The Replan Recording
+~~~~~~~~~~~~~~~~~~~~
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1.
+
+.. note::
+
+   The live check prints "Cross-check before /submit_high_priority_order",
+   but this Li-Ion kit would go to ``/submit_kitting_order``. A comment in
+   ``live()`` says so; the printed line stays as recorded.
+
+.. literalinclude:: outputs/closed_loop_replan_rec1.txt
    :language: text
 
-Output with ``--wait``:
+Tokens, latency and cost per call (written by L8's ``run_cost.py`` from the
+raw API responses; call 27 is the VLM call):
 
-.. literalinclude:: outputs/closed_loop_wait.txt
+.. literalinclude:: outputs/closed_loop_replan_rec1_cost.txt
    :language: text
 
-The two runs are the same until t = 145 s. From there the first replans and
-finishes at 245 s after 3 model calls; the second waits for tester 1 and
-finishes at 285 s after 1 model call. The stand-in model's calls take 0 s, so
-the times count only the actions and the waiting.
+The Wait Recording
+~~~~~~~~~~~~~~~~~~
+
+Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
+different answers. Recording 1 of 1.
+
+.. literalinclude:: outputs/closed_loop_wait_rec1.txt
+   :language: text
+
+.. literalinclude:: outputs/closed_loop_wait_rec1_cost.txt
+   :language: text
+
+The Dry Run
+~~~~~~~~~~~
+
+Scripted model: fixed replies, on ARIAC with no challenge. Its cycle times
+set ``START_TIME`` and ``DURATION`` in ``l9_trial.yaml`` (see the comments
+there).
+
+.. literalinclude:: outputs/closed_loop_dry.txt
+   :language: text
 
 
-Running Both: ``run_all.sh``
-----------------------------
+Running the Offline Part: ``run_all.sh``
+----------------------------------------
 
-``run_all.sh`` is the script that produced the outputs above. It runs each
-example in a clean environment (``env -i``), so the system Python and its
+``run_all.sh`` is the script that produced ``vlm_check.txt``. It runs the
+script in a clean environment (``env -i``), so the system Python and its
 ``jsonschema`` are used even when a ROS 2 or virtual environment is active in
-your shell. It writes the Python and jsonschema versions to
-``../outputs/versions.txt``. You do not need it: the commands in the sections
-above give the same results.
+your shell. It also runs the lecture's tests and checks every slide listing
+against its source in ``lecture9/outputs/``: ``closed_loop_replan_rec1.txt``,
+``closed_loop_wait_rec1.txt`` or ``vlm_check.txt``. The tests and the slides
+are in the course's slides repository, not on this page; ``python3
+vlm_check.py`` gives the same output.
 
 .. literalinclude:: code/run_all.sh
    :language: bash
    :caption: run_all.sh
+
+.. literalinclude:: code/listings_l9.json
+   :language: json
+   :caption: listings_l9.json
 
 Versions used for the outputs on this page:
 

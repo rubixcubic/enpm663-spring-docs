@@ -80,16 +80,17 @@ Multiple Choice (Questions 1 to 11)
    **C**.
 
    The model can say "done"; only the orchestrator decides, by checking the
-   state in code. In the demo, ``shipped()`` checks that ``agv1`` is at
-   ``SHIPPING``. If the check fails, the orchestrator sends back
-   "goal not reached" and the loop goes on.
+   state in code. In the demo, ``one_cell_in_slot()`` checks that agv1 slot 1
+   is occupied and that the record holds a voltage from 3.4 to 3.8 V for it.
+   If the check fails, the orchestrator sends back "goal not reached" and the
+   loop goes on.
 
 
 .. admonition:: Question 3
    :class: hint
 
-   In Run 1 of the orchestrator demo, the characters sent were 666, then 839,
-   then 1025. Why do they grow?
+   In Run 1 of the orchestrator demo, Gemini's five calls sent 1264, 1535,
+   1788, 2045 and 2309 input tokens. Why do they grow?
 
    A. The model's replies get longer
 
@@ -106,9 +107,11 @@ Multiple Choice (Questions 1 to 11)
    **B**.
 
    Each call sends the system message, the tool list and every message so
-   far. Each step adds one model reply and one result: 839 − 666 = 173 more,
-   then 1025 − 839 = 186 more. The system message and the tool list stay the
-   same.
+   far. Each step adds one model call and its result, with the new
+   observation and the record: 1535 − 1264 = 271, 1788 − 1535 = 253,
+   2045 − 1788 = 257 and 2309 − 2045 = 264 tokens more. The system message
+   and the tool list stay the same. (The output was 16 to 24 tokens per call,
+   and 1 for "done".)
 
 
 .. admonition:: Question 4
@@ -207,58 +210,61 @@ Multiple Choice (Questions 1 to 11)
 
    MCP messages are JSON-RPC 2.0. A client finds the tools with
    ``tools/list`` and runs one with ``tools/call``. In the demo, the client's
-   ``list_tools()`` printed the ``move-agv`` tool and its input schema.
+   ``list_tools()`` printed the ten tools (7 skills and 3 readings) and one line per argument.
 
 
 .. admonition:: Question 8
    :class: hint
 
-   In the MCP demo, ``agv1`` is at ``SHIPPING`` and the client calls
-   ``move-agv`` with ``{"agv": 1, "station": "ASSEMBLY"}``. What comes back?
+   In the MCP demo, the client calls ``robot2_place_in_slot`` with
+   ``{"agv": 4, "slot": 1}``. What comes back?
 
-   A. ``is_error`` ``True``, because the move failed
+   A. ``is_error`` ``False``, with ``"code": "PRECONDITION_FAILED"``, because
+      robot 2 holds nothing
 
-   B. ``is_error`` ``False``, with ``"status": "REJECTED"`` and the reason in
-      the result
+   B. ``is_error`` ``True``: the server's own argument check refuses AGV 4,
+      and the tool never runs
 
    C. An exception in the client
 
-   D. ``is_error`` ``False``, with ``"status": "SUCCEEDED"``
+   D. ``is_error`` ``False``, with ``"code": "SUCCESS"``
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **B**.
 
-   ARIAC has no path from ``SHIPPING`` to ``ASSEMBLY``. The tool ran and
-   reported the failure in its result, so ``is_error`` is ``False``. The call
-   with AGV 4 is the other case: it failed the server's own argument check,
-   the tool never ran, and ``is_error`` was ``True``.
+   MCP wrote the schema of ``agv`` from the type hint ``Literal[1, 2, 3]``,
+   so 4 fails the argument check ("Input should be 1, 2 or 3"). The tool
+   never ran, so the skill gave no result code, and ``is_error`` was
+   ``True``. The call to ``robot2_move_home`` is the other case: the tool
+   ran, returned ``SUCCESS``, and ``is_error`` was ``False``.
 
 
 .. admonition:: Question 9
    :class: hint
 
-   With the lecture's values (:math:`F` = 2000 tokens on every call,
-   :math:`h` = 250 tokens per earlier step), how many input tokens does call
-   10 of a ReAct run send?
+   With the values measured in Run 1 (:math:`F` = 1264 tokens on every
+   call, :math:`h` = 261 tokens per earlier step), how many input tokens does
+   call 10 of a ReAct run send?
 
-   A. 2250
+   A. 1525
 
-   B. 4250
+   B. 3613
 
-   C. 4500
+   C. 3874
 
-   D. 31,250
+   D. 24,385
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **B**.
 
-   Call :math:`k` sends :math:`F + (k - 1)\,h`: 2000 + 9 × 250 = 4250. It is
-   the "last call" value for 10 steps in the ``token_growth.py`` table.
-   **D**, 31,250, is the total over all 10 calls.
+   Call :math:`k` sends :math:`F + (k - 1)\,h`: 1264 + 9 × 261 = 1264 + 2349
+   = 3613. It is the "last call" value for 10 steps in the
+   ``token_growth.py`` table. **C** uses 10 earlier steps instead of 9, and
+   **D**, 24,385, is the total over all 10 calls.
 
 
 .. admonition:: Question 10
@@ -344,24 +350,27 @@ True or False (Questions 12 to 17)
    **False.**
 
    In ``mcp`` 2.x the class that 1.x tutorials call ``FastMCP`` is
-   ``MCPServer``, imported from ``mcp.server.mcpserver``. The 1.x import
-   fails with "FastMCP was renamed to MCPServer".
+   ``MCPServer``, imported from ``mcp.server.mcpserver``. In 2.3.0 the 1.x
+   import raises ``ModuleNotFoundError``, with a message that says
+   "FastMCP was renamed to MCPServer".
 
 
 .. admonition:: Question 14
    :class: hint
 
-   The input schema that the MCP server generated for ``move-agv`` refuses
-   extra fields, like the hand-written schema in ``validator.py``.
+   MCP wrote the ``agv`` argument of ``robot2_place_in_slot`` as an integer
+   ``enum`` of 1, 2 and 3. The Gemini declarations of the same tool use the
+   same ``enum``.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
    **False.**
 
-   The generated schema has ``minimum``, ``maximum``, the ``enum`` and the
-   ``required`` list, but no ``additionalProperties``. The hand-written
-   schema is stricter. Check what your server generates.
+   The Gemini declarations use ``minimum`` and ``maximum`` instead, because
+   Gemini's ``parameters`` schema allows ``enum`` for strings only. The same
+   tool can have two schemas, one written by MCP from the type hints and one
+   written for Gemini, so check what each one says.
 
 
 .. admonition:: Question 15
@@ -458,16 +467,18 @@ Short Answer (Questions 18 to 20)
 .. admonition:: Question 20
    :class: hint
 
-   From 20 to 40 steps, the ReAct input grows from 87,500 to 275,000 tokens,
-   about 3.1 times, while the slides say the history grows about four times.
-   Explain the difference with the formula :math:`nF + h\,n(n - 1)/2`.
+   From 20 to 40 steps, the ReAct input grows from 74,870 to 254,140 tokens,
+   about 3.4 times, while the slides say the history grows about four times.
+   Explain the difference with the formula :math:`nF + h\,n(n - 1)/2`
+   (:math:`F` = 1264, :math:`h` = 261).
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   The total has two parts. The fixed part :math:`nF` only doubles: 40,000
-   to 80,000. The history part :math:`h\,n(n - 1)/2` grows with the square
-   of :math:`n`: 47,500 to 195,000, about 4.1 times. The total,
-   275,000 / 87,500 = 3.1 times, sits between the two. The longer the run,
+   The total has two parts. The fixed part :math:`nF` only doubles: 25,280
+   to 50,560. The history part :math:`h\,n(n - 1)/2` grows with the square
+   of :math:`n`: 261 × 20 × 19 / 2 = 49,590 to 261 × 40 × 39 / 2 = 203,580,
+   about 4.1 times. The total, 254,140 / 74,870 = 3.4 times, sits between
+   the two. The longer the run,
    the more the history part dominates, which is why the slides suggest
    summarizing old steps.

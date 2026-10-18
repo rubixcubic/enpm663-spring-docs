@@ -3,8 +3,9 @@ References
 ====================================================
 
 These are the sources the L9 slides cite, grouped by topic, in the order the
-slides first use them. Every link was checked on 2026-10-12. The ARIAC source
-links point to the ``ariac2025`` branch of the ARIAC repository. A last
+slides first use them. The links were checked on 2026-10-12; the ARIAC source
+files added for the Gemini demonstrations were read on 2026-10-17. The ARIAC
+source links point to the ``ariac2025`` branch of the ARIAC repository. A last
 dropdown lists further reading that the exercises use but no slide cites.
 
 
@@ -201,6 +202,34 @@ dropdown lists further reading that the exercises use but no slide cites.
 
          ``OPERATIONAL = 1`` and ``MALFUNCTIONING = 2``.
 
+      .. grid-item-card:: voltage_tester/model.sdf
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_gz/models/voltage_tester/model.sdf
+         :class-card: sd-border-secondary
+
+         ``noise_std_dev`` 0.05: the noise on each tester reading, used in
+         the chance step of the kit total.
+
+      .. grid-item-card:: user_config_parser.py
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_setup/ariac_setup/user_config_parser.py
+         :class-card: sd-border-secondary
+
+         The camera's default field of view, 0.873 rad, used to place the
+         camera over agv1's tray.
+
+      .. grid-item-card:: competition_manager_plugin.cpp
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_plugins/src/competition_manager_plugin.cpp
+         :class-card: sd-border-secondary
+
+         Line 249: a kit submit needs an AGV at the shipping station.
+
+      .. grid-item-card:: agv_tray_interface_plugin.cpp
+         :link: https://github.com/usnistgov/ARIAC/blob/ariac2025/ariac_plugins/src/agv_tray_interface_plugin.cpp
+         :class-card: sd-border-secondary
+
+         The kit check of ``/submit_kitting_order``: line 357 (the AGV
+         station), line 416 (the sum of the cells' own voltages) and line
+         437 (the total against the kit tolerance).
+
 
 .. dropdown:: Software Used by the Demonstrations
    :class-container: sd-border-secondary
@@ -224,8 +253,8 @@ dropdown lists further reading that the exercises use but no slide cites.
 
          **python-jsonschema**
 
-         The ``Draft7Validator`` both scripts use to check replies against a
-         schema. The outputs were made with version 4.10.3.
+         The ``Draft7Validator`` that ``vlm_check.py`` uses to check replies
+         against a schema. The outputs were made with version 4.10.3.
 
 
 .. dropdown:: Further Reading
