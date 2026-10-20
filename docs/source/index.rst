@@ -43,6 +43,9 @@ Students enrolling in ENPM663 must have:
   the ``ros2`` command-line tools.
 - Strong **Python** programming skills.
 - The ability to **read** C++ ROS 2 code. Writing C++ is not required.
+- Good command of **Git and GitHub**: clone, branch, commit, push and pull,
+  resolve a merge conflict, and open and review a pull request. The course
+  does not teach them.
 
 .. note::
 

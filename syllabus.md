@@ -104,6 +104,9 @@ with:
 - Using launch files, parameters, and basic command-line tools (`ros2 topic`,
   `ros2 node`, etc.).
 - Reading C++ ROS 2 code (writing C++ is not a prerequisite).
+- Using Git and GitHub well: cloning, branching, committing, pushing and pulling,
+  resolving a merge conflict, and opening and reviewing a pull request. The course does
+  not teach them.
 
 A diagnostic quiz in Week 1 helps students and the instructor calibrate on ROS 2
 background. The quiz is ungraded.

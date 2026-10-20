@@ -28,6 +28,9 @@ Prerequisites
        group project.
    * - **C++ (reading)**
      - Read C++ ROS 2 code. Writing C++ is not a prerequisite.
+   * - **Git and GitHub**
+     - Clone, branch, commit, push and pull, resolve a merge conflict, and
+       open and review a pull request. The course does not teach them.
 
 .. admonition:: Not sure about your ROS 2 background?
    :class: tip

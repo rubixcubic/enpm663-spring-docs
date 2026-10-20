@@ -6,10 +6,19 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.17: Lecture Pages Corrected After Independent Checks (2026-10-18)
+.. dropdown:: v0.4.18: Git and GitHub Are Prerequisites (2026-10-20)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - The syllabus and the home page list Git and GitHub under Prerequisites:
+     clone, branch, commit, push and pull, resolve a merge conflict, and open
+     and review a pull request. The course does not teach them.
+
+
+.. dropdown:: v0.4.17: Lecture Pages Corrected After Independent Checks (2026-10-18)
+   :icon: tag
+   :class-container: sd-border-success
 
    .. rubric:: Lecture 1
 
