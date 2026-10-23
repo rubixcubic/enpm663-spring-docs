@@ -5,8 +5,10 @@ L9: LLM Agents II: VLM Grounding and Agentic Replanning
 Overview
 --------
 
-The L8 agent observed ROS 2 topics only, and it ran its plan without checking
-the world after each step. This lecture adds two things to it.
+After every call, the L8 agent read the testers, the conveyor and agv1 from
+ROS 2 topics, and ``guard()`` checked the next call against that reading. It
+had no camera, and in its run nothing failed. This lecture adds two things to
+it.
 
 The first is **grounding**. A **vision-language model (VLM)** takes a camera
 image and a text prompt, and returns text. You ask it for a JSON record that
@@ -17,12 +19,12 @@ field against a second source. Tray occupancy comes from ARIAC's
 recorded for the cell on a voltage tester. A field where the two disagree is a
 flag, and the agent does not act on it.
 
-The second is **replanning**. After each action, the orchestrator observes the
-factory again and compares what it sees with the action's expected effect. On
-a mismatch it does one of three things: it **retries** the action, it
-**waits** for a device to come back, or it asks the LLM for a **new plan**. A
-decision chart picks among the three, and the lecture applies it to the four
-ARIAC 2025 challenges.
+The second is **replanning**. After every call, the agent compares the new
+observation with what the action should have done. On a mismatch there are three
+moves: **retry** the action, **wait** for a device to come back, or ask for a
+**new plan**. A decision chart sorts ARIAC 2025's four challenges among the three.
+No code picks the move: the model chooses, and ``guard()`` refuses a call that
+breaks a rule.
 
 Two demonstrations show both ideas. In the first, Gemini reads a real
 camera image of agv1's tray in ARIAC, and its record is cross-checked slot by

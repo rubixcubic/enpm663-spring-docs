@@ -98,7 +98,7 @@ Multiple Choice (Questions 1 to 10)
 
    B. The conveyor stops until a report arrives
 
-   C. The cell is pushed into the inspection bin
+   C. The door stays closed, and the cell drops into the inspection bin
 
    D. The cell goes to the recycling bin after the voltage test
 
@@ -108,8 +108,8 @@ Multiple Choice (Questions 1 to 10)
    **C**.
 
    The door lets a cell through only if your team submitted a passing report
-   for it. A cell that fails, or has no report, is pushed into the inspection
-   bin. A good cell in the inspection bin is a penalty, which is why your
+   for it. A failing or missing report keeps the door closed, and the cell
+   drops into the inspection bin. A good cell in the inspection bin is a penalty, which is why your
    system submits a report for every cell from GP1 on.
 
 
@@ -157,8 +157,8 @@ Multiple Choice (Questions 1 to 10)
 
    A cell outside its nominal voltage plus or minus 0.2 V goes to the
    recycling bin. For Li-Ion that range is 3.4 V to 3.8 V, and 3.85 V is
-   0.05 V above it. The inspection bin (**B**) is for cells the inspection
-   door pushes off the conveyor.
+   0.05 V above it. The inspection bin (**B**) is where a cell drops when the
+   inspection door stays closed.
 
 
 .. admonition:: Question 6

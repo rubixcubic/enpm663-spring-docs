@@ -223,7 +223,14 @@ Which Sensor Each Part of the Course Needs
   camera images and is scored against your GP2 lidar detector on the same
   cells.
 
-**The rule** (``scoring_weights.yaml``, ``ariac_db/scoring.py``):
+The $9600 Budget and the Sensor Cost Bonus
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The cost is the total, in dollars, of every sensor in your team configuration
+file, each billed at its grade's cost (Sensor Grades and Costs, above). The
+budget is $9600 (``SENSOR_BUDGET`` in ``ariac_db/config/scoring_weights.yaml``),
+and the 1000 below is ``W6`` in the same file; ``ariac_db/scoring.py`` applies
+both.
 
 - Under the $9600 budget: a **sensor cost bonus** of
   1000 × (1 − cost / 9600) points, only if the team submitted every kit,

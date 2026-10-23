@@ -1000,8 +1000,9 @@ A ``py_trees_ros`` behavior tree that builds one kit:
 .. warning::
 
    GP1 has no defect detection and runs on a trial with no defective cells,
-   so every report says passed. Without a report, the inspection door pushes
-   the cell into the inspection bin and nothing reaches the robots.
+   so every report says passed. Without a report, the inspection door stays
+   closed, the cell drops into the inspection bin, and nothing reaches the
+   robots.
 
 
 What You Get, What You Submit, and When

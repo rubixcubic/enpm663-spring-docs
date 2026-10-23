@@ -667,8 +667,8 @@ Which leaf or branch of your tree detects it?
 Task 1 Events That Call for a New Plan
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. A cell fails inspection, and the inspection door pushes it into the
-   inspection bin. In the L6 domain it never gets ``at-door``, so no plan
+1. A cell fails inspection: the inspection door stays closed, and the cell
+   drops into the inspection bin. In the L6 domain it never gets ``at-door``, so no plan
    names it. A plan that counted on it before its inspection, as a queued
    cell in Demo 5 does, needs a new plan.
 2. A cell's averaged voltage is outside 3.4 V to 3.8 V (Li-Ion). It must be

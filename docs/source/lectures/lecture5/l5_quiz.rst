@@ -273,9 +273,9 @@ Multiple Choice (Questions 1 to 12)
    **C**.
 
    ARIAC attaches a report to the cell nearest the door, upstream of
-   :math:`x` = 1.0 m (plus a 5 mm margin), that has no report yet. A cell with
-   a missing report is pushed into the inspection bin, which costs 50 points
-   if it was good.
+   :math:`x` = 1.0 m (plus a 5 mm margin), that has no report yet. A missing
+   report keeps the door closed, and the cell drops into the inspection bin.
+   That costs 50 points if the cell was good.
 
 
 .. admonition:: Question 11

@@ -64,7 +64,8 @@ budget of $9600. For each cell, your perception node builds the inspection
 report: passed or failed, and for each defect its type, its angle around the
 cell (theta) and its height above the cell base (z). The report decides what
 happens at the inspection door: a passing cell goes through to inspection
-robot 1, and a failing cell is pushed into the inspection bin.
+robot 1. For a failing cell the door stays closed, and the cell drops into
+the inspection bin.
 
 Two checks
 ~~~~~~~~~~
@@ -293,8 +294,7 @@ Tasks
 
    - Keep one record per cell that joins the inspection result and the
      averaged voltage.
-   - The tree does not wait for cells that were pushed into the inspection
-     bin.
+   - The tree does not wait for cells that dropped into the inspection bin.
    - The tree still builds and submits the kit on a trial with defects.
 
 

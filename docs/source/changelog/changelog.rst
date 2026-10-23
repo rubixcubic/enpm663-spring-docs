@@ -6,10 +6,27 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.18: Git and GitHub Are Prerequisites (2026-10-20)
+.. dropdown:: v0.4.19: Inspection Door, L5 Bonus, L9 Recap (2026-10-22)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **Inspection door:** without a passing report the door stays closed and
+     the cell drops into the inspection bin; the door does not push it. Fixed
+     in L1, L2, L3, L5, L7 and L13, GP1, GP2 and the syllabus.
+   - **Lecture 5:** a new slide, "The $9600 Budget and the Sensor Cost
+     Bonus", gives the bonus formula with a worked line.
+   - **Lecture 9:** the recap now says what the L8 agent did: after every
+     call it read the testers, the conveyor and agv1, and ``guard()`` checked
+     the next call. No code picks between retry, wait and replan; the model
+     chooses.
+   - **LLM prompting pre-read:** it names Google Gemini, or a local open-weight
+     model, as the course's choice.
+
+
+.. dropdown:: v0.4.18: Git and GitHub Are Prerequisites (2026-10-20)
+   :icon: tag
+   :class-container: sd-border-success
 
    - The syllabus and the home page list Git and GitHub under Prerequisites:
      clone, branch, commit, push and pull, resolve a merge conflict, and open

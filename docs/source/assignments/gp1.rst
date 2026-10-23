@@ -50,8 +50,9 @@ a time) to decide what the robots do next. Your team writes the tree in
 The tree feeds Li-Ion cells onto the inspection conveyor and submits an
 inspection report for every cell. An **inspection report** says whether a
 cell passed, and lists any defects. ARIAC's **inspection door** lets a cell
-through only if your team submitted a passing report for it. A cell that
-fails, or that has no report, is pushed into the inspection bin.
+through only if your team submitted a passing report for it. A failing or
+missing report keeps the door closed, and the cell drops into the inspection
+bin.
 
 .. important::
 
@@ -409,9 +410,9 @@ Common Mistakes
 
 .. danger::
 
-   - **Skipping a report.** A cell with no report is pushed into the
-     inspection bin, and ARIAC counts a good cell in the inspection bin as a
-     penalty.
+   - **Skipping a report.** Without a report, the door stays closed and the
+     cell drops into the inspection bin. ARIAC counts a good cell in the
+     inspection bin as a penalty.
    - **Checking the kit total after the fourth cell.** Cells lock to the
      tray once placed. Check before each placement.
    - **Deciding on one voltage reading.** The tester adds noise to each

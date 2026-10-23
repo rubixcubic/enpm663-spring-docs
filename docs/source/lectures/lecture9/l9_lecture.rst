@@ -33,12 +33,14 @@ The **orchestrator** is the program that runs the loop around the LLM. It
 observes, asks the model, checks the model's output against a JSON schema,
 calls a tool, and reads the result.
 
-The L8 agent had two gaps:
+After every call, the L8 agent read the testers, the conveyor and agv1 from
+ROS 2 topics, and ``guard()`` checked the next call against that reading. Two
+things were still missing:
 
-- It observed ROS 2 topics only. No topic says what a cell looks like or
-  which cell type sits in which tray slot.
-- It ran its plan without checking the world after each step, so it did not
-  notice when the factory changed under it.
+- It read ROS 2 topics only. No topic says what a cell looks like or which
+  cell type sits in which tray slot.
+- In its run nothing failed: Gemini filled agv1 slot 1 in five calls. It
+  never had to react to a device that broke during the run.
 
 
 Today Adds Two Things
@@ -46,8 +48,9 @@ Today Adds Two Things
 
 1. **Grounding:** a vision-language model (VLM) describes what a camera sees,
    so the agent's decisions rest on the factory as it is.
-2. **Replanning:** after each action the orchestrator observes again,
-   compares, and asks for a new plan only when it must.
+2. **Replanning:** the agent compares each new observation with what the
+   action should have done, and asks for a new plan only when it must.
+   Today's run breaks voltage tester 1 partway through.
 
 
 Today's Milestones

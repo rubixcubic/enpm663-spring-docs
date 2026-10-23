@@ -240,8 +240,8 @@ predict the output first, write it down, then run the script.
       **Question 2.** A cell with a defect fails inspection, so it must not
       go in a kit. The world model now holds two facts that cannot both
       stand: c7 has a dent, and c7 is part of kit3. In Task 1 your system
-      submits a failing report for c7, the inspection door pushes it into the
-      inspection bin, and it never reaches a tray. Your system must remove
+      submits a failing report for c7, the inspection door stays closed, c7
+      drops into the inspection bin, and it never reaches a tray. Your system must remove
       partOf(c7, kit3) and plan another cell for that place in the kit.
 
 

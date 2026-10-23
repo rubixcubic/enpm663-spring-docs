@@ -185,9 +185,9 @@ provides joint trajectory and gripper actions, but no pick or place skills. Team
 move the AGVs with ARIAC's own AGV move action.
 
 In ARIAC 2025, a cell on the inspection conveyor reaches the inspection robot only
-if your team has submitted a passing inspection report for it. A cell with a
-failing report, or with no report, is pushed into the inspection bin. So every
-project submits an inspection report for every cell.
+if your team has submitted a passing inspection report for it. A failing or
+missing report keeps the inspection door closed, and the cell drops into the
+inspection bin. So every project submits an inspection report for every cell.
 
 ### GP1: Behavior Tree for One Kit
 
@@ -348,7 +348,7 @@ Teammates are not told the flag was raised.
 
 ### How the score is computed
 
-- For each PT, a student's peer score is the mean of their teammates' ratings across
+- For each project, a student's peer score is the mean of their teammates' ratings across
   all five dimensions, normalized to a 0 to 100 scale (score = 80 + 10 × (mean − 3): a mean of 1
   gives 60, 3 gives 80 and 5 gives 100; the
   scale rewards above-expectations contribution while protecting against single-

@@ -17,8 +17,9 @@ LLM Prompting and Structured Output
 
 The examples on this page use Anthropic's Python SDK. The L8 demonstrations
 use Google's Gemini (see the :doc:`L8 code page </lectures/lecture8/l8_code>`).
-**The course has not chosen an LLM provider.** Every idea here holds for the other providers
-on the :doc:`AI Access </ariac/ai_setup>` page; only the field names change.
+**The course's LLM provider is Google Gemini.** GP4 and the final demo also allow a local
+open-weight model (see the :doc:`AI Access </ariac/ai_setup>` page). Every idea here holds
+for Gemini and the other providers too; only the field names change.
 
 **What you need to run the examples.** Python 3.10 or newer and a virtual
 environment. The outputs on this page come from Python 3.12.3, ``anthropic``

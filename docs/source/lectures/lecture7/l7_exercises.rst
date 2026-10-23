@@ -454,8 +454,9 @@ script.
    3.86 V. A queued cell is new in L7: it has not been inspected or measured
    yet, so a plan can count on it before its inspection. (In the L6 domain
    alone a cell that fails inspection never gets ``at-door``, so no plan
-   names it.) Now ``c3`` fails inspection: the inspection door pushes it
-   into the inspection bin, so it never reaches a tester. Your team's
+   names it.) Now ``c3`` fails inspection: the inspection door stays
+   closed, and ``c3`` drops into the inspection bin, so it never reaches a
+   tester. Your team's
    inspection report tells your executor, which removes ``c3`` from its
    record.
 

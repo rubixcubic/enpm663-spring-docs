@@ -494,9 +494,9 @@ ARIAC Has Written Rules; a World Model Learns Its Rules
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **ARIAC 2025** is a physics simulation in Gazebo Harmonic whose rules
-engineers wrote: the conveyor, the inspection door that pushes a cell into
-the inspection bin without a passing report, the voltage testers that publish
-a noisy voltage, the scoring formula.
+engineers wrote: the conveyor, the inspection door that stays closed without a
+passing report (the cell then drops into the inspection bin), the voltage
+testers that publish a noisy voltage, the scoring formula.
 
 **A world model** learns its rules from data. It can produce scenes no one
 programmed. It can also be wrong in ways no one programmed.

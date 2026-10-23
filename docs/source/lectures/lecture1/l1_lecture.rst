@@ -351,9 +351,9 @@ optional defect type and location.
    :class: warning
 
    The inspection door lets a cell through only if your team submitted a
-   passing report for it. A cell that fails, or has no report, is pushed into
-   the inspection bin. So from GP1 on, your system submits a report for every
-   cell.
+   passing report for it. A failing or missing report keeps the door closed,
+   and the cell drops into the inspection bin. So from GP1 on, your system
+   submits a report for every cell.
 
 **1b. Conveyor pickup.** Inspection robot 1 (a UR3e with a Robotiq 2F-85
 gripper) picks the cell off the moving conveyor and places it in one of two

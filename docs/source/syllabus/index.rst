@@ -497,9 +497,9 @@ ARIAC's own AGV move action.
 
 In ARIAC 2025, a cell on the inspection conveyor reaches the inspection
 robot only if your team has submitted a passing inspection report for it.
-A cell with a failing report, or with no report, is pushed into the
-inspection bin. So every project submits an inspection report for every
-cell.
+A failing or missing report keeps the inspection door closed, and the cell
+drops into the inspection bin. So every project submits an inspection report
+for every cell.
 
 .. list-table::
    :header-rows: 1
