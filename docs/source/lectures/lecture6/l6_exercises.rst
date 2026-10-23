@@ -839,7 +839,7 @@ result first, write the prediction down, then run the script.
       The counts match the prediction, and the plans are as short as before.
       The search also expanded far fewer states: 2346 / 97 = 24.2 times
       fewer on the large problem. The search time of the large problem fell
-      from 15.549870 s (``fd_summary.txt``) to 0.015796 s in one run with
+      from 12.539839 s (``fd_summary.txt``) to 0.015796 s in one run with
       ``run_all.sh``'s settings. The plan now says ``check-kit agv1``: the
       executor must find the four cells from its own records, which it
       keeps anyway.

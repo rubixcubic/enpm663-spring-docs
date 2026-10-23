@@ -6,10 +6,20 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.22: The Code-Freeze Tag Is final-demo (2026-10-23)
+.. dropdown:: v0.4.23: New L6 Planner Timings (2026-10-23)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **L6:** ``fd_summary.txt`` comes from a new run of the Fast Downward
+     example. The plans and the expanded-state counts are unchanged; the
+     search times are new measurements. The exercise answer that quotes the
+     large problem's search time now says 12.539839 s.
+
+
+.. dropdown:: v0.4.22: The Code-Freeze Tag Is final-demo (2026-10-23)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **Final demo:** the code-freeze tag is named ``final-demo``, and a team
      whose image does not build on May 1 pushes ``final-demo-fix``. The final
