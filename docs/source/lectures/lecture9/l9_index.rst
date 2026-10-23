@@ -53,8 +53,8 @@ domain has no action for, and on recovery the domain did not plan for.
 .. important::
 
    **Group project.** GP3 (PDDL planner and behavior tree executor) is due
-   today. **GP4 (LLM agent with VLM grounding) is posted today** and is due in
-   Week 13 (04/21). GP4 replaces the GP3 planner with an LLM agent, adds a
+   today. **GP4 (LLM agent with VLM grounding) is posted today** and is due
+   Friday, April 23, at 11:59 pm. GP4 replaces the GP3 planner with an LLM agent, adds a
    VLM, and tests the agent on a conveyor malfunction, a voltage tester
    malfunction and high-priority orders. The vacuum tool malfunction happens
    only in Task 2, so the final demo tests it, not GP4.

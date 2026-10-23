@@ -969,7 +969,7 @@ GP4's test cases.
 GP4: LLM Agent with VLM Grounding
 ---------------------------------
 
-GP4 is posted today and is due in Week 13 (04/21). It is 10% of the course
+GP4 is posted today and is due Friday, April 23, at 11:59 pm. It is 10% of the course
 grade.
 
 

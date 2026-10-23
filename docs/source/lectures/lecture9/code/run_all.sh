@@ -42,5 +42,5 @@ env -i HOME="$HOME" PATH=/usr/bin:/bin PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=../.
   /usr/bin/python3 -m pytest -q -p no:cacheprovider tests
 "${SYS[@]}" ../../lecture8/code/listings.py build listings_l9.json
 # every listing in the deck must equal its file in ../outputs/listings, byte for byte
-"${SYS[@]}" ../../lecture8/code/listings.py check ../ENPM663-L9-v1.0.tex $OUT/listings
+"${SYS[@]}" ../../lecture8/code/listings.py check ../L9-ENPM663-v1.0.tex $OUT/listings
 cat $OUT/versions.txt

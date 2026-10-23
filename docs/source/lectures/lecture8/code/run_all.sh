@@ -41,5 +41,5 @@ write $OUT/system_message.txt "${SYS[@]}" -c "from structured_live import SYSTEM
 "${SYS[@]}" -m pytest -q -p no:cacheprovider tests
 bash tests/test_run_sim_demo.sh
 "${SYS[@]}" listings.py build listings_l8.json
-"${SYS[@]}" listings.py check ../ENPM663-L8-v1.0.tex $OUT/listings
+"${SYS[@]}" listings.py check ../L8-ENPM663-v1.0.tex $OUT/listings
 cat $OUT/versions.txt

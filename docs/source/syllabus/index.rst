@@ -460,7 +460,7 @@ given as MM/DD.
      - 13
      - Evaluation and Measurement Science for Agentic Systems
      - L12
-     - :assignment:`GP4 due`
+     - :assignment:`GP4 due Fri 04/23`
    * - 04/28
      - 14
      - The Physical AI Frontier: VLAs, Robot Foundation Models, and World

@@ -46,7 +46,7 @@ why a skill reports a failure instead of retrying.
 .. important::
 
    **Group project.** GP4 (LLM agent with VLM grounding) is in progress and is
-   due in Week 13. Its agent calls the skills as tools, so its tool
+   due Friday, April 23. Its agent calls the skills as tools, so its tool
    descriptions should name each skill's preconditions and failure results.
    This lecture lists both.
 
@@ -113,7 +113,7 @@ Next Steps
 
 - **Before next class:**
 
-  - GP4 (due Week 13): write tool descriptions that list each skill's
+  - GP4 (due Friday, April 23): write tool descriptions that list each skill's
     preconditions and failure results.
   - Read the :doc:`Course Skills Package </ariac/skills>` page.
   - Run the L10 scripts (see :doc:`l10_code`) and compare your outputs with

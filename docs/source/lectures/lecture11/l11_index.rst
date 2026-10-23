@@ -51,7 +51,7 @@ the LLM fits, and three worked examples.
 .. important::
 
    **Group project.** GP4 (LLM agent with VLM grounding) is due on
-   Wednesday, April 21. Add the checks and the challenge handling from this
+   Friday, April 23, at 11:59 pm. Add the checks and the challenge handling from this
    lecture, and log every detection and recovery. GP4 tests the conveyor
    malfunction, the voltage tester malfunction and high-priority orders. The
    vacuum tool malfunction happens only in Task 2, so the final demo is the
@@ -116,7 +116,7 @@ Next Steps
   - Recovery rate, challenge handling, and how the ARIAC score rewards or
     penalizes each recovery choice.
 
-- **GP4 is due Wednesday, April 21.** Add the checks and the challenge
+- **GP4 is due Friday, April 23, at 11:59 pm.** Add the checks and the challenge
   handling from today (retry, wait or replan for each failure), and log
   every detection and recovery.
 

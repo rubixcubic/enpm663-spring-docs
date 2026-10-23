@@ -33,12 +33,13 @@ The Diagnostic Quiz
 ~~~~~~~~~~~~~~~~~~~
 
 The first 15 minutes of L1 are an **ungraded** diagnostic quiz, closed notes,
-on ELMS-Canvas or on paper. It covers the ROS 2 prerequisites in the syllabus:
+on ELMS-Canvas or on paper. It covers the prerequisites in the syllabus:
 
 - packages and workspaces;
 - publishers, subscribers, services, action clients and servers in Python;
 - launch files, parameters and the ``ros2`` command-line tools;
-- reading C++ ROS 2 code.
+- reading C++ ROS 2 code;
+- Git and GitHub: branches, merge conflicts and pull requests.
 
 The result shows you, and the instructor, where your ROS 2 background stands.
 If it shows gaps, read the ROS 2 Refresher in the

@@ -6,10 +6,21 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.19: Inspection Door, L5 Bonus, L9 Recap (2026-10-22)
+.. dropdown:: v0.4.20: GP4 Due Friday, April 23 (2026-10-22)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **GP4** is now due Friday, April 23, 2027, at 11:59 pm (it was due
+     Wednesday, April 21). The syllabus, the schedule, the GP4 page and the L9
+     to L12 pages say so.
+   - **Lecture 1:** the diagnostic quiz also covers Git and GitHub
+     (branches, merge conflicts and pull requests).
+
+
+.. dropdown:: v0.4.19: Inspection Door, L5 Bonus, L9 Recap (2026-10-22)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **Inspection door:** without a passing report the door stays closed and
      the cell drops into the inspection bin; the door does not push it. Fixed

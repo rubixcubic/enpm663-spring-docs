@@ -1032,7 +1032,7 @@ written, and if not, what is missing: in the tree, or in the PDDL domain.
 Next Class
 ----------
 
-**GP4 (due Wednesday, April 21).**
+**GP4 (due Friday, April 23, at 11:59 pm).**
 
 - Add the checks and the challenge handling from today: retry, wait or
   replan for each failure. Log every detection and recovery.

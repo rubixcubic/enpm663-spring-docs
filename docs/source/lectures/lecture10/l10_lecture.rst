@@ -43,7 +43,7 @@ step can fail.
 This Week
 ~~~~~~~~~
 
-No quiz and no deliverable. GP4 is due in Week 13. Quiz 5, next week, covers
+No quiz and no deliverable. GP4 is due Friday, April 23 (end of Week 13). Quiz 5, next week, covers
 L9 and L10.
 
 
@@ -1164,7 +1164,7 @@ specification is posted.
 
 **Before next class:**
 
-- GP4 (due Week 13): write tool descriptions that list each skill's
+- GP4 (due Friday, April 23): write tool descriptions that list each skill's
   preconditions and failure results.
 - Read the course skills package documentation page.
 - Run the L10 scripts (see :doc:`l10_code`) and compare your outputs with the

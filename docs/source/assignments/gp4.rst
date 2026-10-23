@@ -10,7 +10,7 @@ GP4: LLM Agent with VLM Grounding
       :class: compact-table
 
       * - **Duration**
-        - 3 weeks (Week 10 to Week 13), posted 03/31, due 04/21
+        - 3 weeks and 2 days (Week 10 to Week 13), posted 03/31, due Friday 04/23 at 11:59 pm
       * - **Weight**
         - 10% of the course grade
       * - **Lectures**

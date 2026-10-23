@@ -13,8 +13,8 @@ Lecture
 .. admonition:: Class logistics for this week
    :class: warning
 
-   - **GP4 is due today.** Submit it on Canvas with the repository link.
-     After the deadline, fill in the GP4 peer-review form.
+   - **GP4 is due this Friday, April 23, at 11:59 pm.** Submit it on Canvas
+     with the repository link. After the deadline, fill in the GP4 peer-review form.
    - **There is no quiz today.**
 
 

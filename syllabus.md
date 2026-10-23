@@ -236,7 +236,7 @@ strained.
 
 ### GP4: LLM Agent with VLM Grounding
 
-**Posted:** Week 10 / **Due:** Week 13 / **Weight:** 10%
+**Posted:** Week 10 / **Due:** Friday, April 23, at 11:59 pm (Week 13) / **Weight:** 10%
 
 Replace the PDDL planner with an LLM agent that calls the robot skills as tools
 (through MCP if the team chooses) and returns structured output checked against a
@@ -487,7 +487,7 @@ Lectures meet on Wednesdays. Spring break (Mar 14 to 21) includes Wednesday Mar 
 | 10 | 03/31 | L9: LLM Agents II: VLM Grounding and Agentic Replanning | Quiz 4; GP3 due; GP4 posted |
 | 11 | 04/07 | L10: Frames, Transforms, and Motion Planning | |
 | 12 | 04/14 | L11: Recovery, Robustness, and Failure Handling for Agentic Systems | Quiz 5; final demo specification posted |
-| 13 | 04/21 | L12: Evaluation and Measurement Science for Agentic Systems | GP4 due |
+| 13 | 04/21 | L12: Evaluation and Measurement Science for Agentic Systems | GP4 due Fri 04/23 |
 | 14 | 04/28 | L13: The Physical AI Frontier: VLAs, Robot Foundation Models, and World Models | |
 | 15 | 05/05 | Final demo and presentations | Final demo |
 
