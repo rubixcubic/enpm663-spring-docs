@@ -401,8 +401,8 @@ Output (recorded once, on 2026-10-17, with gemini-3.5-flash-lite):
 .. literalinclude:: outputs/agent_run1_cost.txt
    :language: text
 
-One Real Output: ``structured_live.py``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+One Gemini Output: ``structured_live.py``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The model gets the example system message of the Prompt Structure section,
 the stub factory's state and one tool, ``move_agv``, whose parameters are
@@ -447,9 +447,8 @@ import, ``from mcp.server.fastmcp import FastMCP``, raises
    :language: python
    :caption: skills_mcp_client.py
 
-The full recording (a real run against ARIAC, on 2026-10-17; no model runs;
-recording 2 of 2, recording 1 used a client that printed 3 lines per
-result):
+The full recording (the MCP client against ARIAC, recorded once, on
+2026-10-17; no model runs):
 
 .. literalinclude:: outputs/mcp_live2.txt
    :language: text

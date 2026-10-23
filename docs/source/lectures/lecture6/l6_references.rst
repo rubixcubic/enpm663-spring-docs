@@ -25,7 +25,7 @@ files and the packages that the slides name. Every link was checked on
 
          *Artificial Intelligence* 2(3 to 4):189 to 208, 1971. States as
          sets of facts, and actions with preconditions and effects: the
-         model PDDL writes in two files.
+         model that you write in two PDDL files.
 
       .. grid-item-card:: The four challenges
          :link: https://pages.nist.gov/ARIAC_docs/en/latest/pages/challenges.html
@@ -227,7 +227,7 @@ files and the packages that the slides name. Every link was checked on
          unmet precondition for the plan with two steps swapped.
 
 
-.. dropdown:: Where PDDL Strains
+.. dropdown:: Limits of PDDL
    :class-container: sd-border-secondary
    :open:
 

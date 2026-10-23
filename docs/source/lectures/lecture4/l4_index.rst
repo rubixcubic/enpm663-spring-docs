@@ -6,25 +6,26 @@ Overview
 --------
 
 **L3 gave the executive layer a small world model: the cell on each tester,
-its averaged voltage, the tray slots filled and the kit total so far. This
-lecture builds the structure that reads and updates that model while the
-robots work.** That structure is a **behavior tree (BT)**: a tree of nodes
+its averaged voltage, the tray slots filled and the kit total so far. In this
+lecture, a behavior tree reads and updates that model while the robots
+work.** A **behavior tree (BT)** is a tree of nodes
 that a program visits from the root down many times a second. Each visit is a
 **tick**, and each node it visits returns ``SUCCESS``, ``FAILURE`` or
 ``RUNNING``.
 
 The lecture starts by writing one GP1 step, moving a tested cell to a tray
 slot or to the recycling bin, as a **finite state machine (FSM)** and as a BT,
-and counts what each one costs when a failure case or a retry is added. It
+and counts the transitions or nodes each one adds for a failure case and for
+a retry. It
 then covers the BT primitives (leaves, sequence, selector, parallel and the
-decorators), each measured with a short ``py_trees`` script, and how a tick
+decorators), each shown with a short ``py_trees`` script, and how a tick
 moves through a tree, with a live demonstration of a ``Retry`` around a pick
 that fails once, run with and without **memory**. Next comes the
 **blackboard**, the shared key-value store that holds L3's world model inside
 the tree. The second half moves to ``py_trees_ros``: the tree as a ROS 2 node,
 and leaves that call actions and services and read topics, shown in three live
 runs against stand-ins for ARIAC and the course skills. The lecture ends with
-three patterns for the GP1 tree: retry, stop cleanly, and check before acting.
+patterns for the GP1 tree: retry, stop cleanly, and check before acting.
 
 .. important::
 
@@ -41,7 +42,7 @@ three patterns for the GP1 tree: retry, stop cleanly, and check before acting.
 
 .. warning::
 
-   **Two GP1 traps this lecture measured.** Both pass a quick test and break
+   **Two GP1 traps this lecture shows.** Both pass a quick test and break
    the kit.
 
    1. **A parallel skips a child that already succeeded.** With the
@@ -61,8 +62,8 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Explain why behavior trees replaced finite state machines for robot task
-  execution.
+- Explain why a behavior tree is easier to change than a finite state
+  machine.
 - Describe the BT primitives (sequence, selector, parallel, and the retry,
   timeout and inverter decorators) and predict the status a composite returns
   from its children's statuses.
@@ -98,8 +99,8 @@ Next Steps
     failure modes.
 
 - In the next lecture we cover **L5: Sensing and Perception for Robotic
-  Systems**: lidar point clouds that find defects on battery cells (GP2), and
-  how to score a detector with precision and recall.
+  Systems**: finding defects on battery cells in lidar point clouds (GP2), and
+  scoring a detector with precision and recall.
 - **Before next class:**
 
   - Run ``retry_demo.py`` (see :doc:`l4_code`), change the memory flag and

@@ -82,8 +82,7 @@ Multiple Choice (Questions 1 to 9)
 
    The registry has no builder for ``move-avg``, so ``build_tree`` stops with
    ``step 5: no builder for move-avg`` and Demo 1 reports ``goals sent: 0``.
-   The error appears before any robot moves, not after four cells are on the
-   tray.
+   The build fails before step 1 runs, so no goal is sent.
 
 
 .. admonition:: Question 3
@@ -158,8 +157,7 @@ Multiple Choice (Questions 1 to 9)
 
    ``num_failures=3`` allows three attempts in all. After the third failure,
    Retry returns FAILURE and the plan fails with it: Demo 2 with three
-   failures prints ``plan FAILURE after 6 ticks; 3 goals sent``. Retries are
-   always bounded.
+   failures prints ``plan FAILURE after 6 ticks; 3 goals sent``.
 
 
 .. admonition:: Question 6
@@ -351,8 +349,8 @@ Short Answer (Questions 15 to 18)
 .. admonition:: Question 15
    :class: hint
 
-   Why does a leaf that watches only for silence never fire during an ARIAC
-   2025 voltage tester malfunction? What does the lecture put in its place?
+   Why does a leaf that fails only when messages stop never fail during an
+   ARIAC 2025 voltage tester malfunction? What does the lecture put in its place?
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -404,7 +402,8 @@ Short Answer (Questions 15 to 18)
 .. admonition:: Question 18
    :class: hint
 
-   Why should the GP3 executor not care where a plan came from?
+   Why should the GP3 executor run any plan built from the domain's action
+   names, whichever program wrote it?
 
 .. dropdown:: Answer
    :class-container: sd-border-success

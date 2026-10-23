@@ -5,8 +5,7 @@ L12: Evaluation and Measurement Science for Agentic Systems
 Overview
 --------
 
-**How do you know your system works, and how sure can you be?** Every team
-has just compared its GP4 agent with its GP3 planner. This lecture is about
+Every team has just compared its GP4 agent with its GP3 planner. This lecture is about
 the measurement behind that comparison. A claim about a system needs three
 things: a **defined metric**, a **source of truth** to compare against, and
 enough runs to know how far the number moves by chance.
@@ -36,7 +35,7 @@ comparison** then changes one variable and holds the rest, so a difference
 has only one cause.
 
 The last part reads the **ARIAC 2025 scoring formula** term by term, with the
-real weights from the ARIAC source, and works two runs of the same trial. A
+weights from the ARIAC source, and works two runs of the same trial. A
 run that misses one kit loses 3201.25 points: its share of the base score and
 every bonus, because ARIAC pays bonuses only when every order is complete.
 The lecture ends with what a final demo test plan contains.
@@ -53,8 +52,8 @@ The lecture ends with what a final demo test plan contains.
 
    **Group project.** GP4 is due this Friday, April 23, at 11:59 pm: submit
    it on ELMS-Canvas with the repository link. After the deadline, fill in the GP4 peer-review form.
-   There is no quiz today. The GP4 comparison with GP3 is the first place you use this
-   lecture's rules. The final demo test plan is the second.
+   There is no quiz today. Use this lecture's rules for the GP4 comparison
+   with GP3 and for the final demo test plan.
 
 
 Learning Objectives
@@ -72,7 +71,7 @@ By the end of this lecture, you will be able to:
 - Design a controlled comparison that changes one variable, and estimate
   whether a difference in success rate is larger than chance.
 - Compute an ARIAC 2025 run score from the scoring formula and the published
-  weights, and explain what each term rewards or penalizes.
+  weights, and explain how each term raises or lowers the score.
 - Evaluate a test plan for the final demo against these metrics.
 
 
@@ -94,8 +93,7 @@ Next Steps
 - In the next lecture we cover **L13: The Physical AI Frontier** (Wednesday,
   April 28):
 
-  - VLAs, robot foundation models and world models: the learned side of
-    physical AI.
+  - VLAs, robot foundation models and world models.
   - Final demo questions are answered at the end of class.
 
 - **Before next class:**

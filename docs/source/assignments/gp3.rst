@@ -80,7 +80,7 @@ After completing GP3, you will be able to:
 - Write a cell selection step that meets the kit voltage limit.
 - Run a planner from Python and check the plan before running it.
 - Build a plan-to-BT executor with retry, timeout and replanning triggers.
-- Explain what PDDL captured well in Task 1 and where it strained.
+- Explain what PDDL modeled well in Task 1 and what was hard to model.
 
 
 Provided Resources
@@ -237,8 +237,8 @@ Deliverables
 2. A demonstration on two or three trials, one of which triggers a replan:
    the trial configurations, a screen recording or log of each run, and the
    ARIAC run results.
-3. A short reflection (1 to 2 pages) on what PDDL captured well and where it
-   strained in Task 1.
+3. A short reflection (1 to 2 pages) on what PDDL modeled well in Task 1 and
+   what was hard to model.
 4. The honor pledge, signed by every team member.
 
 
@@ -256,8 +256,8 @@ Submission Checklist
          timeout around each skill.
    - [ ] One run shows a trigger, the new plan, and an accepted kit after
          it.
-   - [ ] The reflection names at least two things PDDL captured well and
-         two places it strained, each with a Task 1 example.
+   - [ ] The reflection names at least two things PDDL modeled well and
+         two things that were hard to model, each with a Task 1 example.
    - [ ] Every team member signed the honor pledge.
    - [ ] Each member fills in the peer-review form after the deadline (see
          :ref:`peer-evaluation`).
@@ -315,8 +315,9 @@ Grading Rubric (Draft)
        run results; one run shows a replan.
    * - Reflection
      - 10
-     - The grader reads the reflection: at least two things PDDL captured
-       well and two places it strained, each tied to a Task 1 example.
+     - The grader reads the reflection: at least two things PDDL modeled
+       well and two things that were hard to model, each tied to a Task 1
+       example.
 
 The points add up to 20 + 10 + 10 + 10 + 15 + 15 + 10 + 10 = 100.
 

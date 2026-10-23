@@ -20,11 +20,9 @@ From L1
 ~~~~~~~
 
 - The course builds the **decision layer** of a factory robot system.
-  Classical skills do the motion.
 - ARIAC 2025 Task 1 is inspection and kit building. Every step is a ROS 2
   topic, service or action.
-- QoS, executors, actions and TF2 decide whether those interfaces behave as
-  you expect.
+- With the wrong QoS or executor, a node receives nothing or misses updates.
 
 The Diagnostic Quiz
 ~~~~~~~~~~~~~~~~~~~
@@ -44,9 +42,9 @@ Classical Robot Architectures
    A robot's **architecture** says how its software is split into parts, and
    how the parts pass decisions and data to each other.
 
-There are four classic answers. Each one strikes a different balance between
-**planning** (thinking ahead about goals) and **reacting** (answering a
-sensor reading right away).
+There are four classic answers. They differ in how much each one does
+**planning** (thinking ahead about goals) before it acts, and how much
+**reacting** (answering a sensor reading right away).
 
 
 Sense-Plan-Act and Reactive
@@ -91,7 +89,7 @@ Behavior-Based Control and Subsumption
 - Brooks's stronger claim, that a robot can work with no explicit world model,
   comes later, in "Intelligence without representation" (1991).
 
-**Where it strains.** Complex tasks are hard to express as layers of
+**Its limit.** Complex tasks are hard to express as layers of
 behaviors. There is no place to write "build a kit whose total voltage is in
 range".
 
@@ -145,8 +143,7 @@ layer slowest.
 
 .. important::
 
-   The stack you build in this course follows this pattern, and it is the
-   frame we use all semester.
+   The stack you build in this course follows this pattern.
 
 
 The Four Architectures Side by Side
@@ -164,7 +161,7 @@ The Four Architectures Side by Side
    Gray: the world and sensing.
 
 Panel 1 puts a model and a plan between every reading and every action.
-Panel 2 puts nothing there. Panels 3 and 4 are two ways to have both.
+Panel 2 puts nothing there. Panels 3 and 4 do both.
 
 
 .. _l2-three-layer:
@@ -172,21 +169,21 @@ Panel 2 puts nothing there. Panels 3 and 4 are two ways to have both.
 The Three-Layer Architecture
 ----------------------------
 
-This section is the frame of the course: what passes between the layers, and
-one example of goals going down and status coming up.
+This section covers what passes between the layers, with one example from
+the toy factory run.
 
 
 What Passes Between the Layers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Down and up.**
+**Goals and status.**
 
 - **Goals and plans go down.** The deliberative layer sends a decision; the
   executive sends skill goals.
 - **Status, results and failures come up.** A skill reports success or a
   failure reason; the executive reports when a step cannot finish.
 
-**Every boundary is an interface.**
+**The interface at each boundary.**
 
 - Executive to reactive: a ROS 2 action (a skill goal and its result).
 - Inside the executive: blackboard keys (L4).
@@ -195,12 +192,11 @@ What Passes Between the Layers
 
 .. note::
 
-   L3 covers how to design what crosses each boundary: the world model each
-   layer needs.
+   L3 covers the world model each layer needs.
 
 
-Goals Down, Status Up: One Example
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+One Example from the Toy Factory
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l2/goals_status.svg
    :alt: Three stacked boxes: Deliberative (slowest) on top, Executive in the middle, Reactive (fastest) below, and World at the bottom. Arrows on the left go down and carry goals: test the next cell at tester 1; pick and place in tester 1 (skills); joint commands (controllers). Arrows on the right go up and carry status: joint states and sensor data; GRASP_FAILED and tester 1 at -1 V, MALFUNCTIONING, in red; and cell 3 at 3.60 V with tester 1 down, in red.
@@ -235,8 +231,8 @@ What the Toy Keeps from ARIAC, and What It Makes Up
 
 .. warning::
 
-   This is a toy, not ARIAC: no simulator, no ROS, one robot action at a
-   time. Only the rules below come from ARIAC 2025 (source, branch
+   The toy has no simulator or ROS and runs one robot action at a time.
+   Only the rules below come from ARIAC 2025 (source, branch
    ``ariac2025``).
 
 **Kept from ARIAC.**
@@ -251,7 +247,7 @@ What the Toy Keeps from ARIAC, and What It Makes Up
 - A malfunctioning tester keeps publishing: −1 V with the status
   ``MALFUNCTIONING`` (``voltage_tester_plugin.cpp``). ARIAC's challenge page
   says a malfunctioning tester stops publishing; the toy follows the code.
-  **Check the status field, not only the voltage.**
+  **Check the status field too.**
 
 **Chosen for this example.** 10 cells; step times of 3 s to 10 s; each pick
 fails with probability 0.2; tester 1 malfunctions from 20 s for 45 s (45 s is
@@ -274,9 +270,9 @@ Architecture 1: Plan Only
    :caption: lecture2/code/toy_factory.py (excerpt)
 
 - The plan is made once, at :math:`t = 0`: testers 1, 2, 1, 2, and so on.
-- It foresees one branch: ``sort_cell`` sends a reading inside 3.4 V to 3.8 V
-  to AGV 1, and any other reading to the recycling bin.
-- It never looks at a skill result or a tester status.
+- Its only branch is in ``sort_cell``: a reading inside 3.4 V to 3.8 V goes
+  to AGV 1, any other reading to the recycling bin.
+- The code never checks a skill result or a tester status.
 
 
 Architecture 2: React Only
@@ -299,7 +295,7 @@ in one pass:
 4. Rule 4 (below the excerpt): a cell is waiting and a tester is free and
    working, so pick the cell into it. A failed pick just fires the rule again.
 
-There is no memory: one reading, no average, and no record of the tray.
+It acts on one reading, with no average and no record of the tray.
 
 
 Architecture 3: The Executive Retries and Moves the Cell
@@ -350,8 +346,6 @@ Architecture 3: The Planner Chooses the Cells for the Kit
   instead:** :doc:`GP1 Task 4 </assignments/gp1>` says "Before placing a cell
   inside that range, check that the four-cell total can still land in
   14.25 V to 14.55 V. If it cannot, recycle the cell."
-- Defective cells never reach the robots: ARIAC's inspection door lets a cell
-  through only if your team submitted a passing report for it.
 
 
 .. _l2-toy-result:
@@ -375,7 +369,7 @@ they arrive. The kits:
    which is 0.05 V above 14.55 V.
 3. **Three layers** ships cells 1, 3, 4 and 6:
    3.73 + 3.61 + 3.52 + 3.60 = 14.46 V, inside the window. It takes 107 s,
-   against 74 s for react only, mostly because it tests six cells, not four:
+   against 74 s for react only, mostly because it tests six cells:
    cells 2 and 5 do not fit and are set aside. One cell takes about 14 s
    (``three_layers.txt`` logs cell 1 at 8.0 s and cell 2 at 22.0 s), so the
    two extra cells are about 2 × 14 = 28 s of the 107 − 74 = 33 s.
@@ -394,8 +388,8 @@ of cell 1 at tester 1 was 3.72 V, and the cell went to AGV 1.
 
 - Cells 3 and 5 reach tester 1 while it malfunctions. The plan reads −1.00 V
   as a voltage, finds it out of range, and recycles two good cells.
-- ``no cell``: a pick failed. The plan goes on and reads an empty tester
-  (about 0 V).
+- ``no cell``: a pick failed. The next step still reads the tester, which is
+  empty (about 0 V).
 
 .. literalinclude:: outputs/react_only.txt
    :language: text
@@ -430,8 +424,8 @@ Exercise 1 on the :doc:`exercises page <l2_exercises>` finishes the kit with
 cells 4 to 6.
 
 
-One Run Is One Sample: 1000 Seeds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Same Run with 1000 Seeds
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 One run could be luck. ``--sweep 1000`` runs each architecture on seeds 1 to
 1000 and counts how each run ended.
@@ -475,17 +469,14 @@ One Tester Malfunction, Layer by Layer
 --------------------------------------
 
 This is the three-layer run from the demonstration, one step at a time.
-Tester 1 malfunctions from 20 s to 65 s (20 + 45). At each step, ask three
-questions: which layer sees the failure, which layer handles it, and what
-moves up.
+Tester 1 malfunctions from 20 s to 65 s (20 + 45).
 
 Steps 1 to 3: The Tester Reports, the Executive Sees
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **20 s, reactive layer.** Tester 1 starts to malfunction. It publishes
-   −1 V with the status ``MALFUNCTIONING`` every 0.1 s. It reports; it
-   decides nothing.
-2. **28 s, deliberative layer.** The planner has heard nothing, so its rule
+   −1 V with the status ``MALFUNCTIONING`` every 0.1 s.
+2. **28 s, deliberative layer.** No report has reached the planner, so its rule
    (alternate the testers) assigns cell 3 to tester 1. Cell 2 used tester 2.
 3. **36.0 s, executive.** The executive averages 10 readings at tester 1 and
    sees ``MALFUNCTIONING``. This is the first layer to see the failure,
@@ -503,10 +494,10 @@ The 28 s is not in the trace. Cell 2 is logged at 22.0 s, and its move to the
 tray takes 6 s, so the planner's next choice comes at 22 + 6 = 28 s.
 
 
-Steps 4 to 6: Handled Where Seen, Then Status Moves Up
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Steps 4 to 6: Handling and Reporting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-4. **36 s to 41 s, executive.** It handles the failure without asking anyone:
+4. **36 s to 41 s, executive.** It handles the failure without the planner:
    it calls a skill to move cell 3 to tester 2 (4 s) and reads again (1 s).
    At 41.0 s, tester 2 reads 3.60 V.
 5. **41 s, executive to planner.** The report holds two facts: cell 3 reads
@@ -519,18 +510,17 @@ Steps 4 to 6: Handled Where Seen, Then Status Moves Up
 
    This is a rule from 4D/RCS, NIST's reference model for robot control,
    which L3 covers: **an error is handled where it is seen, and only the
-   status moves up.** The planner never learns what
-   a −1 V reading is.
+   status moves up.**
 
 
-Steps 7 and 8: Recovery, and the Whole Story in One Table
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Steps 7 and 8: Recovery, and a Summary Table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 7. **65 s to 75.3 s.** Tester 1 works again at 65 s. Before each new cell,
    the planner asks for the status of the testers it marked down. The first
    check after 65 s comes at 75.3 s.
-8. **79.3 s to 91.3 s.** Two grasps fail and the executive retries; the
-   planner never hears of them. Cell 6 is tested at tester 1 (logged at
+8. **79.3 s to 91.3 s.** Two grasps fail and the executive retries; no
+   report goes to the planner. Cell 6 is tested at tester 1 (logged at
    91.3 s).
 
 .. list-table::
@@ -564,11 +554,11 @@ Steps 7 and 8: Recovery, and the Whole Story in One Table
 
 .. _l2-real-software:
 
-Three Layers in Real Robot Software
------------------------------------
+Three Layers in Nav2 and MoveIt
+-------------------------------
 
 This section looks at Nav2 (ROS 2 navigation) and MoveIt (motion planning),
-quoted from their documentation, read on 2026-10-12. The layer names are
+quoted from their documentation. The layer names are
 ours: the documentation uses its own words.
 
 Nav2: A Behavior Tree Calls the Servers
@@ -600,9 +590,8 @@ The Nav2 documentation says:
 
 .. important::
 
-   Nav2's **planner server** computes a path. In our terms it is a skill
-   below the executive, not the deliberative layer. **Match layers by role,
-   not by name.**
+   Nav2's **planner server** computes a path, so in our terms it is a skill
+   below the executive, despite its name.
 
 Sources (Nav2 documentation, Jazzy):
 `Behavior Trees <https://docs.nav2.org/jazzy/getting_started/navigation_concepts/behavior_trees/>`__,
@@ -610,8 +599,8 @@ Sources (Nav2 documentation, Jazzy):
 `Behavior-Tree Navigator <https://docs.nav2.org/jazzy/configuration_and_development/configuration_guide/core_servers/configuring_bt_navigator/>`__.
 
 
-MoveIt: A Motion Layer, Not an Executive
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+MoveIt: A Motion Layer
+~~~~~~~~~~~~~~~~~~~~~~
 
 The MoveIt documentation says that the ``move_group`` node "serves as an
 integrator: pulling all the individual components together to provide a set
@@ -623,8 +612,8 @@ is a trajectory and not just a path."
 - In the course stack, MoveIt 2 sits inside the skills package. A skill asks
   it for a trajectory, and the ``follow_joint_trajectory`` action of the
   robot's joint trajectory controller in ARIAC runs it (ARIAC API page).
-- MoveIt does not decide which cell to pick next or what to do when a grasp
-  fails. Your executive and your planner do.
+- Your planner and your executive decide which cell to pick next and what to
+  do when a grasp fails.
 
 Sources (MoveIt documentation, Rolling version):
 `The move_group node <https://moveit.picknik.ai/main/doc/concepts/move_group.html>`__,
@@ -633,12 +622,11 @@ Sources (MoveIt documentation, Rolling version):
 
 .. _l2-where-ai:
 
-Where AI Plugs In
------------------
+AI in the Three Layers
+----------------------
 
-An LLM agent goes in the deliberative layer, a vision-language model (VLM)
-goes in perception, and
-everything else stays classical.
+An LLM agent goes in the deliberative layer, and a vision-language model
+(VLM) goes in perception.
 
 Two AI Components and Their Places
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -646,8 +634,8 @@ Two AI Components and Their Places
 **LLM agent: deliberative layer (GP4).**
 
 - It decides the next step from the world state and calls skills as tools.
-- It handles situations a fixed planning model does not describe, such as the
-  ARIAC challenges.
+- It can respond to situations a fixed planning model does not describe, such
+  as the ARIAC challenges.
 
 **VLM: perception (GP4, final demo).**
 
@@ -670,17 +658,12 @@ services.
 Why the Executive Stays Classical
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- The behavior tree checks each skill result and stops cleanly on failure,
-  whatever planner sits above it.
+- Your behavior tree checks each skill result and stops cleanly on failure
+  (GP1, Task 6), whatever planner sits above it.
 - In GP3 the tree runs a PDDL plan; in GP4 the same tree runs the agent's
   decisions.
 - Because the executive is the same, GP4 can compare the agent with the
   planner on identical trials: validity, plan length, cost and latency.
-
-.. important::
-
-   Swap the deliberative layer, keep the executive: that is how this course
-   measures what an LLM adds.
 
 
 Discussion: Assign Each Task 1 Step to a Layer
@@ -724,7 +707,7 @@ ARIAC 2025 as a Three-Layer System
 ----------------------------------
 
 This section says who provides each layer (ARIAC, the course, or your team)
-and gives the drawing we keep for the rest of the semester.
+and shows the course stack as one drawing.
 
 Who Provides Each Layer
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -763,8 +746,8 @@ The vacuum tools on assembly robot 2 use grasp and release services instead of
 a gripper action.
 
 
-The Drawing We Keep All Semester
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Course Stack in One Drawing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l2/ariac_three_layers.svg
    :alt: The course stack drawn as boxes. Top, in blue: Deliberative (your team), GP3 PDDL planner, and in GP4 an LLM agent. Below it, in amber: Executive (your team), the GP1 behavior tree in py_trees_ros. Below that, in green: Skills (the course), pick and place as ROS 2 actions on MoveIt 2. At the bottom, in green: Reactive (ARIAC), the controllers, grippers, conveyor, testers, AGVs and sensors. Arrows go down on the left and up on the right between the layers. A separate arrow goes from the executive straight down to ARIAC, past the skills, labeled /agvN/move and ARIAC services. On the left, a purple Perception box (your team: GP2 lidar defects, GP4 VLM on camera images) receives sensor data from ARIAC and sends its results to the executive and to the deliberative layer.
@@ -773,13 +756,12 @@ The Drawing We Keep All Semester
 
    Left arrows: goals down. Right arrows: status up. The executive calls the
    skills for the arms, and calls ARIAC directly to move the AGVs and to use
-   the factory services. Each later lecture points to the box it fills.
+   the factory services.
 
 
-What the Course Skills Package Promises
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What the Course Skills Package Does
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Your team calls skills and never writes motion code.
 - Each skill is a ROS 2 action: it reports success, or a failure reason in its
   result.
 - **A skill never retries a task on its own.** It stops and returns a failure
@@ -794,7 +776,7 @@ What the Course Skills Package Promises
 .. important::
 
    The skills package is the boundary between the reactive layer you are
-   given and the executive you build. L10 opens it up.
+   given and the executive you build. L10 covers how the skills work.
 
 
 .. _l2-vla:
@@ -802,8 +784,8 @@ What the Course Skills Package Promises
 The End-to-End Alternative
 --------------------------
 
-This section is a survey only: no policy training and no hands-on VLA work.
-L13 goes deeper.
+This section is a survey only, with no policy training and no hands-on VLA
+work (more in L13).
 
 What a VLA Model Is
 ~~~~~~~~~~~~~~~~~~~
@@ -844,21 +826,20 @@ A Two-System VLA Next to the Three Layers
 
    1: Helix, a two-system VLA; numbers from Figure's Helix page. 2: this
    course.
-   Same colors as the earlier drawings: blue deliberates, amber executes,
-   green reacts.
+   Same colors as the earlier drawings: blue, deliberative; amber, executive;
+   green, reactive.
 
 .. important::
 
    Helix has the deliberative and reactive roles, and its policy acts on the
-   slow model's output directly: nothing between them checks each step. Your
-   behavior tree is that check. Not every two-system design works this way:
+   slow model's output directly: nothing between them checks each step. Not every two-system design works this way:
    in Gemini Robotics 1.5, the reasoning model "gives Gemini Robotics 1.5
    natural language instructions for each step" and "estimates its success
    and progress" (Google DeepMind, 2025).
 
 
-The Tradeoffs This Course Weighs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+VLA and Modular Stack Compared
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -884,10 +865,8 @@ The Tradeoffs This Course Weighs
 
 .. important::
 
-   The course keeps the modular stack for the first three rows: it runs with
-   no training data or GPUs, every failure can be traced, and every kit can be
-   checked against the voltage window. The last row is the price of that
-   choice.
+   The course keeps the modular stack for the first three rows and gives up
+   the fourth: new tasks need new skills.
 
 
 .. _l2-multi-robot:
@@ -965,13 +944,13 @@ Central or Per-Robot Decision Makers
 
       Each robot decides for itself and negotiates for shared space.
 
-      It scales, but the robots must agree, and a missed message can
-      **deadlock** them (each one waits for the other, forever).
+      It scales, but the inspection robots must agree on the tester area, and
+      a missed message can **deadlock** them (each one waits for the other, forever).
 
 .. important::
 
-   An LLM agent that controls several robots in GP4 and the final demo meets
-   these conflicts. L11 returns to them.
+   In GP4 and the final demo, an LLM agent controls several robots and must
+   resolve these conflicts (L11).
 
 
 .. _l2-gp1:
@@ -1059,7 +1038,7 @@ Forming Your Team
 
    - who owns which part of the system, with a primary and a backup;
    - when the team meets, and how it uses Git;
-   - what happens when someone goes quiet;
+   - what happens when a member stops responding;
    - how the team uses AI tools.
 
 

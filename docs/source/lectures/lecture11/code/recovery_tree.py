@@ -26,7 +26,7 @@ per arm" and "Cancel stops the arm and retreats"):
     (chosen for this example)
 
 A failed place returns its result after the arm has retreated
-(L10, "No Hidden Retries"), so robot 1 is free when a failure
+(L10, "After a Failure or a Cancel"), so robot 1 is free when a failure
 comes back.
 """
 import py_trees

@@ -5,9 +5,8 @@ L3: Knowledge Representation for Agentic Robotics
 Overview
 --------
 
-**L2 drew the boundaries between the layers of a robot system. This lecture
-asks what crosses them.** The answer is a representation of the world, the
-task and the robot. **Knowledge representation** is the study of how to write
+**This lecture covers what crosses the interfaces between L2's layers: a
+representation of the world, the task and the robot.** **Knowledge representation** is the study of how to write
 that model down so programs can use it.
 
 Three programs in this course read the same world model, each in its own
@@ -43,9 +42,8 @@ which are unknown, and one cell tracked from events, step by step.
 .. important::
 
    **Group project.** GP1 is under way. Its world model lives on the
-   ``py_trees`` blackboard, so decide your key names and types now: they are
-   interfaces, and your team charter, due before this class, assigns who owns
-   them.
+   ``py_trees`` blackboard, so decide your key names and types now, and give
+   each key an owner in your team charter, due before this class.
 
 
 Learning Objectives
@@ -53,11 +51,12 @@ Learning Objectives
 
 By the end of this lecture, you will be able to:
 
-- Explain why representation matters when a PDDL planner, an LLM agent and
-  an executor use the same world model.
+- Explain what goes wrong when a PDDL planner, an LLM agent and an executor
+  keep separate copies of one world model.
 - Apply frames (slots, fillers, defaults, inheritance) to ARIAC cells, kits,
   modules and AGVs.
-- Describe an ontology and its role in connecting perception to planning.
+- Describe an ontology, and trace one dented cell from perception to planning
+  with it.
 - Explain two ideas from NIST's 4D/RCS reference model, and apply them to
   the three layers of the ARIAC stack.
 - Write one kit as PDDL facts, as a JSON record checked by a JSON schema, and
@@ -83,12 +82,12 @@ Next Steps
 
 - **Quiz 1** is next week (Wednesday, February 17), at the start of class:
   closed notes, on ELMS-Canvas or paper, covering L1 to L3. Review the ARIAC
-  2025 tasks, challenges and what the score rewards; QoS, executors, actions
+  2025 tasks, challenges and how ARIAC scores a run; QoS, executors, actions
   and TF2 and their demo results; the classical and three-layer architectures
-  and where AI plugs in; frames, ontologies, the two 4D/RCS ideas and the
+  and AI in the three layers; frames, ontologies, the two 4D/RCS ideas and the
   three views of a kit.
 - In the next lecture we cover **L4: Behavior Trees for Task Execution**, the
-  executive layer that runs on today's representation. After L4, your team
+  executive layer, which reads and writes the blackboard. After L4, your team
   writes the GP1 tree.
 - **Before next class:**
 

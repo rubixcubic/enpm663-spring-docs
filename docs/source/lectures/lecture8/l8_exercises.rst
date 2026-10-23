@@ -709,7 +709,7 @@ script.
 
       ``json.dumps`` prints the input 3.70 as ``3.7``; it is the same number.
 
-      **Question 5.** The model chooses; code does the sums. A tool returns a
+      **Question 5.** A tool returns a
       number the code computed, so a model's arithmetic slip cannot put a bad
       cell in the kit. The model only has to read "3.4 to 3.68" and pick a
       cell, and the orchestrator's semantic check (Exercise 3) still checks

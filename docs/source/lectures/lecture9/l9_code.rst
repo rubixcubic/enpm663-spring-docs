@@ -43,7 +43,7 @@ same files the slides show.
        ``live()`` is the live check that ``closed_loop.py`` calls.
      - offline; ``live()`` on ARIAC
    * - :download:`closed_loop.py <code/closed_loop.py>`
-     - The L8 orchestrator with Gemini fills agv1's four slots while voltage
+     - Gemini, through the L8 orchestrator, fills agv1's four slots while voltage
        tester 1 malfunctions, under a replan or a wait policy, then prints
        the kit total.
      - ARIAC
@@ -159,7 +159,7 @@ The Replan Recording
 ~~~~~~~~~~~~~~~~~~~~
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1.
+different answers.
 
 .. note::
 
@@ -180,7 +180,7 @@ The Wait Recording
 ~~~~~~~~~~~~~~~~~~
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1.
+different answers.
 
 .. literalinclude:: outputs/closed_loop_wait_rec1.txt
    :language: text

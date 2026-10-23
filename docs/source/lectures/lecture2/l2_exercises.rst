@@ -112,11 +112,9 @@ script, **write your prediction down first**, then run the script and compare.
       good. It only fails the toy's fit rule, so the planner keeps it on
       AGV 2 for a later kit. The spare tray is a simplification of the toy.
       :doc:`GP1 Task 4 </assignments/gp1>` recycles instead: before placing
-      a cell in range, check that the four-cell total can still land in
+      a cell in range, check that the four-cell total can still fall in
       14.25 V to 14.55 V, and recycle the cell if it cannot. Under that rule
       cell 5 would be placed: 10.81 + 3.47 = 14.28 V is inside the window.
-      Defective cells never reach the robots: the inspection door lets a
-      cell through only with a passing report.
 
       **Question 5.**
 

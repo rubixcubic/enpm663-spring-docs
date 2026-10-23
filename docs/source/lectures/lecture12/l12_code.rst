@@ -156,7 +156,7 @@ Score calculator: ``score_calculator.py``
 -----------------------------------------
 
 The script reads ``scoring_weights.yaml`` and computes the base score, the
-five bonuses (with the bonus gate and the same clamping as ``scoring.py``),
+five bonuses (with every bonus set to 0 when an order is missing, and the same clamping as ``scoring.py``),
 the penalties and the run score for the two runs of the worked example. The
 sensor prices come from the ARIAC sensors page; the choice of sensors and
 every run measurement are chosen for the example. Its last line checks the

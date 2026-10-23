@@ -14,7 +14,7 @@ Quiz
    for it. Memorizing the answers below is not.
 
 This quiz covers Lecture 1: physical AI and agents, the ARIAC 2025 factory
-and what a run's score rewards, the kit voltage window, the path of one cell
+and how ARIAC scores a run, the kit voltage window, the path of one cell
 through the ROS 2 interfaces, and the four refresher demonstrations (QoS,
 executors, actions, TF2). Every question can be answered from the slides
 shown in class.
@@ -392,8 +392,8 @@ Short Answer (Questions 17 to 19)
    :class-container: sd-border-success
 
    An agent's decisions leave a trace a person can read and grade: each tool
-   call and its arguments. A learned motion policy fails in ways that are
-   hard to inspect, and this course grades your system on trials it has never
+   call and its arguments. A learned motion policy leaves no such trace of
+   tool calls, and this course grades your system on trials it has never
    seen. So the agent decides what happens next, and classical skills
    (MoveIt 2) do the motion.
 

@@ -56,7 +56,7 @@ Multiple Choice (Questions 1 to 11)
    **B**.
 
    An LLM call takes a list of messages and returns text, and between calls
-   it keeps nothing. The program, not the model, keeps the conversation and
+   it keeps nothing. The program keeps the conversation and
    sends it again on every call. **D** is wrong twice: the model keeps
    nothing, and it never reads ROS; the orchestrator does.
 
@@ -134,8 +134,8 @@ Multiple Choice (Questions 1 to 11)
    **C**.
 
    The text is valid JSON, ``agv`` 2 is inside 1 to 3 and ``SHIPPING`` is in
-   the enum, so it passes steps 1 and 2. Only code that knows the factory's
-   state sees that ``agv2`` holds 3 of 4 cells: "semantic: agv2 holds 3 of 4
+   the enum, so it passes steps 1 and 2. Only the semantic checks, which read
+   the factory's state, see that ``agv2`` holds 3 of 4 cells: "semantic: agv2 holds 3 of 4
    cells".
 
 
@@ -184,9 +184,9 @@ Multiple Choice (Questions 1 to 11)
 
    **A**.
 
-   Constrained output removes parse and schema errors (steps 1 and 2), not
-   semantic errors. A schema-perfect output can still ship a tray with 3
-   cells, so the semantic checks, the error feedback and the retry cap
+   Constrained output removes parse and schema errors (steps 1 and 2). It
+   does not stop a move of ``agv2``, with 3 of 4 cells, to ``SHIPPING``, so
+   the semantic checks, the error feedback and the retry cap
    (steps 3 to 5) stay.
 
 
@@ -312,9 +312,9 @@ Multiple Choice (Questions 1 to 11)
    **B**.
 
    What still works is unclear until a few results come back, so the agent
-   takes ReAct-style steps, then writes a new plan. This is the common
-   hybrid: plan-and-execute with ReAct-style recovery when a trigger fires,
-   which matches the L7 executor.
+   takes ReAct-style steps, then writes a new plan. This is a hybrid:
+   plan-and-execute, with ReAct-style steps after a trigger fires, as in the
+   L7 replanning loop.
 
 
 ----
@@ -417,8 +417,7 @@ True or False (Questions 12 to 17)
    **False.**
 
    ros-mcp-server lets an LLM publish and subscribe to topics, call services
-   and actions, and set parameters: wide access to the robot system.
-   Task-level tools behind the executor's guards are safer. Each team may
+   and actions, and set parameters. Task-level tools behind the executor's guards are safer. Each team may
    choose whether to use MCP at all; the tool schemas are the same either
    way.
 
@@ -443,22 +442,21 @@ Short Answer (Questions 18 to 20)
    14.25 V to 14.55 V, so the fourth cell must be at least 14.25 − 10.87 =
    3.38 V, raised to the cell minimum of 3.40 V, and at most 14.55 − 10.87 =
    3.68 V. The prompt says "the fourth cell must be from 3.40 V to 3.68 V".
-   LLMs make arithmetic slips, so code does the sums and the model only
-   chooses among cells.
+   The model's output is sampled and can be wrong, so the orchestrator
+   computes the window and the model only chooses among cells.
 
 
 .. admonition:: Question 19
    :class: hint
 
-   The slides say the orchestrator owns the loop and the LLM only proposes.
-   Name what the orchestrator owns, and what happens to a tool call that
-   fails the checks.
+   Name what the orchestrator runs and holds, and what happens to a tool
+   call that fails the checks.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   The orchestrator owns the loop, the list of tools, the checks and the
-   logs; the LLM never sends a ROS goal itself. A call that fails checks 1 to
+   The orchestrator runs the loop, holds the list of tools, runs the checks
+   and writes the logs; the LLM never sends a ROS goal itself. A call that fails checks 1 to
    4 (parse, schema, semantic checks, executor guards) is not run. It goes
    back to the LLM as an error message, and the loop goes on until a stop
    condition fires, such as too many invalid outputs in a row.

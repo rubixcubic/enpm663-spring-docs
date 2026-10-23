@@ -13,7 +13,7 @@ Quiz
    next week, covers L1 to L3. Working through this page is good preparation
    for it. Memorizing the answers below is not.
 
-This quiz covers Lecture 3: why representation matters, frames, ontologies,
+This quiz covers Lecture 3: the shared world model, frames, ontologies,
 the two ideas from 4D/RCS, the three views of one kit with the JSON record and
 the schema check, the fourth-cell example and its margin for chance, and the
 observed, inferred and unknown facts of Task 1. Every question can be answered from the slides shown in class.
@@ -115,7 +115,7 @@ Multiple Choice (Questions 1 to 14)
 
    A. In every cell frame, as its own slot
 
-   B. Once for the class, not per cell
+   B. Once, in the class
 
    C. In the kit frame's status slot
 
@@ -127,8 +127,8 @@ Multiple Choice (Questions 1 to 14)
    **B**.
 
    They are the same for every cell of a type, so they are stored once for
-   the class. Copying them into every cell frame would give many places for
-   one fact to drift apart.
+   the class. Copying them into every cell frame would give many copies of
+   one fact that can disagree.
 
 
 .. admonition:: Question 5
@@ -260,7 +260,7 @@ Multiple Choice (Questions 1 to 14)
    Why does GP3 pick the four cells in a separate step instead of in the
    PDDL planner?
 
-   A. PDDL handles numbers poorly, and choosing cells depends on voltages
+   A. PDDL facts are true or false, and choosing cells depends on voltages
 
    B. PDDL cannot describe AGVs
 
@@ -337,7 +337,7 @@ Multiple Choice (Questions 1 to 14)
 
    A. The tester rounded the reading
 
-   B. JSON writes a number without its trailing zero
+   B. ``json.dumps`` writes a number without its trailing zero
 
    C. The schema changed the value
 
@@ -348,7 +348,7 @@ Multiple Choice (Questions 1 to 14)
 
    **B**.
 
-   3.70 and 3.7 are the same number, and JSON writes it as 3.7. The record
+   3.70 and 3.7 are the same number, and ``json.dumps`` writes it as 3.7. The record
    still passes the schema, which checks only that the voltage is a number.
 
 
@@ -378,7 +378,7 @@ Multiple Choice (Questions 1 to 14)
 
    So the 3.75 V cell's 0.07 V overshoot is about 1.6 times what chance
    moves a full kit (0.07 / 0.0447 = 1.57). A true 14.55 V kit would read
-   that high about 6 times in 100, so a failed kit is likely, not certain.
+   that high about 6 times in 100, so a failed kit is likely but not certain.
 
 ----
 
@@ -398,7 +398,7 @@ True or False (Questions 15 to 22)
    **False.**
 
    The course requires neither. IEEE 1872-2015 (with its core ontology,
-   CORA) and OWL show that standards bodies define such ontologies. IEEE made
+   CORA) and OWL are standards, not course requirements. IEEE made
    1872-2015 inactive (reserved) on 2026-03-26 and is drafting a revision,
    P1872.
 
@@ -478,8 +478,8 @@ True or False (Questions 15 to 22)
    **False.**
 
    The eight levels are sized for a military vehicle hierarchy, with plans
-   from 50 ms at the servo level to 24 h at the battalion level. ARIAC's stack
-   is shallow, so the three layers are enough. The course takes only two
+   from 50 ms at the servo level to 24 h at the battalion level. ARIAC needs
+   no platoon or battalion levels, so the course keeps L2's three layers. The course takes only two
    ideas from 4D/RCS.
 
 
@@ -512,8 +512,8 @@ True or False (Questions 15 to 22)
 
    ``window`` is computed from the class: 4 × 3.6 = 14.40 V, plus or minus
    0.15 V, gives 14.25 V to 14.55 V. Only the cells' measured voltages are
-   stored; the total and the window are computed, so they cannot drift from
-   the cells.
+   stored; the total and the window are computed, so they cannot disagree
+   with the cells.
 
 ----
 

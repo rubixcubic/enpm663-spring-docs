@@ -9,7 +9,7 @@ commit 0c3e722 of the ``ariac2025`` branch, the commit the lecture read
 2026-10-12.
 
 
-.. dropdown:: What Good Means
+.. dropdown:: Measuring a System
    :class-container: sd-border-secondary
    :open:
 
@@ -23,8 +23,8 @@ commit 0c3e722 of the ``ariac2025`` branch, the commit the lecture read
          **NIST, ARIAC 2025 documentation**
 
          The home page says the competition's results guide "standards
-         efforts in robot agility", the quote on the slide "A Claim Is Only
-         as Good as Its Measurement".
+         efforts in robot agility", the quote on the slide "Claims and
+         Measurements".
 
 
 .. dropdown:: Plan-Level Metrics
@@ -155,7 +155,7 @@ commit 0c3e722 of the ``ariac2025`` branch, the commit the lecture read
 
          **ARIAC source:** ``ariac_db/ariac_db/scoring.py``
 
-         ``score_bonuses`` (the bonus gate and which bonuses are clamped),
+         ``score_bonuses`` (every bonus set to 0 when an order is missing, and which bonuses are clamped),
          ``score_penalties`` (the over-budget penalty) and
          ``get_run_score_table`` (the table printed at the end of a run).
          ``score_calculator.py`` follows it.

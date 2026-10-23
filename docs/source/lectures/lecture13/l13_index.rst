@@ -5,11 +5,9 @@ L13: The Physical AI Frontier: VLAs, Robot Foundation Models, and World Models
 Overview
 --------
 
-**All semester, your team built one side of physical AI: an agent that
-reasons about the factory and calls classical robot skills. This lecture
-surveys the other side, where learned models produce the robot's motions.**
-It is a survey: you train no policy and need no GPU. There is no quiz this
-week. The final demo code freeze is Friday, April 30, at 11:59 pm, two days
+**All semester, your team built an agent that reasons about the factory and
+calls classical robot skills. In the systems this lecture surveys, learned
+models produce the robot's motions.** There is no quiz this week. The final demo code freeze is Friday, April 30, at 11:59 pm, two days
 after this class.
 
 The lecture starts from the NVIDIA definition of **physical AI** used since
@@ -38,9 +36,10 @@ one step, failure modes and new tasks.
 
 The last part shows the one physical AI step the final demo adds: an
 **embodied-reasoning (ER) model** that judges cell defects from a camera
-image. A demonstration calls Gemini Robotics ER through the real
+image. A demonstration calls Gemini Robotics ER through the
 ``google-genai`` SDK, first with a scripted stand-in in place of the server,
-then in two runs recorded with the real model on 12 ARIAC camera images. It
+then in two runs recorded with ``gemini-robotics-er-2-preview`` on 12 ARIAC
+camera images. It
 checks each answer against a JSON schema and scores the answers with
 precision and recall per defect type. The class ends with
 questions about the Week 15 final demo.

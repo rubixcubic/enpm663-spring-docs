@@ -24,8 +24,7 @@ Prerequisites
        subscribers, services, and action clients and servers in Python. Use
        launch files, parameters and the ``ros2`` command-line tools.
    * - **Python**
-     - A significant amount of Python programming is required in every
-       group project.
+     - Every group project requires Python programming.
    * - **C++ (reading)**
      - Read C++ ROS 2 code. Writing C++ is not a prerequisite.
    * - **Git and GitHub**
@@ -61,8 +60,8 @@ Course and Instructor
    * - **Office hours**
      - By appointment
 
-Email replies come within 24 hours on weekdays. Use email for personal,
-academic or intellectual concerns, not for due dates and point values
+Email replies come within 24 hours on weekdays. Use email for personal or
+academic concerns, not for due dates and point values
 already in this syllabus. Important announcements, including project and
 due date changes, are posted on ELMS: turn on its notifications.
 
@@ -202,7 +201,7 @@ diagnostic quiz in Week 1.
      - L9 and L10
 
 - Quizzes are given at the start of class, on Canvas or on paper, and last
-  10 to 20 minutes.
+  20 minutes.
 - **Closed notes**: no notes, no external tools, no AI.
 - Quizzes are taken in class, unless you are registered in the online
   section. Absent students cannot take a quiz.
@@ -351,8 +350,8 @@ are handled under it.
      - No
 
 - **AI tools are required** in GP4 and the final demo: the system you build
-  calls an LLM and a VLM. Your team must understand, design and debug the
-  code that calls them.
+  calls an LLM and a VLM. Your team must design and debug the code that
+  calls them.
 - You may use AI tools to clarify concepts or look up syntax on any group
   project, but the submitted code and report must be your team's own work.
 - **Submitting AI-generated code that your team cannot explain is a
@@ -614,7 +613,7 @@ Required Software and Tools
      - MoveIt 2, ``py_trees_ros``, OpenCV, Unified Planning Framework or
        Fast Downward
    * - AI access
-     - From GP4 on: Google Gemini by default. While it develops, your team uses its own
+     - From GP4 on: Google Gemini by default. For development, your team uses its own
        free-tier Gemini API key. The course Gemini key runs only the graded
        GP4 and final demo evaluations. A team may run a local open-weight
        model instead, as the GP4 and final demo pages allow.

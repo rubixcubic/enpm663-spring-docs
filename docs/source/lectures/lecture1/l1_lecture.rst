@@ -5,9 +5,9 @@ Lecture
 .. note::
 
    These notes follow the L1 slides shown in class, in the same order and
-   with the same sections, so you can read them at home. Every program output
-   below comes from running the L1 scripts on ROS 2 Jazzy on 2026-10-12. The
-   scripts and how to run them are on the :doc:`code page <l1_code>`.
+   with the same sections, so you can read them at home. The program outputs
+   below come from the four L1 scripts, run on ROS 2 Jazzy. The scripts and
+   how to run them are on the :doc:`code page <l1_code>`.
 
 
 .. _l1-course-introduction:
@@ -19,8 +19,8 @@ Course Focus
 ~~~~~~~~~~~~
 
 This course is about robot systems in which an **AI agent decides what a
-factory cell does next**. Classical robotics carries out each decision:
-behavior trees, planners and motion planning. You work in one testbed all
+factory cell does next**. Behavior trees, planners and motion planning carry
+out each decision. You work in one testbed all
 semester, the ARIAC 2025 EV battery factory from NIST, and your team builds
 four group projects and a final demo on a trial no team has seen.
 
@@ -32,7 +32,7 @@ lists what the first class covers, with links to the full text.
 The Diagnostic Quiz
 ~~~~~~~~~~~~~~~~~~~
 
-The first 15 minutes of L1 are an **ungraded** diagnostic quiz, closed notes,
+The first 20 minutes of L1 are an **ungraded** diagnostic quiz, closed notes,
 on ELMS-Canvas or on paper. It covers the prerequisites in the syllabus:
 
 - packages and workspaces;
@@ -41,8 +41,7 @@ on ELMS-Canvas or on paper. It covers the prerequisites in the syllabus:
 - reading C++ ROS 2 code;
 - Git and GitHub: branches, merge conflicts and pull requests.
 
-The result shows you, and the instructor, where your ROS 2 background stands.
-If it shows gaps, read the ROS 2 Refresher in the
+If you miss questions on a topic, read the ROS 2 Refresher in the
 :doc:`Pre-Read </preread/index>` again and talk to the instructor this week.
 
 
@@ -68,9 +67,7 @@ The Instructor and His Research
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Zeid Kootbally (zeidk@umd.edu, office hours by appointment) is a researcher
-at the NIST Engineering Laboratory. He leads the Measurement Science for
-Automated Vehicles (MSAV) project and is a member of the Agility Performance
-of Robotic Systems (APRS) project. Format email subjects as
+at the NIST Engineering Laboratory. Format email subjects as
 ``ENPM663 (Section): [Topic]``.
 
 His research is on **robot agility**:
@@ -103,7 +100,7 @@ How the Course Runs
 - **Grades.** Final project 60% (GP1 to GP4 at 10% each, final demo at 20%),
   five quizzes 25%, peer-review contribution 15%. There is no final exam.
   See :doc:`the syllabus </syllabus/index>`.
-- **Quizzes.** Five quizzes at the start of class, 10 to 20 minutes, closed
+- **Quizzes.** Five quizzes at the start of class, 20 minutes each, closed
   notes, no AI. Quiz 1 is in Week 4 and covers L1 to L3. No quiz is dropped.
 - **Late work.** 10% of the project grade per calendar day, up to 3 days.
   Work more than 3 days late earns zero.
@@ -150,9 +147,8 @@ and the tree work follows L4.
 
 **How the final demo is graded.** Your team tags its code before the code
 freeze, and the instructor runs every team's Docker image on the same unseen
-ARIAC trial, on one machine, before the Week 15 class. One machine means the
-same hardware for every run, so no team's score depends on its laptop. In
-class, each team presents its recorded run for 5 to 6 minutes.
+ARIAC trial, on one machine, before the Week 15 class, so every run has the
+same hardware. In class, each team presents its recorded run for 5 to 6 minutes.
 
 **Teams and peer review.** Teams of three form in Week 2, when GP1 is posted,
 and post a one-page team charter on ELMS before L3. After each project you rate
@@ -170,7 +166,7 @@ Jalisco, Gazebo Harmonic, ARIAC 2025 (Docker or native), MoveIt 2,
 ``py_trees_ros`` and a PDDL planner, and Visual Studio Code. From GP4 on, your
 team uses its own free-tier Gemini API key while it develops; the course
 Gemini key runs only the graded GP4 and final demo evaluations. The
-:doc:`ARIAC Testbed </ariac/ariac>` pages walk through every install. GP1
+:doc:`ARIAC Testbed </ariac/ariac>` pages give the install steps. GP1
 needs a working install by Week 2.
 
 
@@ -205,9 +201,8 @@ Two Definitions
    3. it calls a **tool** (in this course, a robot skill);
    4. it checks the result, and repeats.
 
-This course works on the "orchestrate" part of the NVIDIA definition: an AI
-component decides what happens next, and classical robot skills do the
-motion. L8 and L9 cover agents in depth.
+This course works on the "orchestrate" part of the NVIDIA definition. L8
+and L9 cover agents in depth.
 
 .. _l1-agentic-physical-ai:
 
@@ -226,18 +221,15 @@ Agentic Physical AI: What It Means in This Course
 
 1. **Agentic:** the agent runs the loop from the agent definition above
    (observe, ask the model, call a skill, check the result, repeat). It picks
-   the next step from what it observes, not from a fixed script.
-2. **Physical:** the decisions move robots. A wrong call can drop a cell on
-   the floor or make a robot hit a tray, and the ARIAC score charges a penalty
-   for each.
+   each next step from what it observes.
+2. **Physical:** each decision runs a robot skill. A wrong decision can make
+   a robot drop a cell on the floor or hit a tray, and the ARIAC score charges
+   a penalty for each.
 3. **AI:** learned models make the decisions (the LLM agent, from GP4 on),
    describe what the cameras see (a vision-language model, or VLM, in GP4),
    and judge cell defects in one perception step (in the final demo, a hosted
    **embodied-reasoning model**: a VLM trained to answer spatial questions
-   about a scene). Motion stays classical.
-
-In NVIDIA's words from the definition above, the agent **orchestrates**: it
-decides, and classical skills carry out the actions.
+   about a scene).
 
 
 What Your Team Builds, Part by Part
@@ -262,25 +254,25 @@ What Your Team Builds, Part by Part
 
 ARIAC gives its robots low-level controls only (listed in
 :ref:`l1-robot-interfaces`): joint motion, and a gripper, vacuum tools or a
-weld service. None of them is a pick or place skill. That gap is why the
-course provides the skills package: you never write motion code.
+weld service. None of them picks or places a cell, so the course gives your
+team the skills package, and you never write motion code.
 
 
 What the Course Does Not Do, and Why
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Out of scope.** No policy training, no reinforcement learning and no GPU
-requirement. Motion planning and grasping stay classical (MoveIt 2).
+**Out of scope.** No policy training and no reinforcement learning, so the
+course needs no GPU. Motion planning and grasping stay classical (MoveIt 2).
 
-**The learned side still appears.** L13 surveys vision-language-action
+**Where learned models appear.** L13 surveys vision-language-action
 models, robot foundation models and world models. In the final demo, a hosted
 embodied-reasoning model judges cell defects from camera images, and your
 team compares it with its GP2 lidar detector.
 
 **Why keep AI at the decision layer.** An agent's decisions leave a trace a
 person can read and grade: each tool call and its arguments. A learned motion
-policy fails in ways that are hard to inspect, and this course grades your
-system on trials it has never seen.
+policy leaves no such trace of tool calls, and this course grades your system
+on trials it has never seen.
 
 
 .. _l1-ariac:
@@ -341,7 +333,7 @@ Task 1: Inspection and Kit Building
 
 Task 1 has five steps, 1a to 1e.
 
-**1a. Physical inspection.** Cells ride the inspection conveyor. Your team must
+**1a. Physical inspection.** The inspection conveyor carries the cells. Your team must
 use **lidar point clouds** to rebuild each cell's shape and find defects: a
 dent, a scratch or a bulge. On ARIAC's training cells these are 0.84 to
 2.49 mm off the normal surface (L5 measures them). Your
@@ -360,8 +352,8 @@ optional defect type and location.
 gripper) picks the cell off the moving conveyor and places it in one of two
 voltage testers.
 
-**1c. Voltage inspection.** The tester publishes a voltage reading with a
-small amount of noise, so your team averages readings over a short window.
+**1c. Voltage inspection.** The tester publishes noisy voltage readings, so
+your team averages readings over a short window.
 
 **1d. AGV placement.** Inspection robot 2 (a UR5e with a 2F-85) moves the
 cell. A cell outside its nominal voltage plus or minus 0.2 V goes to the
@@ -389,8 +381,7 @@ cells must fall in. Here it is for a Li-Ion kit, in numbered steps.
 4. If all four cells were at 3.8 V, they would total 4 × 3.8 = 15.2 V, which
    is 0.8 V above 14.4 V and far outside the window.
 
-.. admonition:: Four good cells can still make a bad kit
-   :class: important
+.. important::
 
    Your system must choose which cells go together. Cells lock to the tray
    once placed, so it must choose before it places.
@@ -453,8 +444,7 @@ The table comes from each robot's controller file in
 welder plugins in ``ariac_plugins``.
 
 A joint trajectory action moves the joints through a list of joint positions
-that you send. Nothing here plans a path to a cell or picks it up, so the
-course skills package adds the pick and place skills.
+that you send. It does not plan a path to a cell or pick the cell up.
 
 
 Sensors Your Team Buys
@@ -480,9 +470,8 @@ Sensors Your Team Buys
 - Lidar may only sit in three bounding boxes around the inspection conveyor.
 - There are no depth cameras and no logical cameras in ARIAC 2025.
 
-The sensors have a **sensor budget**: $9600 in the ARIAC scoring file.
-Spending less earns a bonus; spending more costs points. Choosing sensors is a
-design decision in GP2.
+The ARIAC scoring file sets a **sensor budget** of $9600. A cost under it
+earns a bonus; a cost over it, a penalty. Your team picks its sensors in GP2.
 
 
 The Four Challenges
@@ -500,12 +489,12 @@ system adapts.
 - **High-priority order**: an order ID arrives; your team switches the feed
   to Ni-MH, builds and ships a Ni-MH kit, and submits it with that ID.
 
-Each challenge is a reason for more than a fixed script. A trial can contain
-any of them, at times your team does not know in advance.
+A trial can contain any of them, at times your team does not know in advance,
+so a fixed script cannot handle them.
 
 
-What a Run's Score Rewards
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+How ARIAC Scores a Run
+~~~~~~~~~~~~~~~~~~~~~~
 
 - **Base score**: the share of the desired kits and modules your team
   submitted.
@@ -518,8 +507,7 @@ What a Run's Score Rewards
 
 .. important::
 
-   Finishing every order comes first: a fast, cheap run that misses one kit
-   earns no bonus at all. L12 teaches the formula and its weights.
+   L12 covers the scoring formula and its weights.
 
 
 How a Competition Run Goes
@@ -544,8 +532,7 @@ A run moves through five competition states:
 Tracing One Cell
 ----------------
 
-Every step of Task 1 is a ROS 2 topic, service or action. The refresher topics
-after this section are what make those interfaces work.
+Every step of Task 1 is a ROS 2 topic, service or action.
 
 Three Kinds of Interface
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -613,8 +600,8 @@ The Path of One Li-Ion Cell
        | ``/agv1/move`` (action)
        | ``/submit_kitting_order`` (service)
 
-In GP1 every report says the cell passed; from GP2 on, your lidar result
-decides.
+In GP1 every report says the cell passed; from GP2 on, each report gives your
+lidar inspection's result.
 
 
 .. _l1-refresher:
@@ -674,14 +661,12 @@ the sensor data profile.
 .. literalinclude:: outputs/qos_match.txt
    :language: text
 
-The 20th message is not lost: it arrives after the loop ends (Exercise 2 shows
-it).
+The 20th message arrives after the loop ends (Exercise 2 shows it).
 
 .. important::
 
-   Run 1 has no error: the node runs and receives nothing. A tree waiting for
-   the break beam would wait forever. Read the warning, and match the
-   publisher's profile.
+   Run 1 has no error: the node runs and receives nothing. Read the warning,
+   and match the publisher's profile.
 
 
 .. _l1-executors:
@@ -762,8 +747,8 @@ An **action** runs a long task in four parts:
 .. important::
 
    Every course skill is an action, and a behavior tree leaf that runs a skill
-   is an action client. A tree stops a skill by cancelling its goal, and the
-   skill's result says what the robot still holds.
+   is an action client. A tree stops a skill by cancelling its goal, then
+   reads the result to learn what the robot still holds.
 
 The demonstration's server uses ``control_msgs/GripperCommand``, which comes
 with ARIAC; ARIAC's own gripper uses ``ariac_interfaces/GripperCommand``. The
@@ -852,7 +837,7 @@ Next Class
 February 3):
 
 - Classical robot architectures and the three-layer architecture.
-- Where an LLM agent and a VLM plug into a robot stack.
+- Which part of a robot system runs the LLM agent, and which runs the VLM.
 - Teams form, and GP1 is posted.
 
 **Before next class:**

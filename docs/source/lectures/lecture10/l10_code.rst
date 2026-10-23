@@ -102,8 +102,8 @@ Output:
 Exercise 1 on the :doc:`exercises page <l10_exercises>` adds a third station.
 
 
-Three Lookups That Fail: ``tf_failures.py``
--------------------------------------------
+Failed Lookups: ``tf_failures.py``
+----------------------------------
 
 The script publishes ``agv1_frame`` under ``world`` and ``top_camera_frame``
 under ``wrld``, a typo on purpose. It waits until both are in the buffer, then

@@ -7,8 +7,8 @@ alone and tick a tree of stand-in leaves: no robot, no ROS 2 node and no
 simulator. The fifth, ``ros_tree_demo.py``, runs a ``py_trees_ros`` tree as a
 ROS 2 node against stand-ins for the ARIAC voltage tester, two course skills
 and the kit check service, all in the same process. The sixth,
-``kit_spread.py``, is plain Python: it measures how far chance moves a kit total
-built from averaged readings. The outputs below come from running them on
+``kit_spread.py``, is plain Python: it computes the noise in a kit total built
+from averaged readings. The outputs below come from running them on
 ROS 2 Jazzy on 2026-10-12; ``kit_spread.py`` and the five sets of ten timeout
 runs were added on 2026-10-18.
 
@@ -247,8 +247,8 @@ destruction was requested`` appears after the last line, while the nodes shut
 down; it does not change the result.
 
 
-How Far Chance Moves the Kit Total: ``kit_spread.py``
------------------------------------------------------
+Noise in the Kit Total: ``kit_spread.py``
+-----------------------------------------
 
 The tree adds four averaged voltages; ARIAC checks the cells' true voltages.
 The ARIAC tester adds noise with a standard deviation of 0.05 V to each reading

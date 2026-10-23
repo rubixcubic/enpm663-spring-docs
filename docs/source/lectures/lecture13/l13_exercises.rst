@@ -539,7 +539,7 @@ check in ``outputs/er_demo.txt``; "none" means no defect):
       valid schema check show the plan asked for the right step; the skill
       result shows the motion failed. The VLA trace has no plan to inspect:
       the instruction is the only "plan", and the model's inside cannot be
-      read, so you see what the robot did, not why.
+      read, so the trace shows the outcome but no reason.
 
 
 .. dropdown:: Exercise 6. What the ER Camera Costs in Points

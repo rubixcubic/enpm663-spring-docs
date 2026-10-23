@@ -116,8 +116,9 @@ paper and checks it with ``voltage_average.py``. For every script exercise,
 
       **Part 5.** The 10 by 40 layout. The belt moves the cell 5 mm between
       scans at 20 Hz, and each scan sees it from a slightly different angle,
-      so stacking scans fills in the horizontal direction. Nothing fills in
-      the vertical direction. The 10 by 40 layout spends its samples there:
+      so stacking scans adds points across the surface. The vertical spacing
+      does not change between scans, so the 10 by 40 layout puts its samples
+      there:
       2.1 mm up instead of 3.3 mm, for about the same number of points per
       scan (212 against 216).
 

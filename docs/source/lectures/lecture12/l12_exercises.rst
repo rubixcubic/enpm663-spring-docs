@@ -16,7 +16,7 @@ Exercise 1 changes the detector's threshold in ``cells.csv`` and prices each
 error in ARIAC points. Exercise 2 is paper and arithmetic: how many runs a
 0.10 difference needs. Exercise 3 changes ``success_spread.py`` to check that
 answer by simulation. Exercises 4 to 6 use ``score_calculator.py``: a Task 2
-run you score, the effect of the bonus gate, and a sensor setup over the
+run you score, what a missing order does to the bonuses, and a sensor setup over the
 budget.
 
 .. note::
@@ -141,7 +141,7 @@ budget.
       with its good cells, and the time to rebuild the kit. Only if the
       rebuild does not finish before the time limit does it cost the kit,
       5000 / 3 = 1666.7 points of base in the lecture's trial
-      (:math:`k_d = 3`), and, through the bonus gate, every bonus (1534.58
+      (:math:`k_d = 3`), and, because bonuses need every order, every bonus (1534.58
       points in Run 1): 3201.25 points in all. So the lower threshold pays
       100 more points of penalties than the original, every run, to save one
       tray rebuild and remove that risk. The higher threshold saves 100
@@ -466,8 +466,8 @@ budget.
       **Question 5.** Run 3:
 
       1. Base: 5000 × 3 / 3 + 12000 × 1 / 2 = 5000 + 6000 = 11000.
-      2. Bonuses: 0, because not every wanted module was submitted (the
-         bonus gate).
+      2. Bonuses: 0, because not every wanted module was submitted, and
+         bonuses need every order.
       3. Penalties: the same 225.
       4. Run score: 11000 − 225 = 10775.
 
@@ -511,7 +511,7 @@ budget.
          run score                   10775.00 17806.25
 
 
-.. dropdown:: Exercise 5. What the Bonus Gate Is Worth
+.. dropdown:: Exercise 5. What Finishing Every Order Is Worth
    :icon: number
    :class-container: sd-border-primary
    :class-title: sd-font-weight-bold
@@ -566,8 +566,8 @@ budget.
       :math:`\gamma = 0`), high-priority speed 600 (if :math:`\tau = 0`),
       sensor cost 1000 (if :math:`\sigma = 0`), classification 500 (if every
       report is right). Sum: 1000 + 500 + 600 + 1000 + 500 = 3600. No real run
-      takes 0 s or uses no sensors, so a real run earns less. The bonus gate
-      removes all of it, whatever the run earned.
+      takes 0 s or uses no sensors, so a real run earns less. A missing order
+      sets all of it to 0, whatever the run earned.
 
       **Question 2.**
 
@@ -639,8 +639,9 @@ budget.
 
    **Part B. The two runs with this setup**
 
-   3. Rescore the lecture's Run 1 and Run 2 with this setup. Does the bonus
-      gate remove the over-budget penalty from Run 2?
+   3. Rescore the lecture's Run 1 and Run 2 with this setup. Run 2 misses
+      one order, so its bonuses are 0. Does that also remove its over-budget
+      penalty?
    4. How many points does Run 1 lose against the lecture's $3700 setup?
 
    .. raw:: html
@@ -679,7 +680,7 @@ budget.
          5000 + 920 − 181.25 = 5738.75.
       2. Run 2: 3333.33 + 0 − 181.25 = 3152.08.
 
-      No. In ``scoring.py`` the bonus gate sets only the bonuses to 0;
+      No. In ``scoring.py`` a missing order sets only the bonuses to 0;
       ``score_penalties`` charges the over-budget penalty in every run, so
       Run 2 pays it too.
 

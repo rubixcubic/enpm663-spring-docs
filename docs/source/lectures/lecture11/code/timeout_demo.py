@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""L11 demo: Timeout turns a hang into a failure (py_trees 2.6.0).
+"""L11 demo: Timeout stops a skill that hangs (py_trees 2.6.0).
 
 A stand-in pick skill never finishes (it returns RUNNING forever).
 Timeout fails it after 0.5 s, and the selector moves on to a

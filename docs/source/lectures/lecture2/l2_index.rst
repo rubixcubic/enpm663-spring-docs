@@ -10,10 +10,9 @@ how the parts pass decisions and data to each other. This lecture gives you
 the architecture vocabulary that the rest of the course uses.
 
 It starts with four classical architectures: **sense-plan-act**,
-**reactive**, **subsumption** and the **three-layer architecture**. Each one
-strikes a different balance between planning and reacting. The three-layer
-architecture is the frame for the whole semester: a **deliberative** layer
-plans, an **executive** layer runs the plan step by step and checks every
+**reactive**, **subsumption** and the **three-layer architecture**. They
+differ in how much each one plans before it acts. In the three-layer
+architecture, which the course stack follows, a **deliberative** layer plans, an **executive** layer runs the plan step by step and checks every
 result, and a **reactive** layer controls the hardware.
 
 A toy factory, written in plain Python, then runs one short Task 1 run under
@@ -21,11 +20,10 @@ three architectures while a voltage tester malfunctions. A fixed plan
 recycles good cells and ships a kit whose total voltage is too high. Pure
 reaction ships a kit that is also too high. Only the three layers ship a kit
 inside the window, and a sweep over 1000 runs shows that this is not luck.
-The same run is then told step by step: which layer sees the malfunction,
-which layer handles it, and what moves up.
+The same run is then followed step by step.
 
-The lecture then finds the same pattern in real robot software (Nav2 and
-MoveIt), shows where an **LLM agent** and a **VLM** plug into the stack, and
+The lecture then finds the same pattern in Nav2 and MoveIt, shows which
+layer runs an **LLM agent** and which part runs a **VLM**, and
 maps ARIAC 2025, the course skills package and every group project onto the
 three layers. It closes with the end-to-end alternative,
 **vision-language-action (VLA)** models, with multi-robot coordination, and
@@ -60,9 +58,9 @@ By the end of this lecture, you will be able to:
   does not finish a Task 1 kit.
 - Trace one voltage tester malfunction through the three layers: which layer
   sees it, which handles it, and what moves up.
-- Recognize the three-layer pattern in real robot software (Nav2 and MoveIt).
-- Identify where an LLM agent and a VLM plug into a robot architecture, and
-  which parts stay classical.
+- Recognize the three-layer pattern in Nav2 and MoveIt.
+- Identify which part of a robot architecture runs an LLM agent and which
+  runs a VLM, and which parts stay classical.
 - Map the ARIAC 2025 interfaces, the course skills package and each group
   project onto the three layers.
 - Explain the end-to-end VLA alternative and weigh its tradeoffs against the

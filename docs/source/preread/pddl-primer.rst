@@ -450,7 +450,7 @@ Where L6 Picks Up
 L6 assumes everything above and builds on it:
 
 - :ref:`The assumptions behind this kind of planning <l6-assumptions>`, and
-  where the ARIAC factory breaks each one.
+  where each one does not hold in the ARIAC factory.
 - :ref:`How a planner searches <l6-search>`, and the difference between a
   shortest plan and a quick one.
 - :ref:`A PDDL domain for ARIAC Task 1 <l6-domain>`: eight actions, from
@@ -460,7 +460,7 @@ L6 assumes everything above and builds on it:
   from the factory state.
 - :ref:`Running Fast Downward from Python <l6-planner>` and
   :ref:`checking a plan with a validator <l6-checking>`.
-- :ref:`Where PDDL strains <l6-strains>`: the kit voltage arithmetic, and
+- :ref:`The limits of PDDL <l6-strains>`: the kit voltage arithmetic, and
   problems with many objects.
 
 

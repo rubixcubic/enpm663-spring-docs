@@ -27,9 +27,10 @@ Recap
 
 - Three layers: deliberative, executive, reactive.
 - An LLM agent goes in the deliberative layer; a VLM goes in perception.
-- Every boundary between layers is an interface.
+- Between the layers: ROS 2 actions, blackboard keys, and plans or agent
+  decisions.
 
-**Today's question.** What crosses those interfaces? A representation of the
+**This lecture.** What crosses those interfaces: a representation of the
 world, the task and the robot.
 
 **Team charters.** Charters were due before class. The ownership list in your
@@ -39,11 +40,10 @@ against.
 
 .. _l3-why:
 
-Why Representation Matters
---------------------------
+The Shared World Model
+----------------------
 
-The idea of this section: one world model, several programs that read it,
-each in its own form.
+This section covers a world model and the programs that read it.
 
 Knowledge Representation and the World Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -65,8 +65,8 @@ Knowledge Representation and the World Model
 - Both kinds go into one world model, and every part of your system reads
   that model.
 
-Three Readers of One World Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Readers of the World Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -91,9 +91,8 @@ Three Readers of One World Model
   on, your behavior tree and the skills it calls.
 - It is not a ROS 2 executor from L1, which runs a node's callbacks.
 - **JSON** is a text format for data, and a **JSON schema** is a set of rules
-  a JSON record must follow. View 2 of today's kit shows both.
-- Each reader needs the same facts in a different form. The rest of the
-  lecture shows one kit written for each of them.
+  a JSON record must follow. View 2 of the example kit shows both.
+- Each reader needs the same facts in a different form.
 
 What Goes Wrong Without a Shared Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,25 +103,22 @@ What Goes Wrong Without a Shared Model
 2. The agent names ``voltage_tester_3``. ARIAC 2025 has two testers, so the
    skill call names a tester that does not exist.
 3. A cell's voltage is stored in one place and its inspection result in
-   another, and the two drift apart: one copy says a cell is good after the
+   another, and the two disagree: one copy says a cell is good after the
    other copy recycled it.
 
 .. important::
 
    Each case has two copies of one fact and nothing that keeps them equal.
-   One shared world model, written once and read by every reader, removes
-   the second copy.
 
-Three Questions to Ask of Any Representation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Questions for the ARIAC World Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. What does it describe: objects, relations, events?
 2. Who writes it, and who reads it?
 3. How is it kept true as the factory changes?
 
-The rest of the lecture answers these questions for the ARIAC factory: frames
-for the objects, an ontology for the relations, and a world model at each
-layer.
+Frames describe the objects, an ontology the relations, and a world model at
+each layer who writes and reads each fact.
 
 
 .. _l3-frames:
@@ -155,8 +151,8 @@ Source: M. Minsky,
 MIT AI Laboratory Memo 306, June 1974.
 
 
-A General Frame, Two Kinds, One Cell
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+From a General Frame to a Cell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l3/frames.svg
    :alt: Three columns of boxes. Tag 1, left, in teal: the general frame Cell with five empty slots: type, nominal_voltage, measured_voltage, inspection and location. Tag 2, middle, in teal: two more specific frames, LiIonCell with type = LI_ION and nominal_voltage = 3.6 V, and NiMHCell with type = NIMH and nominal_voltage = 1.2 V; a solid arrow goes from each to Cell. Tag 3, right, in magenta: the cell c1, with type = LI_ION, nominal_voltage = 3.6 V, measured_voltage = 3.55 V, inspection = passed and location = agv1, slot 1; a dashed arrow goes from c1 to LiIonCell.
@@ -165,7 +161,7 @@ A General Frame, Two Kinds, One Cell
 
    Tag 1: the general frame ``Cell``, slots empty. Tag 2: two more specific
    frames; each fills ``type`` and gives ``nominal_voltage`` its default.
-   Tag 3: one real cell, ``c1``, from today's example kit. Solid arrow: takes
+   Tag 3: the cell ``c1`` from the example kit. Solid arrow: takes
    every slot of. Dashed arrow: is one instance of. Teal: a frame. Magenta:
    an instance.
 
@@ -207,7 +203,7 @@ A Cell Frame, Slot by Slot
 - ARIAC never sends your team an inspection result. Your team decides it
   from lidar and submits it with ``SubmitInspectionReport.srv``.
 - The tolerances, plus or minus 0.2 V per cell and 0.15 V per kit
-  (``CellTypes.msg``), are stored once for the class, not per cell.
+  (``CellTypes.msg``), are stored once, in the class.
 
 
 Kit, Module, AGV and Order Frames
@@ -237,14 +233,14 @@ Kit, Module, AGV and Order Frames
 
 .. tip::
 
-   Many slots mirror ARIAC message fields. Reading the message definitions
-   is the fastest way to find the slots a frame needs.
+   Many slots match ARIAC message fields: start from the message definitions
+   when you list a frame's slots.
 
 
 .. _l3-kit-frame:
 
-Worked Example: Filling the Kit Frame for Today's Kit
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Worked Example: Filling the Kit Frame
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Chosen for this example.** A Li-Ion kit on AGV 1. Slots 1 to 3 link to
 cells ``c1``, ``c2`` and ``c3``, measured at 3.55 V, 3.62 V and 3.70 V. Slot 4
@@ -261,8 +257,8 @@ is empty.
 .. important::
 
    Only the measured voltages are stored per cell. The total and the window
-   are computed from them and from the class, so neither can drift from the
-   cells.
+   are computed from them and from the class, so neither can disagree with
+   the cells.
 
 
 .. _l3-ontologies:
@@ -270,8 +266,8 @@ is empty.
 Ontologies
 ----------
 
-This section covers classes, relations and instances: what can be said about
-the factory, and what follows from it.
+This section covers classes, relations and instances, and which statements
+about the factory they accept.
 
 An ARIAC Ontology Sketch
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -342,8 +338,8 @@ From Perception to Planning: One Dented Cell
 
 1. **Perception** produces instances and facts: your GP2 lidar detector finds
    a dent on cell ``c7`` at an angle θ and a height z.
-2. **The ontology** says what follows: a cell with a defect fails inspection,
-   so it must not go in a kit.
+2. **The ontology's rule**: a cell with a defect fails inspection, so it must
+   not go in a kit.
 3. **Your system acts on it**: it submits an ``InspectionReport.msg`` with
    ``passed`` false and the dent in ``defects``. The inspection door stays
    closed for ``c7``, and the cell goes into the inspection bin.
@@ -363,14 +359,13 @@ Where Ontologies Are Standardized
   on 2026-03-26 and is drafting a revision, P1872.
 - The W3C Web Ontology Language (`OWL <https://www.w3.org/OWL/>`_) is a
   standard language for writing ontologies.
-- The course does not require either; they show that standards bodies define
-  such ontologies.
+- The course does not require either.
 
 .. important::
 
-   In this course, your ontology lives in code: the message types, the PDDL
-   types of GP3, and the JSON schema of GP4 each say which values and
-   statements make sense.
+   In this course, your ontology is written in code: the message types, the
+   PDDL types of GP3, and the JSON schema of GP4 each define which values and
+   statements are valid.
 
 
 .. _l3-world-model:
@@ -418,10 +413,8 @@ Idea 1: Each Layer Keeps Only the Detail It Decides With
 
 - A **node** is one unit of the 4D/RCS hierarchy, at one level, with its own
   world model. In this course, read it as one layer.
-- Broad scope with little detail at the top: the planner sees the whole
-  order, but not a single tester reading.
-- Narrow scope with fine detail at the bottom: a controller sees joint
-  positions, but not the order.
+- At the top, the planner sees the whole order but no single tester reading.
+- At the bottom, a controller sees joint positions but not the order.
 
 
 .. _l3-layer-models:
@@ -446,8 +439,8 @@ Idea 1 in ARIAC: Each Layer's Model at One Moment
    The key names in the figure follow L4.
 
 
-Idea 2: Errors Are Handled Where They Are Seen; Status Moves Up
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Idea 2: Handle Errors Where They Are Seen
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: From NISTIR 6910
    :class: note
@@ -487,24 +480,24 @@ The Design Rule, and What We Leave Out
 **What the course does not take from 4D/RCS.** Its eight levels (servo,
 primitive, subsystem, vehicle, section, platoon, company, battalion; Table 1,
 p. 55) are sized for a military vehicle hierarchy, with plans from 50 ms at
-the servo level to 24 h at the battalion level. ARIAC's stack is shallow, so
-the three layers are enough.
+the servo level to 24 h at the battalion level. ARIAC needs no platoon or
+battalion levels, so the course keeps L2's three layers.
 
 
 .. _l3-three-views:
 
-One Kit, Three Views
+Three Views of a Kit
 --------------------
 
-One kit state, written for the planner, for the agent, and for a prompt. The
-values are chosen for this example:
+One kit state, written for the planner, for the agent, and for a prompt. It
+is the kit from the kit frame example:
 
 - AGV 1 at the inspection station;
 - a Li-Ion kit;
 - slots 1 to 3 holding cells measured at 3.55 V, 3.62 V and 3.70 V;
 - slot 4 empty.
 
-Every output in this section comes from running ``kit_views.py``. In the
+The outputs in this section come from ``kit_views.py``. In the
 script the kit is one Python dictionary:
 
 .. literalinclude:: code/kit_views.py
@@ -512,8 +505,8 @@ script the kit is one Python dictionary:
    :lines: 19-29
    :caption: lecture3/code/kit_views.py (excerpt)
 
-One Kit State, Three Readers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Three Views and Their Readers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l3/three_views.svg
    :alt: Left, a gray box: one kit state, agv1 at INSPECTION, Li-Ion, drawn as four slots holding 3.55 V, 3.62 V, 3.70 V and empty. Three arrows lead from it to three gray boxes in the middle, each with one sample line. Tag 1: PDDL facts, sample line (in-slot c1 agv1 s1). Tag 2: JSON record, sample line with "agv": 1. Tag 3: Text, sample line AGV 1 is at the .... An arrow leads from each to a blue box on the right: GP3 planner, GP4 agent and LLM prompt.
@@ -524,7 +517,7 @@ One Kit State, Three Readers
    line. Blue: the deliberative layer, as in L2.
 
 One program writes all three views from one Python dictionary, so the three
-cannot disagree.
+views hold the same facts.
 
 
 View 1: PDDL Facts for the GP3 Planner
@@ -542,8 +535,7 @@ View 1: PDDL Facts for the GP3 Planner
    :language: text
    :lines: 2-9
 
-- ``(passed cN)`` is inferred, not stored in the kit record: a cell on the
-  tray got through the inspection door, so its report passed.
+- ``(passed cN)`` is inferred: a cell on the tray got through the inspection door, so its report passed.
 - The names are examples; your team chooses its own in GP3.
 
 
@@ -567,7 +559,7 @@ checks it:
    :language: json
    :caption: lecture3/outputs/kit_record.json
 
-- JSON writes 3.70 as 3.7: a number keeps no trailing zero.
+- ``json.dumps`` writes 3.70 as 3.7: a number keeps no trailing zero.
 - ``null``: slot 4 holds no cell.
 
 
@@ -626,8 +618,8 @@ names the field from the top of the record; list items count from 0. So
 
 .. important::
 
-   An LLM agent can return a record like the last two. The schema lets your
-   code reject it before any robot moves (L8).
+   An LLM agent can return a record like the last two. Your code checks each
+   record against the schema before any robot moves (L8).
 
 
 View 3: Text for a Prompt
@@ -637,11 +629,11 @@ View 3: Text for a Prompt
    :language: text
    :lines: 11-13
 
-- An LLM reads text, so the agent's prompt carries the kit in words.
-- In GP4, a VLM also describes a camera image in words. That description is
-  checked against this text, not trusted on its own (L9).
-- The text drops the cell IDs: it is for reading, not for checking. The
-  record of View 2 is what your code checks.
+- An LLM reads text, so the agent's prompt describes the kit in words.
+- In GP4, a VLM also describes a camera image in words. Your code checks that
+  description against this text (L9).
+- The text drops the cell IDs, so your code checks the record of View 2
+  instead.
 
 
 .. _l3-fourth-cell:
@@ -659,7 +651,7 @@ Worked Example: The Voltage Range for the Fourth Cell
 5. A cell at 3.75 V passes on its own, but it would put the kit at
    10.87 + 3.75 = 14.62 V, outside the window.
 
-**The program agrees.**
+**The program's output.**
 
 .. literalinclude:: outputs/kit_views.txt
    :language: text
@@ -667,9 +659,9 @@ Worked Example: The Voltage Range for the Fourth Cell
 
 .. important::
 
-   The representation must keep each cell's measured voltage, not only pass
-   or fail; otherwise this decision cannot be made. PDDL handles numbers
-   poorly, so GP3 picks the cells in a separate step (L6).
+   This decision uses each cell's measured voltage, so the representation
+   must keep it. PDDL facts are true or false (View 1), so GP3 picks the cells
+   in a separate step (L6).
 
 
 .. _l3-chance:
@@ -695,14 +687,15 @@ Worked Example: How Far Chance Moves the Answer
 **The verdicts, checked against chance.**
 
 3. With a 3.75 V cell, the averages total 14.62 V: 14.62 − 14.55 = 0.07 V over
-   the window, and 0.07 / 0.0447 = 1.57, about 1.6 spreads.
+   the window. A **spread** here is how far chance moves the number:
+   0.0447 V for a full kit. So 0.07 / 0.0447 = 1.57, about 1.6 spreads.
 4. If the true total were exactly 14.55 V, the averages would still read
    14.62 V or more about 6 times in 100 (5.9% by the normal formula). So a
-   failed kit is likely, not certain, and keeping the 3.75 V cell out of this
-   kit is the safe call.
-5. A fourth cell that reads 3.68 V puts the averages at exactly 14.55 V. A
-   total within about 2 × 0.045 = 0.09 V of an edge cannot be called either
-   way (L4).
+   failed kit is likely but not certain. Keep the 3.75 V cell out of this
+   kit.
+5. A fourth cell that reads 3.68 V puts the averages at exactly 14.55 V. For
+   a total within about 2 × 0.045 = 0.09 V of an edge, chance alone can put
+   the true total on either side (L4).
 
 .. literalinclude:: outputs/kit_views.txt
    :language: text
@@ -724,8 +717,8 @@ each number; the factor 2 is chosen for this example.
 
 .. important::
 
-   To set a margin, the world model must keep how many readings are behind
-   each average, not only the average.
+   To set a margin, the world model must keep each average and the number of
+   readings behind it.
 
 
 .. _l3-gp1:
@@ -759,8 +752,8 @@ Observed, Inferred and Unknown
    :class: warning
 
    Your system must track each cell itself, from events: the beam time, the
-   tester reading, the skill result. A world model that loses track of a cell
-   cannot recover it by asking ARIAC.
+   tester reading, the skill result. If your system loses track of a cell, no
+   ARIAC topic gives its position.
 
 
 .. _l3-track-cell:
@@ -768,11 +761,11 @@ Observed, Inferred and Unknown
 Worked Example: Tracking Cell c4 from Events
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``track_cell.py`` feeds stand-in events, not ARIAC messages, to a small world
+``track_cell.py`` feeds stand-ins for ARIAC messages to a small world
 model and prints each change. The step names follow L4's starter tree, and the
 keys follow L4's blackboard table. Chosen for this example: ``c4`` at 3.58 V,
 seed 91. Each average uses five readings, as L4's ``wait_for_voltage``
-collects; the 0.05 V reading noise is ARIAC's. The kit is today's example kit,
+collects; the 0.05 V reading noise is ARIAC's. The kit is the example kit,
 with ``c1`` to ``c3`` already placed.
 
 .. literalinclude:: outputs/track_cell.txt
@@ -782,35 +775,35 @@ with ``c1`` to ``c3`` already placed.
 Only the readings and the beam event are observed; which cell each event
 belongs to is inferred, and the inspection value is your team's own report.
 
-**GP1's rule decides c4.** GP1, Task 4: "Before placing a cell inside that
+**Applying GP1's rule to c4.** GP1, Task 4: "Before placing a cell inside that
 range, check that the four-cell total can still land in 14.25 V to 14.55 V. If
 it cannot, recycle the cell."
 
 1. ``c4`` averages 3.599 V, inside 3.40 V to 3.80 V, so GP1's check applies.
-2. On the averages, the total lands: 10.87 + 3.599 = 14.469 V, inside
+2. On the averages, the total is 10.87 + 3.599 = 14.469 V, inside
    14.25 V to 14.55 V. It is 14.55 − 14.469 = 0.081 V below the top edge.
-3. But 0.081 V is under the 0.09 V kit margin: a total that close to an edge
-   cannot be called either way (L4). The same check on the cell: 3.599 V is
-   0.009 V over the 3.59 V limit, less than one spread (0.0224 V).
-4. So chance makes GP1's check uncertain for ``c4``. Cells lock to the tray
-   once placed, so GP1's safe call is to recycle ``c4``, as L4 does with the
-   3.75 V cell. Slot 4 stays open.
+3. But 0.081 V is under the 0.09 V kit margin: chance alone can put a total
+   that close to an edge on either side (L4). The same check on the cell:
+   3.599 V is 0.009 V over the 3.59 V limit, less than one spread of a single
+   average (0.0224 V).
+4. So for ``c4``, chance alone could make GP1's check give the wrong answer.
+   Cells lock to the tray once placed, so the tree recycles ``c4``, as L4
+   does with the 3.75 V cell. Slot 4 stays open.
 
 .. important::
 
    The cost: ``c4``'s true voltage, 3.58 V, would have fit
-   (10.87 + 3.58 = 14.45 V, if ``c1`` to ``c3`` read true). A margin turns
-   away some cells that fit, so fewer kits fail the check.
+   (10.87 + 3.58 = 14.45 V, if ``c1`` to ``c3`` read true).
 
 
-Where the Model Lives in GP1
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Where GP1 Stores Its World Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - On the ``py_trees`` blackboard (L4): a small set of named keys, such as the
   cell on each tester, the averaged voltages, the slots filled and the kit
   total so far.
-- Decide the key names and types now. They are interfaces, and your charter
-  assigns who owns them.
+- Decide the key names and types now, and give each key an owner in your
+  charter.
 
 **Later in the semester.**
 
@@ -825,13 +818,13 @@ Next Class
 
 **Quiz 1** (Wednesday, February 17, start of class): closed notes, on
 ELMS-Canvas or paper, covering L1 to L3. Review the ARIAC 2025 tasks,
-challenges and what the score rewards; QoS, executors, actions and TF2 and
-their demo results; the classical and three-layer architectures and where AI
-plugs in; frames, ontologies, the two 4D/RCS ideas and the three views of a
+challenges and how ARIAC scores a run; QoS, executors, actions and TF2 and
+their demo results; the classical and three-layer architectures and AI in the
+three layers; frames, ontologies, the two 4D/RCS ideas and the three views of a
 kit.
 
-**L4: Behavior Trees for Task Execution.** The executive layer that runs on
-today's representation. After L4, your team writes the GP1 tree.
+**L4: Behavior Trees for Task Execution.** Behavior trees for the executive
+layer, which read and write the blackboard. After L4, your team writes the GP1 tree.
 
 **Before next class.**
 

@@ -21,9 +21,7 @@ Lecture
    - **The final demo is next week**, Week 15 (Wednesday, May 5). The last
      part of class is for your questions about it.
 
-The reference pages quoted below were read on 2026-10-12 and checked again on
-2026-10-18. They change often, so the quotes are checked again the week before
-class.
+The quotes below are from the reference pages as of 2026-10-18.
 
 
 .. _l13-physical-ai:
@@ -31,17 +29,16 @@ class.
 Physical AI and This Course
 ---------------------------
 
-- All semester, your team built one side of physical AI: an agent that
-  reasons about the factory and calls classical robot skills.
-- This lecture surveys the other side, where learned models produce the
-  robot's motions.
-- It is a survey: no policy training and no GPU. No quiz this week.
+- All semester, your team built an agent that reasons about the factory and
+  calls classical robot skills.
+- Today: systems where learned models produce the robot's motions.
+- No quiz this week.
 - The final demo code freeze is Friday, April 30, at 11:59 pm, two days
   after this class.
 
 
-Two Kinds of Physical AI System
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Perform and Orchestrate
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Physical AI (NVIDIA glossary, used since L1)
    :class: note
@@ -52,10 +49,10 @@ Two Kinds of Physical AI System
 
 The last two verbs give two kinds of system:
 
-- **Perform:** a learned model produces the robot's actions. This is the VLA
-  side, the subject of this lecture.
+- **Perform:** a learned model produces the robot's actions, as a VLA does.
+  Today covers this kind.
 - **Orchestrate:** an agent decides what happens next and calls skills that
-  carry it out. This is the side the course built.
+  carry it out. The course built this kind.
 
 The course's own term, agentic physical AI, is the orchestrate kind (L1,
 :ref:`l1-agentic-physical-ai`).
@@ -84,33 +81,19 @@ The Stack Your Team Has Now, on the L2 Layers
      - The GP2 inspection pipeline, which reads lidar point clouds over the
        inspection conveyor
 
-.. admonition:: The question for this lecture
-   :class: hint
-
-   What changes if a learned model replaces the reactive layer, or the
-   reactive and executive layers together?
+This lecture compares this stack with designs where a learned model
+replaces the reactive layer, or the reactive and executive layers together.
 
 
-Two More Technologies the Same Glossary Names
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+More Terms from the Glossary
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Reinforcement learning.** The glossary says: "Reinforcement learning
 teaches autonomous machines skills in a simulated environment to perform in
 the real world."
 
 **Simulation and world foundation models.** The glossary says the two are
-used together to create synthetic data for training. The section
-:ref:`l13-world-models` returns to both.
-
-**The lecture, in order:**
-
-1. VLA models and robot foundation models.
-2. Two-system designs, next to your three layers.
-3. World models and simulation.
-4. What learned policies cost and how they fail.
-5. Agentic manufacturing in industry.
-6. A demonstration of the embodied-reasoning step from the final demo, then
-   final demo questions.
+used together to create synthetic data for training.
 
 
 .. _l13-vla:
@@ -129,7 +112,7 @@ One ARIAC Step, Done Two Ways
    :class: note
 
    A **VLA** is a learned model that maps camera images and language straight
-   to robot actions. The course surveys VLAs; it does not build one.
+   to robot actions.
 
 **The step.** ``inspection_robot_1`` (a UR3e with a Robotiq 2F-85 gripper)
 picks a cell off the moving conveyor and places it in a voltage tester.
@@ -144,8 +127,8 @@ picks a cell off the moving conveyor and places it in a voltage tester.
   no named skill sit in between.
 
 
-Five VLAs
-~~~~~~~~~
+VLA Examples
+~~~~~~~~~~~~
 
 **OpenVLA** (`project page <https://openvla.github.io/>`_)
 
@@ -161,16 +144,13 @@ Five VLAs
 - pi-0.5 is "an upgraded version of pi0 with better open-world
   generalization." (README, Updates list)
 - The base checkpoints are "pre-trained on 10k+ hours of robot data."
-- The README writes the names with Greek letters: :math:`\pi_0` and
-  :math:`\pi_{0.5}`.
 
 **Gemini Robotics** (Google DeepMind,
 `model page <https://deepmind.google/models/gemini-robotics/>`_)
 
 - The page calls its VLA a model "that converts vision and language input
   into motor control."
-- The current models include Gemini Robotics 2 and Gemini Robotics ER 2
-  (page read 2026-10-18), written with no hyphen.
+- The current models include Gemini Robotics 2 and Gemini Robotics ER 2.
 
 **NVIDIA Isaac GR00T** (`README <https://github.com/NVIDIA/Isaac-GR00T>`_)
 
@@ -204,8 +184,8 @@ line so they do not overlap.
    :width: 90%
    :align: center
 
-The table gives each tag's event and the source of its date (read on
-2026-10-12, checked again on 2026-10-18). Gemini Robotics 2 is not on the
+The table gives each tag's event and the source of its date (checked
+2026-10-18). Gemini Robotics 2 is not on the
 line: its page gives no date.
 
 .. list-table::
@@ -267,7 +247,7 @@ Robot Foundation Models: Train Once, Adapt with Less Data
    **Fine-tuning** is more training of a trained model, on a smaller set of
    data for the new robot or task.
 
-The references show this pattern:
+Examples from the references:
 
 - OpenVLA "can be quickly adapted to new robot setups via parameter-efficient
   fine-tuning."
@@ -285,13 +265,12 @@ What a VLA Would Need Before It Could Work in ARIAC
   robot.
 - ARIAC 2025 has no learned policies, and the final demo does not need one.
 - The final demo uses one physical AI model for perception: a hosted
-  embodied-reasoning model judges cell defects from camera images. The
-  section :ref:`l13-demo` shows it.
+  embodied-reasoning model judges cell defects from camera images.
 
 .. tip::
 
    Your skills package needed no demonstrations: it needed the ARIAC geometry
-   and a MoveIt 2 configuration. A VLA trades that engineering for data.
+   and a MoveIt 2 configuration. A VLA needs demonstrations in their place.
 
 
 .. _l13-two-system:
@@ -305,8 +284,8 @@ with an action prediction module "a common design pattern in recent VLA
 systems" (Hugging Face blog).
 
 
-Two Forms of the Split
-~~~~~~~~~~~~~~~~~~~~~~
+Two Models, or Two Parts of One Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Two models: Gemini Robotics.**
 
@@ -361,8 +340,8 @@ Colors: blue is the deliberative role, green the executive role, orange the
 reactive role, gray no layer role.
 
 
-Mapping the Split onto the Course
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Two-System Roles in the Course
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -385,22 +364,21 @@ Mapping the Split onto the Course
      - A learned policy (the VLA or action expert)
      - Classical motion planning: the skills package and MoveIt 2
 
-The slow system matches your agent closely. The fast system does not: yours
-is classical motion planning, not a learned policy.
+The slow system matches your agent closely. In the fast system, a learned
+policy takes the place of your classical motion planning.
 
 
 What Checks Each Step, Design by Design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Your stack.** The behavior tree checks each skill result before the next
-step and stops cleanly on failure (L4, L7, L11). These checks are code.
+**Your stack.** Code in your behavior tree checks each step (L4, L7, L11).
 
 **SmolVLA.** Nothing between the two parts checks each step: the VLM passes
 its features straight to the action expert. Helix (L2) works the same way.
 
 **Gemini Robotics.** The `Gemini API robotics page
-<https://ai.google.dev/gemini-api/docs/robotics-overview>`_ (read 2026-10-18)
-says Gemini Robotics ER 2 "specializes in embodied reasoning capabilities,
+<https://ai.google.dev/gemini-api/docs/robotics-overview>`_ says Gemini
+Robotics ER 2 "specializes in embodied reasoning capabilities,
 such as agentic orchestration of robots (e.g. using VLAs), robot video
 understanding including progress understanding and success detection,
 instrument reading, pointing, and spatial reasoning."
@@ -418,16 +396,13 @@ What Crosses the Interface
 - **SmolVLA:** the VLM passes learned features (lists of numbers) to the
   action expert. A person cannot read them.
 
-.. admonition:: Conclusion
+.. admonition:: Your stack against a two-system VLA
    :class: important
 
    - Your architecture has the deliberative and reactive roles of a
      two-system VLA, plus an executive layer that SmolVLA lacks.
-   - The differences are three: what sits in the fast layer, what crosses
-     the interface, and what checks each step (nothing in SmolVLA, a learned
-     judgment in Gemini Robotics, code in your behavior tree).
-   - These three differences are where the auditability comparison in
-     :ref:`l13-cost` starts.
+   - They differ in what sits in the fast layer, what crosses the interface,
+     and what checks each step.
 
 
 .. _l13-world-models:
@@ -486,23 +461,23 @@ How Much Data the References Name
        demonstrations
      - Isaac-GR00T README
 
-Collecting that much on real robots is slow. That is why synthetic data from
-simulation and world models matters for the learned side.
+Collecting that much on real robots is slow. Simulation and world models can
+make synthetic data in its place (NVIDIA glossary).
 
 
-ARIAC Has Written Rules; a World Model Learns Its Rules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ARIAC and a World Model
+~~~~~~~~~~~~~~~~~~~~~~~
 
 **ARIAC 2025** is a physics simulation in Gazebo Harmonic whose rules
 engineers wrote: the conveyor, the inspection door that stays closed without a
 passing report (the cell then drops into the inspection bin), the voltage
 testers that publish a noisy voltage, the scoring formula.
 
-**A world model** learns its rules from data. It can produce scenes no one
-programmed. It can also be wrong in ways no one programmed.
+**A world model** learns its rules from data, so neither its scenes nor its
+errors come from a written rule.
 
-**The same purpose:** test before hardware. Every GP was tested in ARIAC
-before anyone would trust it on a real cell.
+**The same purpose:** both let you test a system before it runs on hardware.
+Every GP was tested in ARIAC.
 
 
 A Learned Policy Is Judged by Outcomes over Many Runs
@@ -518,9 +493,8 @@ A Learned Policy Is Judged by Outcomes over Many Runs
 
 .. tip::
 
-   Your stack is checked at each step and by its outcomes. A learned policy
-   is checked only by its outcomes, so it needs more runs before you trust a
-   number.
+   A learned policy has only its outcomes as evidence, so it needs more runs
+   than your stack before you trust a number.
 
 
 .. _l13-cost:
@@ -610,8 +584,7 @@ The step: place a cell in voltage tester 1.
    :class: important
 
    The instructor's view: an LLM-based plan leaves a trace a person can
-   inspect, and a learned policy's failure leaves no readable reason. With a
-   VLA, you see what the robot did, not why.
+   inspect, and a learned policy's failure leaves no readable reason.
 
 
 Rows 4 and 5: Failure Modes and New Tasks
@@ -626,9 +599,9 @@ Rows 4 and 5: Failure Modes and New Tasks
      - **Your stack**
      - **A learned policy (VLA)**
    * - Failure modes
-     - A failure has a named place: a skill returns failure, a schema check
-       rejects the agent's output, the VLM misreads a cell. L11's recovery
-       structures catch each one.
+     - Each failure comes from a named part: a skill returns failure, a schema
+       check rejects the agent's output, the VLM misreads a cell. L11 gives a
+       check or a recovery for each one.
      - No step returns failure. You find the failure from the outcome, for
        example a dropped cell or a collision penalty in the ARIAC score.
    * - A new task
@@ -636,8 +609,8 @@ Rows 4 and 5: Failure Modes and New Tasks
      - The foundation models aim to generalize to new tasks (pi-0.5: "better
        open-world generalization"), with fine-tuning when they do not.
 
-The last row favors the learned side: your stack can only do what its skills
-cover.
+On new tasks, a learned policy has the advantage: your stack can only do what
+its skills cover.
 
 
 Class Discussion: Which Part Would You Replace with a VLA?
@@ -650,7 +623,7 @@ Class Discussion: Which Part Would You Replace with a VLA?
    place it in one of two voltage testers. Which part of your system would
    you replace with a VLA, and what would you need first?
 
-Points the discussion covered:
+What you would need first:
 
 - Demonstrations of the UR3e picking cells at your conveyor speed.
 - A GPU of the size in the GPU memory chart.
@@ -661,8 +634,8 @@ Points the discussion covered:
   every 5 s).
 
 
-Why the Course Keeps Its Scope
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Why the Course Grades a Skills Stack
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - The course grades engineering judgment on unseen trials: the final demo
   runs your system on a trial you have never seen.
@@ -673,7 +646,7 @@ Why the Course Keeps Its Scope
 
 .. tip::
 
-   The learned side is surveyed so you can judge when it fits: when a task
+   This lecture surveys learned policies so you can judge when one fits: when a task
    has no skill, when demonstrations exist, and when outcomes over many runs
    are enough evidence.
 
@@ -753,18 +726,12 @@ Industry Example: Amazon DeepFleet
   outputs like assignments of robots to specific retrieval tasks and target
   locations".
 
-.. note::
-
-   The two LLM examples are lab work. Lim and Kovalenko check each LLM answer
-   before it runs. In Xia et al., the LLM's commands go straight to the
-   modules, and the authors say an accuracy under 100% is not reliable enough
-   for that.
 
 
-What the Examples Show
-~~~~~~~~~~~~~~~~~~~~~~
+Lab and Industry Examples Compared
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- The two LLM examples are pilots and research. DeepFleet, a learned model,
+- The two LLM examples are lab work. DeepFleet, a learned model,
   is the one example that Amazon reports already helping in its robot
   deployments.
 - In both lab examples, the LLM decides and classical controllers do the
@@ -810,15 +777,11 @@ demo.
 
 .. warning::
 
-   **This section has two kinds of output.**
-
-   - **Scripted model: fixed replies.** The first parts run offline. A
-     scripted stand-in answers instead of the model server, and no API key
-     is used. The client code is the real ``google-genai`` SDK; only the
-     server's answers are scripted.
-   - **Run 1 and Run 2:** the real model on 12 ARIAC camera images. Each run
-     was recorded once, on 2026-10-18, with
-     ``gemini-robotics-er-2-preview``. A rerun gives different answers.
+   - The first parts run offline. A scripted stand-in answers instead of the
+     model server, and no API key is used. The client code is the
+     ``google-genai`` SDK itself; only the server's answers are scripted.
+   - **Run 1 and Run 2** use ``gemini-robotics-er-2-preview`` on 12 ARIAC
+     camera images.
 
    Code: ``lecture13/code/er_demo.py``, ``er_rerun.py`` and ``score_er.py``;
    ``run_all.sh`` runs the offline parts (see :doc:`l13_code`). Versions:
@@ -836,18 +799,17 @@ What an Embodied-Reasoning Model Is, and Which One
    answer spatial questions about a scene, such as where a part is or which
    cell looks damaged.
 
-**The course example** (Gemini API robotics page, read 2026-10-12):
+**The course example** (Gemini API robotics page):
 
 - Google's Gemini Robotics ER, through the Gemini API and the
   ``google-genai`` Python SDK.
 - API model: ``gemini-robotics-er-2-preview``, a preview model that supports
   structured output and function calling.
-- "Gemini Robotics ER 1.6 was deprecated on August 31, 2026." The model name
-  is checked again the week before class.
+- "Gemini Robotics ER 1.6 was deprecated on August 31, 2026."
 
 
-The Final Demo's ER Step, in Five Steps
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Final Demo's ER Step
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Capture** one image from an RGB camera placed through your team config,
    beside the inspection conveyor: a cell stands upright, and its defects are
@@ -862,7 +824,7 @@ The Final Demo's ER Step, in Five Steps
    defect type, latency and cost per call.
 
 The same call also finds the top shell over the assembly table in Task 2 (it
-spawns at a random pose). This lecture's example is defects. Whether defects
+spawns at a random pose). Whether defects
 0.84 to 2.49 mm deep show in a camera image is part of what your team
 measures.
 
@@ -944,8 +906,8 @@ the prompt when it prints them.
 Step 3: The Answer and the Schema Check
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Scripted model: fixed replies. The answers come from the scripted stand-in,
-and the cell IDs are chosen for this example:
+The answers come from the scripted stand-in, and the cell IDs are chosen for
+this example:
 
 .. literalinclude:: outputs/er_demo.txt
    :language: text
@@ -1016,10 +978,9 @@ The Comparison Table for 12 Cells
    :language: text
    :caption: outputs/score_er.txt
 
-Scripted model: fixed replies. The ground truth and the lidar labels are
-chosen for this example, and the ER labels come from the scripted stand-in.
-The table shows how to score; it says nothing about how a real model or a
-real detector does.
+The ground truth and the lidar labels are chosen for this example, and the
+ER labels come from the scripted stand-in. The table shows how to score; it
+does not measure Gemini Robotics ER or your lidar detector.
 
 
 Reading the Table, Step by Step
@@ -1034,21 +995,20 @@ Reading the Table, Step by Step
    2 / 3 = 0.67; recall 2 / 2 = 1.00. The one mistake on c07 counts twice: an
    FN for DENT and an FP for BULGE.
 4. **SCRATCH:** both detectors have recall 1 / 2 = 0.50, but lidar missed c09
-   and the stand-in missed c04. The same number hides different cells; the
-   labels agree on only 7 of 11 cells.
+   and the stand-in missed c04. The same recall comes from different cells;
+   the labels agree on only 7 of 11 cells.
 
 .. warning::
 
-   Scripted model: fixed replies. Each type has 2 defective cells here, so
-   one cell moves recall by 1 / 2 =
-   0.50. With so few cells, a difference between the two detectors can be
+   Each type has 2 defective cells here, so one cell moves recall by
+   1 / 2 = 0.50. With so few cells, a difference between the two detectors can be
    one cell. Use many more cells (L12).
 
 
 .. _l13-real-runs:
 
-The Real Model: Two Runs on 12 ARIAC Images
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Gemini Robotics ER: Two Runs on 12 ARIAC Images
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - One ARIAC session (trial ``LEC13001``, seed 2) fed 12 Li-Ion cells past a
   1080p camera and saved one image per cell. ARIAC's cell log
@@ -1092,16 +1052,11 @@ c02 to c08 (lines 31 to 51 of the file) carry the same fence. Then:
    :language: text
    :lines: 18-19
 
-.. note::
-
-   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
-   rerun gives different answers.
-
 - All 8 answers came inside a Markdown code fence (c01 is shown; c02 to c08
   are the same in ``er_rec1.txt``), although the prompt says "Answer only
   with JSON". ``json.loads`` fails at the first character, so the deck's
-  check rejects all 8, and 0 of 12 cells are scored. The check worked: it
-  kept answers that are not JSON out of the scores.
+  check rejects all 8, and 0 of 12 cells are scored: no answer that is not
+  JSON reaches the scores.
 - Call 9 got HTTP 429. Google's message, in the error body
   (``outputs/raw/er_rec1/c09.response.json``): "Rate limit exceeded for model
   gemini-robotics-er-2-preview (limit: 5 requests per minute on Free Tier).
@@ -1135,13 +1090,12 @@ Run 2: The Same Call, with Structured Output
   shorter gap fails.
 - ``response_format`` "Enforces that the generated response is a JSON object
   that complies with the JSON schema specified in this field"
-  (`Interactions API reference <https://ai.google.dev/api/interactions-api>`_,
-  read 2026-10-18). The schema is the deck's own ``ANSWER_SCHEMA``. Its
+  (`Interactions API reference <https://ai.google.dev/api/interactions-api>`_). The schema is the deck's own ``ANSWER_SCHEMA``. Its
   ``type`` field is a string ``enum``, which the
   `structured output page <https://ai.google.dev/gemini-api/docs/structured-output>`_
   lists among the supported keywords for strings.
-- Structured output is a request, so the deck's check still runs on every
-  answer. The structured output page says: "While output is syntactically
+- The deck's check still runs on every answer, because the structured
+  output page says: "While output is syntactically
   correct JSON, always validate values in your application."
 - ``store``: "Whether to store the response and request for later retrieval"
   (API reference). The
@@ -1170,11 +1124,6 @@ From ``outputs/score_er_rec2.txt``:
    :language: text
    :lines: 5-18
 
-.. note::
-
-   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
-   rerun gives different answers.
-
 - All 12 calls were answered with no fence, and the check accepted all 12.
   With 13 s between call starts, no call got HTTP 429.
 - The model named a defect on 6 cells, and all 6 have one. It said none on
@@ -1202,17 +1151,12 @@ From ``outputs/score_er_rec2.txt``:
    :language: text
    :lines: 20-34
 
-.. note::
-
-   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
-   rerun gives different answers.
-
 .. warning::
 
    Each type is on 3 cells, so one cell moves its recall by 1 / 3 = 0.33, and
-   DENT's precision rests on 1 call (one cell moves it by 1.00). Every
-   per-type 95% interval (Wilson score) is 0.56 to 0.79 wide. 12 cells cannot
-   rank this model against your lidar detector or another model; see
+   DENT's precision comes from 1 call (one cell moves it by 1.00). Every
+   per-type 95% interval (Wilson score) is 0.56 to 0.79 wide. 12 cells are too
+   few to rank this model against your lidar detector or another model; see
    :ref:`l12-runs-a-claim-needs` in L12.
 
 .. [#wilson] Wilson score interval for :math:`k` of :math:`n`, with
@@ -1257,11 +1201,6 @@ The model's type, then ARIAC's log:
   approximate. To locate a defect, your team finds the cell in the image
   itself.
 
-.. note::
-
-   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
-   rerun gives different answers.
-
 
 Run 2: Tokens, Latency and Cost
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1275,11 +1214,6 @@ From ``outputs/score_er_rec2.txt``:
 .. literalinclude:: outputs/score_er_rec2.txt
    :language: text
    :lines: 62-77
-
-.. note::
-
-   Recorded once, on 2026-10-18, with ``gemini-robotics-er-2-preview``. A
-   rerun gives different answers.
 
 - Every call had 1203 input tokens: 103 of text and 1100 for the image.
   Thinking tokens are billed as output: for c01, 1203 + 51 + 332 = 1586, the

@@ -4,15 +4,11 @@ ENPM663: Agentic Physical AI for Manufacturing Robotics
 Course Description
 ------------------
 
-ENPM663 teaches how to build robot systems where AI agents decide what a
-factory cell does next and classical robotics carries it out. **Physical
-AI** means AI systems that perceive, reason and act in the physical world.
-An **agent** is a program that runs a loop around a language model: it
-observes the state of the world, asks the model what to do, calls a tool
-(here, a robot skill), checks the result, and repeats. The course's title
-term, **agentic physical AI**, means a robot system in which an AI agent
-decides what the robots do next, and robot skills carry out each decision in
-the physical world.
+ENPM663 teaches how to build **agentic physical AI**: robot systems where AI
+agents decide what a factory cell does next and robot skills carry out each
+decision. An **agent** is a program that runs a loop around a language model:
+it observes the state of the world, asks the model what to do, calls a tool
+(here, a robot skill), checks the result, and repeats.
 
 The course is built on the **ARIAC 2025** testbed from NIST, a simulated
 EV battery factory in which robots inspect battery cells, build kits and
@@ -25,8 +21,7 @@ layers where it earns its place:
 - LLM agents that plan with tool calls (MCP) and structured output
 - Vision-language models that describe what the cameras see
 - Replanning when the factory does not behave as planned
-- The physical AI frontier: vision-language-action models, robot
-  foundation models and world models
+- Vision-language-action models, robot foundation models and world models
 
 Motion planning and grasping stay classical (MoveIt 2). By the end of the
 semester, your team will have built an agentic system that runs a full
@@ -51,7 +46,7 @@ Students enrolling in ENPM663 must have:
 
    L1 includes a short refresher on the ROS 2 topics this course uses most
    (QoS, executors, actions and TF2), and an ungraded diagnostic
-   quiz so you can check your own ROS 2 background.
+   quiz so you can check your own ROS 2, Git and GitHub background.
 
 
 Learning Outcomes

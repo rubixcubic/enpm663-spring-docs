@@ -34,8 +34,7 @@ Quiz 1 and Recap
 
 **Today.**
 
-- The structure that reads and updates that model while the robots work: a
-  behavior tree (BT).
+- A behavior tree (BT) reads and updates that model while the robots work.
 - Every example is a piece of the GP1 tree, which builds one kit and is due
   next week (02/24).
 
@@ -46,8 +45,8 @@ Trees and State Machines
 ------------------------
 
 This section writes one GP1 step as a finite state machine and as a behavior
-tree, then counts what each one costs when a failure case or a retry is
-added.
+tree, then counts the transitions or nodes each one adds for a failure case
+and for a retry.
 
 Two Ways to Write the Executive Layer
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,8 +97,8 @@ One GP1 Step, Two Ways
 - **Tag 2: the BT**, indented the way ``py_trees`` prints a tree. Orange boxes
   are sequences, the cyan octagon is a selector, gray ellipses are leaves.
 
-Counting What Each Change Costs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Counting Transitions and Nodes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Change 1: stop when a skill or the tester fails.**
 
@@ -122,11 +121,9 @@ The 8 nodes of the BT are the ones in tag 2 of the figure: ``move_cell``,
 ``place_if_good``, ``voltage_in_range``, ``place_in_slot`` and
 ``recycle_cell``.
 
-Why Robot Software Moved to Behavior Trees
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Why Use Behavior Trees
+~~~~~~~~~~~~~~~~~~~~~~
 
-- In an FSM, each new failure case adds transitions to many states. In a BT,
-  a failure moves up the tree by itself.
 - A BT subtree that does one job (move a cell from tester to tray) can be
   reused, wrapped in a retry, or put under a fallback, without touching the
   rest of the tree.
@@ -148,13 +145,12 @@ BT Primitives
 
 This section covers leaves, sequence, selector, parallel and decorators. For
 each one, it gives the status it returns from its children's statuses,
-measured with ``composite_status.py`` and ``parallel_watch.py``
-(``py_trees`` 2.6.0).
+printed by ``composite_status.py`` and ``parallel_watch.py``.
 
 Nodes and Statuses
 ~~~~~~~~~~~~~~~~~~
 
-**Three kinds of node.**
+**Leaves, composites and decorators.**
 
 - A **leaf** does the work. An **action** leaf runs a skill or calls a
   service. A **condition** leaf checks a fact and returns ``SUCCESS`` or
@@ -163,7 +159,7 @@ Nodes and Statuses
   decides which of them to tick.
 - A **decorator** has one child and changes its result.
 
-**Four statuses in** ``py_trees``.
+**Statuses in** ``py_trees``.
 
 - ``SUCCESS`` and ``FAILURE``: the node is done.
 - ``RUNNING``: the node needs more ticks, for example while a robot moves.
@@ -194,8 +190,8 @@ Every Node Type in One GP1 Subtree
   ``[o]``, ``/_/``, ``-^-`` and ``-->``. Braces mean the composite has memory
   (memory is explained in :ref:`l4-memory`).
 
-How the Demonstration Measures a Composite
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A Stand-in Leaf for Testing Composites
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: code/composite_status.py
    :language: python
@@ -233,8 +229,8 @@ Cases 2 and 3: ``update`` shows ``INVALID`` because the sequence stopped
 before it. It was never ticked.
 ``memory`` is explained in :ref:`l4-memory`.
 
-Selector: The First Child That Succeeds Wins
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Selector: Stop at the First Success
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: selector (fallback)
    :class: note
@@ -321,7 +317,7 @@ Decorators: One Child, a Changed Result
    * - ``Timeout``
      - Returns ``FAILURE`` if the child is still ``RUNNING`` after
        ``duration`` seconds, and stops the child
-     - A place skill that never finishes
+     - A place skill that runs too long
    * - ``Inverter``
      - Swaps ``SUCCESS`` and ``FAILURE``
      - "tester is NOT malfunctioning"
@@ -333,10 +329,10 @@ Decorators: One Child, a Changed Result
        when the condition fails
      - Keep placing only while the AGV is at the inspection station
 
-All five are in ``py_trees.decorators`` (``py_trees`` 2.6.0).
+All five are in ``py_trees.decorators``.
 
-Decorators: Measured
-~~~~~~~~~~~~~~~~~~~~
+Decorators: Program Output
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: outputs/composite_status.txt
    :language: text
@@ -356,8 +352,7 @@ Ticks and Memory
 ----------------
 
 This section covers how a tick moves through a tree, what a node does on each
-tick, and composites with and without memory, with a live demonstration
-(``retry_demo.py``, ``py_trees`` 2.6.0, ROS 2 Jazzy, run 2026-10-12).
+tick, and composites with and without memory, shown with ``retry_demo.py``.
 
 What a Tick Is
 ~~~~~~~~~~~~~~
@@ -382,8 +377,8 @@ What a Tick Is
    is done blocks the whole tree, and with it the node's other callbacks (the
    L1 executor demonstration: 11 status reads instead of 50).
 
-The Four Methods of a Node
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Methods of a Node
+~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -407,7 +402,7 @@ The Four Methods of a Node
      - Cancel the goal if it was stopped while running
 
 This is how ``py_trees_ros.action_clients.FromConstant`` works
-(``action_clients.py`` in ``py_trees_ros`` 2.6.0). It sends the cancel only
+(``action_clients.py``). It sends the cancel only
 when its status goes from ``RUNNING`` to ``INVALID``.
 
 Memory in a Sequence or Selector
@@ -536,8 +531,8 @@ A Tick That Interrupts a Running Action
 - ``py_trees_ros`` action leaves cancel the goal. The course skills accept a
   cancel.
 - ARIAC's ``/agvN/move`` action rejects cancel requests: once the AGV leaves,
-  it finishes its move. Interrupt the tree before you send the AGV, not while
-  it drives.
+  it finishes its move. Any interrupt must come before the tree sends the
+  AGV.
 
 
 .. _l4-blackboards:
@@ -546,8 +541,7 @@ Blackboards
 -----------
 
 This section covers the shared state that leaves read and write: L3's world
-model, inside the tree. It is measured with ``blackboard_demo.py``
-(``py_trees`` 2.6.0).
+model, inside the tree, shown with ``blackboard_demo.py``.
 
 Keys, Access and the GP1 World Model
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -557,8 +551,7 @@ Keys, Access and the GP1 World Model
 
    The **blackboard** is a key-value store that every leaf can reach. In
    ``py_trees``, each behavior registers the keys it uses with
-   ``Access.READ`` or ``Access.WRITE``, and the blackboard refuses any other
-   use.
+   ``Access.READ`` or ``Access.WRITE``. Any other access raises an error.
 
 **GP1 keys, from the L3 world model.**
 
@@ -616,8 +609,8 @@ Three Cells through ``handle_cell``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Tree: sequence ``handle_cell`` = ``average_voltage``, then the selector
-``place_or_recycle`` from the selector section. Tester readings are chosen for
-this example: five per cell, averaging 3.55 V, 3.85 V and 3.62 V.
+``place_or_recycle`` from the selector section. The script gives each cell
+five tester readings, averaging 3.55 V, 3.85 V and 3.62 V.
 
 .. literalinclude:: outputs/blackboard_demo.txt
    :language: text
@@ -636,7 +629,7 @@ Conventions and Pitfalls
 - One writer per key where you can. Give each key a clear name and type.
 - Write a key only after the action it describes succeeded:
   ``place_in_slot`` updates the kit keys after the skill reports success.
-- Clear a key when it no longer holds.
+- Clear a key when its value is out of date.
 
 **Pitfalls.**
 
@@ -664,8 +657,8 @@ The blackboard, visited keys and who accessed them:
 
    py-trees-blackboard-watcher --visited --activity
 
-Both options are from the tools' own ``--help`` (``py_trees_ros`` 2.6.0). Use
-them in GP1 when a leaf reads a value you did not expect.
+Both options are from the tools' own ``--help``. Use them in GP1 when a leaf
+reads a value you did not expect.
 
 
 .. _l4-py-trees-ros:
@@ -674,8 +667,8 @@ py_trees_ros
 ------------
 
 This section covers the tree as a ROS 2 node, and leaves that call actions and
-services and read topics. A live demonstration, ``ros_tree_demo.py``, has
-three runs (ROS 2 Jazzy, ``py_trees_ros`` 2.6.0, run 2026-10-12).
+services and read topics, with a live demonstration in three runs:
+``ros_tree_demo.py``.
 
 The Tree as a ROS 2 Node
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -690,9 +683,7 @@ The Tree as a ROS 2 Node
 .. tip::
 
    The ticks come from a timer callback, so subscription and action callbacks
-   run between ticks. As long as no leaf waits inside a tick, the tree never
-   blocks the node, and the problem from the L1 executor demonstration does
-   not happen.
+   run between ticks, as long as no leaf waits inside a tick.
 
 Leaves That Talk to ROS 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -720,7 +711,7 @@ Leaves That Talk to ROS 2
        message, or a field of it, to a key
      - Tester voltage, conveyor status
 
-Each row's behavior is from the ``py_trees_ros`` 2.6.0 source. A subscriber
+Each row's behavior is from the ``py_trees_ros`` source. A subscriber
 leaf's QoS must match the publisher's, as in the L1 QoS demonstration.
 
 The Demonstration: Stand-ins for ARIAC and the Skills
@@ -747,8 +738,7 @@ The Demonstration: Stand-ins for ARIAC and the Skills
      - ``/agv1/check_kit_quality``, which answers ``is_good``
 
 - Run 2 changes one thing: the place goal runs 5.0 s. Run 3 changes another:
-  the kit check replies ``success=False``. All times are chosen for this
-  example.
+  the kit check replies ``success=False``. The script sets all these times.
 - The stand-ins share the tree's process, so the script spins both nodes on a
   multi-threaded executor. In GP1 the skills run in their own process.
 
@@ -811,8 +801,8 @@ Ticks 13 to 21:
 
 .. _l4-run2:
 
-Run 2: A Place That Never Finishes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run 2: The Place Times Out
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Output, from tick 13:
 
@@ -829,8 +819,8 @@ Output, from tick 13:
    :doc:`code page <l4_code>`), the timeout fired on tick 33 in 3 runs and on
    tick 34 in 7; in five more sets of 10 (``ros_tree_repeat_sets.txt``), on
    tick 33 in 3 to 6 runs. ``Timeout`` fails only once *more* than 2.0 s have
-   passed, and the 2.0 s mark falls on a tick, so timer jitter decides which
-   tick sees it.
+   passed, and the 2.0 s mark falls on a tick, so with timer jitter the first
+   tick past it is 33 or 34.
 4. This run heard 35 messages in 34 ticks. In the 60 other timeout runs in
    those two files, the counts were equal every time.
 
@@ -853,9 +843,9 @@ Output, from tick 20:
 .. warning::
 
    **GP1 trap 2: a service leaf returns SUCCESS even when the reply says the
-   kit is bad.** ARIAC's check kit quality service answers ``is_good``. A
-   tree with only the service leaf would ship a rejected kit. **Follow every
-   service leaf whose reply matters with a condition on that reply**, as
+   kit is bad.** ARIAC's check kit quality service answers ``is_good``.
+   **Follow every service leaf whose reply matters with a condition on that
+   reply**, as
    ``kit_is_good`` does here.
 
 
@@ -864,8 +854,8 @@ Output, from tick 20:
 Patterns for the GP1 Tree
 -------------------------
 
-This section goes from the starter tree to a tree that builds one kit, with
-three patterns: retry, stop cleanly, check before acting.
+This section goes from the starter tree to a tree that builds one kit: retry,
+stop cleanly, and check before acting.
 
 The Starter Tree: One Sequence for One Cell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -885,16 +875,15 @@ The Starter Tree: One Sequence for One Cell
 - Inspection robot 1 runs the two tag 3 leaves at the top
   (``pick_from_conveyor``, ``place_on_tester``); inspection robot 2 runs the
   two at the bottom (``pick_from_tester``, ``place_in_slot``).
-- The names follow the Task 1 steps in L1. The handout's code may name them
-  differently.
+- The names follow the Task 1 steps in L1.
 - After four cells, the tree checks the kit, moves the AGV to shipping with
   ``/agvN/move`` and submits the kit.
 
 Pattern 1: Retry
 ~~~~~~~~~~~~~~~~
 
-- Wrap a skill leaf in ``Retry`` for a failure that can pass on a second try
-  (:ref:`run 1 <l4-run1>`).
+- Wrap a skill leaf in ``Retry`` when the skill can succeed on a second
+  attempt (:ref:`run 1 <l4-run1>`).
 - The skills package never retries a task by itself. Any retry must be in
   your tree.
 
@@ -905,19 +894,19 @@ Pattern 2: Stop Cleanly
   ``num_failures`` attempts. Let that failure reach the root.
 - Leave the robot where the skill left it: the skill's result says what the
   gripper still holds.
-- Log the reason, and do not loop forever. A ``Timeout`` turns a skill that
-  never answers into a failure (:ref:`run 2 <l4-run2>`).
+- Log the reason, and do not loop forever. Wrap a skill that can run too long
+  in a ``Timeout`` (:ref:`run 2 <l4-run2>`: ``FAILURE`` after 2.0 s).
 
 Pattern 3: Check the Kit Before Every Place
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **The rule (GP1, Task 4).**
 
-- Put a condition before each step that cannot be undone. Cells lock to the
-  tray once placed, so every decision comes before the place.
+- Put a condition before each step that cannot be undone: in GP1, the place,
+  since cells lock to the tray once placed.
 - The kit window is 14.25 V to 14.55 V (L1: 4 × 3.6 = 14.4 V, plus or minus
-  0.15 V). Before every place, check that the four cells can still land in
-  it. If they cannot, recycle the cell.
+  0.15 V). Before every place, check that the kit total can still end inside
+  it. If it cannot, recycle the cell.
 - Each cell still to come adds 3.40 V to 3.80 V. So the cells placed so far
   must total at least 14.25 V minus 3.80 V per missing cell, and at most
   14.55 V minus 3.40 V per missing cell.
@@ -947,14 +936,13 @@ L3's worked example, in steps:
    ``/kit/total``, must catch it.
 
 The check kit quality service comes after the fourth place, when the cells are
-already locked, and its reply needs its own condition
-(:ref:`run 3 <l4-run3>`).
+already locked.
 
-Pattern 3: How Far Chance Moves the Kit Total
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Pattern 3: Noise in the Kit Total
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**What is known.** ARIAC checks the cells' true voltages; the tree knows only
-averages. The tester adds noise with a standard deviation of 0.05 V to each
+**What is known.** ARIAC checks the cells' true voltages, but the tree works
+from averaged readings. The tester adds noise with a standard deviation of 0.05 V to each
 reading (ARIAC's ``voltage_tester/model.sdf``). Here each value averages five
 readings, as ``wait_for_voltage`` collects.
 
@@ -971,10 +959,10 @@ readings, as ``wait_for_voltage`` collects.
 
 .. important::
 
-   So 14.62 V makes a failed kit likely, not certain, and recycling the
-   3.75 V cell is still the safe call. A total within about
-   2 × 0.045 = 0.09 V of an edge cannot be called either way. Twenty readings
-   per cell halve the spread, to about 0.022 V.
+   So a 14.62 V reading means the kit likely fails, and the tree recycles the
+   3.75 V cell. Within about 2 × 0.045 = 0.09 V of an edge, the averages
+   cannot tell whether the kit passes. Twenty readings per cell halve the
+   spread, to about 0.022 V.
 
 Class Discussion and the GP1 Write-up
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -988,8 +976,8 @@ Class Discussion and the GP1 Write-up
 
 **GP1 write-up.**
 
-- The tree diagram, and the reason for each composite choice: why a selector
-  here, why memory there.
+- The tree diagram, and the reason for each composite type and memory
+  setting.
 - Test the two failure cases: a skill that fails once, and a skill that keeps
   failing.
 
@@ -1009,8 +997,8 @@ Next Class
   and statuses, memory, blackboards, ``py_trees_ros`` leaves and failure
   modes.
 
-**L5: Sensing and Perception for Robotic Systems.** Lidar point clouds that
-find defects on battery cells (GP2), and how to score a detector with
+**L5: Sensing and Perception for Robotic Systems.** Finding defects on
+battery cells in lidar point clouds (GP2), and scoring a detector with
 precision and recall.
 
 **Before next class.**

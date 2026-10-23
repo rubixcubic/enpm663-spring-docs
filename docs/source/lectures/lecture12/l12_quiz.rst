@@ -255,8 +255,8 @@ True or False (Questions 9 to 14)
 
    A good score next to poor lower-level metrics can mean that the trial did
    not test the weak part. The lecture's example: a trial with few defective
-   cells hides a detector that misses defects. Chance can also give one good
-   run. The score says how a run went; the lower levels say why.
+   cells gives a detector few defects to miss. Chance can also give a weak
+   system one good run.
 
 
 .. admonition:: Question 10
@@ -363,8 +363,7 @@ Short Answer (Questions 15 to 18)
    of **invented objects** (a cell, slot, AGV or order ID that does not
    exist), **tokens and dollars per decision** (or GPU time for a local
    model), and **latency per decision**. A list per decision, from the
-   decision logs kept since L9, gives a mean and a spread. A single total for
-   the run gives neither.
+   decision logs kept since L9, gives a mean and a spread.
 
 
 .. admonition:: Question 16
@@ -411,7 +410,7 @@ Short Answer (Questions 15 to 18)
    :class-container: sd-border-success
 
    The difference is 3201.25 points: 1666.67 from the base (one kit of three,
-   5000 / 3) and all 1534.58 of the bonuses, which the bonus gate sets to 0
-   because not every wanted kit was submitted. So finishing every order
-   matters more than any speed bonus: a slow recovery that finishes the kit
-   beats a fast system that drops one.
+   5000 / 3) and all 1534.58 of the bonuses, which ARIAC sets to 0 because
+   not every wanted kit was submitted. So finishing every order matters more
+   than speed: Run 1's three speed bonuses total 300 + 125 + 120 = 545
+   points.

@@ -5,16 +5,16 @@ L11: Recovery, Robustness, and Failure Handling for Agentic Systems
 Overview
 --------
 
-**What does the system do when something goes wrong, and which layer
-handles it?** This lecture answers that question for the system you build
-from GP1 to GP4.
+This lecture shows how the system you build from GP1 to GP4 detects each
+type of failure, and whether the tree handles it (retry, wait) or the planner
+or agent does (replan).
 
 The lecture sorts failures into four types: an **action failure** (a skill
 does not do what it was asked), a **sensor failure** (a device gives no data
 or wrong data), a **plan failure** (the plan is invalid) and **world drift**
 (the world changed, and no single action failed). Each type has a signal
-that detects it in the ARIAC 2025 interfaces, and the type decides where
-recovery starts. AI components add two new sources of failure: LLM output,
+that detects it in the ARIAC 2025 interfaces, and a layer where recovery
+starts. AI components add two new sources of failure: LLM output,
 which shows up as plan failures, and VLM output, which shows up as sensor
 failures.
 
@@ -22,7 +22,7 @@ The lecture maps the seven skill failure results from L10 to a response:
 retry, wait or replan. The recovery tools come next, at three levels:
 
 - **The behavior tree.** A selector falls back to another branch, Retry runs
-  a failed skill again, Timeout turns a hang into a failure, and a guard
+  a failed skill again, Timeout fails a skill that hangs, and a guard
   stops a running branch when a device breaks. A demonstration in
   ``py_trees`` 2.6.0 injects failures into a tree that places a cell on a
   voltage tester, with no simulator.
@@ -54,8 +54,7 @@ the LLM fits, and three worked examples.
    Friday, April 23, at 11:59 pm. Add the checks and the challenge handling from this
    lecture, and log every detection and recovery. GP4 tests the conveyor
    malfunction, the voltage tester malfunction and high-priority orders. The
-   vacuum tool malfunction happens only in Task 2, so the final demo is the
-   first place your system meets it.
+   vacuum tool malfunction happens only in Task 2, which GP4 does not test.
 
 .. admonition:: This week
    :class: warning
@@ -68,7 +67,7 @@ the LLM fits, and three worked examples.
      grading rubric is on the final demo page. Gemini Robotics ER is the
      course example for the embodied-reasoning step; another VLM is allowed
      if it is a Google model that runs on the course key, or a model that
-     runs locally. Who pays is set: the course key runs the graded runs only
+     runs locally. The course key runs the graded runs only
      (GP4 and the final demo), and your team uses its own free-tier Gemini
      key while you develop.
 
@@ -113,8 +112,8 @@ Next Steps
   for Agentic Systems**:
 
   - How to measure an agentic system with the ARIAC scoring formula.
-  - Recovery rate, challenge handling, and how the ARIAC score rewards or
-    penalizes each recovery choice.
+  - Recovery rate, challenge handling, and how each recovery choice raises or
+    lowers the ARIAC score.
 
 - **GP4 is due Friday, April 23, at 11:59 pm.** Add the checks and the challenge
   handling from today (retry, wait or replan for each failure), and log

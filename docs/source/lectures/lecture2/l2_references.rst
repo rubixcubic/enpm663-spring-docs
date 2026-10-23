@@ -140,7 +140,7 @@ order of the slides, grouped by section. Every link was checked on
          only the status moves up", which L3 covers.
 
 
-.. dropdown:: Three Layers in Real Robot Software
+.. dropdown:: Three Layers in Nav2 and MoveIt
    :class-container: sd-border-secondary
    :open:
 

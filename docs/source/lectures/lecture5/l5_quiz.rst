@@ -261,9 +261,9 @@ Multiple Choice (Questions 1 to 12)
 
    B. ARIAC rejects the report.
 
-   C. The report lands on the next cell upstream that has no report, and the
-      cell at 1.1 m, which had no report at the door, goes into the inspection
-      bin.
+   C. ARIAC gives the report to the next cell upstream that has no report,
+      and the cell at 1.1 m, which had no report at the door, goes into the
+      inspection bin.
 
    D. The report is attached to the cell that was reported before it.
 

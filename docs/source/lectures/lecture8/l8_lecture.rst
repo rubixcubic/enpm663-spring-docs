@@ -31,14 +31,15 @@ From L7
 
 - A plan-to-BT factory turns each plan step into a subtree: guard, act,
   verify, update.
-- Retry and timeout decorators are always bounded.
+- Retry gives up after ``num_failures`` failures; Timeout fails a child that
+  runs too long.
 - Replanning triggers stop a plan and ask the planner for a new one.
 
-Today's Question
-~~~~~~~~~~~~~~~~
+Today
+~~~~~
 
-GP4 replaces the PDDL planner with an LLM agent. **What must the code around
-the LLM do so that the robots stay safe?**
+GP4 replaces the PDDL planner with an LLM agent, and the code around the LLM
+checks every call before a robot moves.
 
 .. admonition:: GP3
    :class: warning
@@ -80,7 +81,7 @@ The GP3 Stack and What GP4 Changes
      - Skills package; GP2 lidar detector
      - The same
 
-The agent decides which skill runs next; classical code moves the robots.
+The agent chooses the next skill; the GP3 executor and skills move the robots.
 This is the "orchestrate" part of NVIDIA's definition of physical AI from
 :doc:`L1 </lectures/lecture1/l1_index>`: physical AI lets autonomous systems
 "perceive, understand, reason, and perform or orchestrate complex actions in
@@ -91,13 +92,13 @@ Where an Agent Helps, and Where It Does Not
 
 **A PDDL domain covers only what its author modeled.** GP3's domain does not
 model the four ARIAC challenges: conveyor malfunction, voltage tester
-malfunction, vacuum tool malfunction and high-priority order. An LLM agent is
-useful on ambiguity, new situations and recovery.
+malfunction, vacuum tool malfunction and high-priority order. GP4 tests an
+LLM agent on three of them: conveyor, voltage tester and high-priority order
+(L7).
 
-**On the routine path, the classical planner wins.** It is cheaper (no
-tokens), deterministic (same problem, same plan) and easier to audit (every
-step follows from the domain). This boundary is part of the course design.
-L9 compares the planner and the agent on the same trial.
+**The classical planner on routine kits.** It is cheaper (no tokens),
+deterministic (same problem, same plan) and easier to audit (every step
+follows from the domain). L9 compares the planner and the agent on the same trial.
 
 
 .. _l8-llm-as-function:
@@ -105,8 +106,8 @@ L9 compares the planner and the agent on the same trial.
 The LLM as a Function
 ---------------------
 
-Messages In, Text Out, Nothing Kept
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What One LLM Call Does
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: context
    :class: note
@@ -124,17 +125,15 @@ to operate on alternating ``user`` and ``assistant`` conversational turns.
 When creating a new ``Message``, you specify the prior conversational turns
 with the ``messages`` parameter, and the model then generates the next
 ``Message`` in the conversation."
-(`Anthropic Messages API reference <https://platform.claude.com/docs/en/api/messages/create>`_,
-read 2026-10-12)
+(`Anthropic Messages API reference <https://platform.claude.com/docs/en/api/messages/create>`_)
 
-So **the program, not the model, keeps the conversation.** It sends the
+So **the program keeps the conversation.** It sends the
 earlier turns again on every call.
 
-Three Consequences for a Robot System
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What the Program Must Do
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. The program sends the current state on every call, because the model
-   keeps nothing.
+1. The program sends the current state on every call.
 2. The program checks every output before anything moves, because the output
    is sampled and can be wrong.
 3. The program limits the cost, because every call is paid for in
@@ -142,11 +141,11 @@ Three Consequences for a Robot System
 
 .. tip::
 
-   An agent's behavior comes from the loop around the model, not from the
-   model alone. That loop is ordinary Python that your team writes and tests.
+   The loop around the model is ordinary Python that your team writes and
+   tests.
 
 Some APIs offer settings, such as a **temperature**, that change how much the
-answers vary. No setting makes the output safe to run without checks.
+answers vary; the checks still run on every output.
 
 
 .. _l8-agent-loop:
@@ -155,11 +154,11 @@ The Agent Loop
 --------------
 
 This section covers the loop, its stop conditions and the orchestrator that
-runs it. A live demonstration then runs an orchestrator with Gemini driving
-the ARIAC inspection robots through the course skills.
+runs it. In a live demonstration, Gemini chooses the skill calls for the
+ARIAC inspection robots, and an orchestrator checks and runs them.
 
-Five Steps, Run by the Orchestrator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Loop Run by the Orchestrator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: orchestrator and agent loop
    :class: note
@@ -186,8 +185,8 @@ Five Steps, Run by the Orchestrator
    state again after every action.
 
 Colors in every L8 figure: **orange** is the LLM, **blue** is your team's code
-(the orchestrator), **green** is the factory side (executor, skills, ARIAC
-actions, robots).
+(the orchestrator), **green** is the executor, the skills, the ARIAC actions
+and the robots.
 
 Step 1: What the Orchestrator Reads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -214,7 +213,7 @@ Step 5: Stop Conditions, Each Checked in Code
 A **stop condition** ends the loop. Each one is checked in code:
 
 1. The goal is reached: the kit was submitted.
-2. A step limit is reached, for example 20 steps (chosen for this example).
+2. A step limit is reached (15 steps in the demonstration).
 3. Too many invalid outputs in a row.
 4. The trial's time limit is near (``TIME_LIMIT`` in the trial file).
 5. An operator stops the run.
@@ -224,8 +223,8 @@ A **stop condition** ends the loop. Each one is checked in code:
    The model can say "done". Only the orchestrator decides that the goal is
    reached, by checking the state in code.
 
-The Orchestrator Owns the Loop; the LLM Only Proposes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Checks Between the LLM and the Robots
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l8/orchestrator_checks.svg
    :alt: The orchestrator, a large blue frame, sits between an orange LLM block on the left and three green blocks on the right: Executor, then Skills, ARIAC, then Robots, linked top to bottom. Inside the frame are five checks in order: tag 1 Parse JSON, tag 2 Schema, tag 3 Semantic checks, tag 4 Executor guards, tag 5 Stop conditions. An arrow labeled call goes from the LLM into the frame and an arrow labeled error comes back. An arrow labeled run goes from the frame to the Executor, and an arrow labeled result comes back from the Robots block.
@@ -238,11 +237,12 @@ The five checks, in order:
 
 1. The text parses as JSON.
 2. It fits the tool's schema.
-3. It makes sense in the factory now.
+3. It passes the semantic checks.
 4. The executor's guards hold.
 5. No stop condition has fired.
 
-- The orchestrator owns the loop, the list of tools, the checks and the logs.
+- The orchestrator runs the loop, holds the list of tools, runs the checks
+  and writes the logs.
   **The LLM never sends a ROS goal itself.**
 - Check 4 uses the same **guards** as L7's executor: the robot holds the
   right object, the AGV is at the right station, the slot is free.
@@ -283,8 +283,7 @@ Demonstration: The Tool List the Model Sees
   ``_args`` lists the arguments and the required ones, and allows no others.
   ``check_call()`` enforces that rule, because Gemini's ``parameters`` schema
   has no ``additionalProperties``
-  (`Gemini API reference <https://ai.google.dev/api/generate-content>`_, read
-  2026-10-17).
+  (`Gemini API reference <https://ai.google.dev/api/generate-content>`_).
 - The other skill tools: ``robot1_move_home``, ``robot1_pick_from_conveyor``,
   ``robot1_place_on_tester``, ``robot2_move_home``,
   ``robot2_pick_from_tester``, ``robot2_drop_in_recycling``. The readings:
@@ -343,19 +342,18 @@ Demonstration: The Loop, Part 2 (Check, Run, Record)
 
 - ``error`` comes from ``check_call()``: an unknown tool, then the schema,
   then ``guard()``.
-- ``max_invalid`` is ``MAX_INVALID`` = 2 invalid outputs in a row (chosen
-  for this example). The result, the new observation and the record go back
+- ``max_invalid`` is ``MAX_INVALID`` = 2 invalid outputs in a row, also a
+  chosen limit. The result, the new observation and the record go back
   to the model.
 
-Run 1: Gemini Fills agv1 Slot 1 in Five Calls
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Run 1: Five Gemini Calls, One Cell in agv1 Slot 1
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: outputs/listings/run1_calls.txt
    :language: text
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1. Run 2 ran first in the same session
-(``--runs 2,1``).
+different answers.
 
 ``model`` is Gemini's call and ``result`` the skill's answer, cut at the
 slide's width. The next listing shows two of the observations.
@@ -366,8 +364,7 @@ Reading Run 1
 .. literalinclude:: outputs/listings/run1_obs24.txt
    :language: text
 
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. ``obs k`` is read after call :math:`k`; ``slots 1---``
+``obs k`` is read after call :math:`k`; ``slots 1---``
 means slot 1 is occupied.
 
 1. Calls 1 and 2: robot 1 catches a cell and places it on tester 1. ``obs 2``
@@ -387,16 +384,15 @@ Run 2: The Scripted Model Repeats a Refused Call
 .. literalinclude:: outputs/listings/run2.txt
    :language: text
 
-Scripted model: fixed replies. The replies ran against ARIAC, so the
-readings are real.
+Scripted model: fixed replies. The calls ran against ARIAC, so the tester
+readings come from the simulation.
 
 **Reading Run 2:**
 
 1. Twice the model asks robot 2 to pick from tester 1. Tester 1 reads
    0.00 V, then 0.04 V: below 0.5 V, so the guard refuses. No robot moves.
 2. Two invalid outputs in a row reach ``MAX_INVALID``, so the orchestrator
-   stops. In GP4 it would then stop safely or hand the decision to the GP3
-   planner.
+   stops.
 
 
 .. _l8-plan-and-react:
@@ -428,15 +424,15 @@ The Two Patterns
    :class: note
 
    The LLM writes a full plan once. The executor runs it, and asks for a new
-   plan only when a trigger fires (L7). This means few calls, low cost, and
-   the whole plan can be checked before any robot moves.
+   plan only when a trigger fires (L7). This means one call per plan, and the
+   whole plan can be checked before the executor runs it.
 
 .. admonition:: Definition: ReAct (Reason and Act)
    :class: note
 
    Each iteration is one reasoning step and one tool call; the model sees
-   each result before it chooses the next. This means more calls, more cost
-   and more delay, but the agent adapts at every step.
+   each result before it chooses the next. This means one call per step, so
+   the cost and the waiting grow with the number of steps.
 
 The ReAct paper describes it this way: "we explore the use of LLMs to
 generate both reasoning traces and task-specific actions in an interleaved
@@ -468,13 +464,13 @@ Choosing a Pattern for an ARIAC Situation
 
 .. tip::
 
-   A common hybrid is plan-and-execute with ReAct-style recovery when a
-   trigger fires. It matches the L7 executor directly.
+   The middle row is a hybrid: plan-and-execute, with ReAct-style steps after
+   a trigger fires, as in the L7 replanning loop.
 
-Time Limits the Agent's Reach
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Factory Clocks and Model Delay
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Two factory clocks:
+The factory's clocks:
 
 - The conveyor moves at up to 0.1 m/s (the ``CONVEYOR_SPEED`` maximum in
   ``user_config_schema.json``).
@@ -494,10 +490,10 @@ What 4 s means at top speed:
    a cell after the door. The agent decides at a slower level: which cells go
    in which kit, when to switch the feed, how to respond to a challenge.
 
-Class Discussion: What Should the Agent Own?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Class Discussion: Agent or Classical Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Discussion question:** which ARIAC decisions should the agent own, and
+**Discussion question:** which ARIAC decisions should the agent make, and
 which must stay classical because of time or safety?
 
 Argue from:
@@ -516,10 +512,11 @@ Prompt Structure for a Planner
 ------------------------------
 
 The system message holds what stays fixed during a run. The user message
-holds the state and the goal, as compact JSON. Arithmetic stays in code.
+holds the state and the goal, as compact JSON. The orchestrator computes the
+voltage sums.
 
-The System Message: Four Parts
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The System Message
+~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: system message and user message
    :class: note
@@ -562,10 +559,11 @@ System message (written for this lecture; tested once in the
   the expected format. Each one costs tokens on every call, so keep them
   short.
 
-Arithmetic Stays in Code
-~~~~~~~~~~~~~~~~~~~~~~~~
+The Orchestrator Computes the Kit Window
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-LLMs make arithmetic slips. The orchestrator computes voltage sums and the
+The model's output is sampled and can be wrong
+(:ref:`l8-llm-as-function`), so the orchestrator computes voltage sums and the
 remaining window, and gives the model the results.
 
 The L3 kit, computed by the orchestrator:
@@ -578,9 +576,9 @@ The L3 kit, computed by the orchestrator:
 
 .. tip::
 
-   The prompt says "the fourth cell must be from 3.40 V to 3.68 V", not the
-   three voltages. The model chooses among cells; code does the sums. A tool
-   that computes the window is the other option.
+   The prompt gives the window, "the fourth cell must be from 3.40 V to
+   3.68 V", instead of the three voltages. A tool that computes the window is
+   the other option.
 
 
 .. _l8-structured-output:
@@ -588,10 +586,9 @@ The L3 kit, computed by the orchestrator:
 Structured Output
 -----------------
 
-This section covers JSON Schema and how ARIAC itself uses it, then validation
-in five steps with semantic checks and a bounded retry. A demonstration runs a
-validator on seven scripted outputs, two retry runs and one real model
-output.
+This section covers JSON Schema and how ARIAC itself uses it, then
+validation, with semantic checks and a bounded retry. A demonstration runs a
+validator on seven scripted outputs, two retry runs and one Gemini output.
 
 JSON Schema, and ARIAC Uses It Too
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -612,8 +609,8 @@ ARIAC's team configuration check:
 - In that schema ``CONVEYOR_SPEED`` is above 0 and at most 0.1
   (``exclusiveMinimum`` 0, ``maximum`` 0.1), and a sensor's ``TYPE`` must be
   one of ``break_beam``, ``distance``, ``lidar`` or ``camera``.
-- A bad file is refused before the simulation starts. Your orchestrator does
-  the same with an LLM's output.
+- ARIAC refuses a bad file before the simulation starts. Your orchestrator
+  refuses an LLM output that fails its schema.
 
 A Schema for One AGV Move
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -629,8 +626,8 @@ A Schema for One AGV Move
   ``station_id`` 1 to 4 (``AgvStations.msg``).
 - ``agv`` runs from 1 to 3 because ARIAC 2025 has three AGVs.
 
-Validation in Five Steps
-~~~~~~~~~~~~~~~~~~~~~~~~
+The Validation Steps
+~~~~~~~~~~~~~~~~~~~~
 
 1. **Parse** the text as JSON. A parse error is a failure.
 2. **Validate against the schema**, for example with ``jsonschema`` or
@@ -643,8 +640,7 @@ Validation in Five Steps
    window.
 4. **On a failure, send the exact error message back** to the LLM and ask
    again.
-5. **Cap the retries**, for example at 2 (chosen for this example). After the
-   cap, fall back: stop safely, or hand the decision to the GP3 planner.
+5. **Cap the retries** (2 in the demonstration). After the cap, fall back: stop safely, or hand the decision to the GP3 planner.
 
 A **semantic check** is a check that needs the factory's current state; a
 **bounded retry** is a retry with a fixed cap.
@@ -667,16 +663,15 @@ The seven paths, from ``stub_agv.py``:
    :lines: 11-19
    :caption: lecture8/code/stub_agv.py (excerpt)
 
-Demonstration: Seven Outputs, One Check Each
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demonstration: The Validator on Scripted Outputs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Output (system Python 3.12.3, ``jsonschema`` 4.10.3):
 
 .. literalinclude:: outputs/listings/validator_seven.txt
    :language: text
 
-Scripted model: fixed replies. The seven outputs are texts chosen for this
-example.
+Scripted model: fixed replies.
 
 **Reading the seven results:**
 
@@ -692,8 +687,8 @@ example.
 
 .. important::
 
-   The last two outputs are well formed and still wrong. Only code that knows
-   the factory's state catches them.
+   The last two outputs pass the schema. Only the semantic checks, which read
+   the factory's state, refuse them.
 
 Demonstration: Steps 4 and 5, the Bounded Retry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -703,8 +698,7 @@ Demonstration: Steps 4 and 5, the Bounded Retry
    :pyobject: ask
    :caption: lecture8/code/validator.py (excerpt)
 
-``MAX_RETRIES`` = 2 gives 3 attempts in all (chosen for this example). The
-model is ``ScriptedModel``, which returns fixed replies.
+``MAX_RETRIES`` = 2 gives 3 attempts in all (chosen for this example).
 
 Retry Run 1: Accepted on the Third Attempt
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -736,8 +730,8 @@ Scripted model: fixed replies.
 
 .. _l8-structured-live:
 
-One Real Output, Through the Same Check
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+One Gemini Output, Through the Same Check
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Output of ``lecture8/code/structured_live.py``:
 
@@ -751,17 +745,15 @@ different answers.
 
 1. Gemini got the example system message of the
    :ref:`Prompt Structure <l8-prompt-structure>` section, the user message
-   above (the state of the stub factory, chosen for this example), and one
+   above (the state of the stub factory), and one
    tool, ``move_agv``, whose parameters are ``SCHEMA``. It is L6's
    ``move-agv`` without the dash; :ref:`l8-what-a-tool-is` says why.
 2. It called ``move_agv`` with ``agv`` 1 and ``SHIPPING``. The script turns
    the arguments back into JSON text, and ``check()`` runs steps 1 to 3 on
    it: valid.
-3. One valid output says nothing about the next one, so the check runs on
-   every output.
 
-Constrained Output Removes Some Errors, Not All
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Constrained Output and Its Limits
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Some providers can hold the output to a schema while it is generated. This is
 **constrained output**.
@@ -777,9 +769,9 @@ Some providers can hold the output to a schema while it is generated. This is
 
 .. warning::
 
-   A schema-perfect output can still ship a tray with 3 cells. Constrained
-   output removes parse and schema errors (steps 1 and 2), not semantic
-   errors, so steps 3 to 5 stay.
+   Constrained output removes parse and schema errors (steps 1 and 2). It
+   does not stop a move of ``agv2``, with 3 of 4 cells, to ``SHIPPING``, so
+   steps 3 to 5 stay.
 
 
 .. _l8-tool-calling:
@@ -812,16 +804,15 @@ The Gemini API reference describes the three fields of a declaration:
 ``name``: "The name of the function." ``description``: "A brief description
 of the function." ``parameters``: "Describes the parameters to this
 function."
-(`Gemini API reference, generateContent <https://ai.google.dev/api/generate-content>`_,
-read 2026-10-17)
+(`Gemini API reference, generateContent <https://ai.google.dev/api/generate-content>`_)
 
 - The name, the description and the schema are all the model knows about a
   tool. So the description states what the tool does, its preconditions and
   its failure results.
 - The Gemini guide says to name functions "without spaces, periods, or
   dashes"
-  (`function calling guide <https://ai.google.dev/gemini-api/docs/generate-content/function-calling>`_,
-  read 2026-10-17). So the L6 action ``move-agv`` is the tool ``move_agv`` in
+  (`function calling guide <https://ai.google.dev/gemini-api/docs/generate-content/function-calling>`_).
+  So the L6 action ``move-agv`` is the tool ``move_agv`` in
   this lecture.
 
 Designing Tools for the Factory
@@ -837,7 +828,7 @@ Designing Tools for the Factory
 
 .. tip::
 
-   Each rule shrinks what a wrong answer can do. A model that can only call
+   A model that can only call
    ``robot2_place_in_slot`` with ``agv`` 1 to 3 and ``slot`` 1 to 4 cannot
    send a joint command.
 
@@ -864,7 +855,7 @@ MCP: Hosts, Clients and Servers
 
 The tags, with the definitions quoted from the
 `MCP architecture overview <https://modelcontextprotocol.io/docs/learn/architecture>`_
-(spec version 2026-07-28, read 2026-10-12):
+(spec version 2026-07-28):
 
 1. **MCP host:** "The AI application that coordinates and manages one or
    multiple MCP clients".
@@ -891,8 +882,8 @@ Messages:
   runs one with ``tools/call``.
 - Two transports: **stdio**, for a local server started as a process, and
   **Streamable HTTP**, for a remote one.
-- Write the robot tools once as an MCP server, and any agent framework that
-  speaks MCP can use them.
+- Write the robot tools once as an MCP server, and any agent framework with
+  an MCP client can use them.
 
 Demonstration: A Server for the Skill Tools
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -907,8 +898,8 @@ Demonstration: A Server for the Skill Tools
   input schema from the function's type hints.
 - The server uses the Python ``mcp`` package 2.3.0, in the lecture's virtual
   environment. ``MCPServer`` is the class that 1.x tutorials call
-  ``FastMCP``. In 2.3.0, ``mcp/server/fastmcp.py`` holds only a message
-  (read 2026-10-17): its docstring says "``FastMCP`` is now
+  ``FastMCP``. In 2.3.0, ``mcp/server/fastmcp.py`` holds only a message:
+  its docstring says "``FastMCP`` is now
   ``mcp.server.mcpserver.MCPServer``", and importing it raises
   ``ModuleNotFoundError``.
 
@@ -932,8 +923,7 @@ Output: The Tool List
 .. literalinclude:: outputs/listings/mcp_tools.txt
    :language: text
 
-A real run of the MCP client against ARIAC, on 2026-10-17. No model runs.
-Recording 2 of 2; recording 1 used a client that printed 3 lines per result.
+The MCP client against ARIAC, recorded once, on 2026-10-17. No model runs.
 
 Output: Three Calls
 ~~~~~~~~~~~~~~~~~~~
@@ -941,8 +931,7 @@ Output: Three Calls
 .. literalinclude:: outputs/listings/mcp_calls.txt
    :language: text
 
-A real run of the MCP client against ARIAC, on 2026-10-17. No model runs.
-Recording 2 of 2; recording 1 used a client that printed 3 lines per result.
+The same recording as the tool list.
 
 Reading the Tool List and the Calls
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -965,15 +954,15 @@ Raw ROS Access, and the GP4 Choice
 
 `ros-mcp-server <https://github.com/robotmcp/ros-mcp-server>`_ connects to a
 robot through rosbridge. It lets an LLM publish and subscribe to topics, call
-services and actions, and set parameters. It gives an LLM wide access to the
-robot system.
+services and actions, and set parameters.
 
 For GP4:
 
 - Task-level tools behind the executor's guards are safer than raw publish
   access to ROS topics.
 - Each team chooses whether to use MCP. The tool schemas are the same either
-  way; MCP changes only how the tools reach the agent.
+  way; MCP changes only how the orchestrator lists the tools and sends the
+  calls (``tools/list``, ``tools/call``).
 
 
 .. _l8-context-cost-latency:
@@ -1009,7 +998,7 @@ agent sits in the deliberative layer.
 
 .. tip::
 
-   A smaller context costs fewer tokens and gives the model less to misread.
+   A smaller context costs fewer tokens on every call.
 
 Measuring F and h in Run 1
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1065,8 +1054,8 @@ Input Tokens over a Run
 - This is a graph of token counts, not a picture of the factory.
 - ReAct: the formula above, with :math:`F` and :math:`h` from Run 1.
 - Plan-and-execute: one plan and one replan, each sending :math:`F` = 1264
-  tokens, so 2 × 1264 = 2528 tokens for any :math:`n`. A replan sends the
-  current state, not the history. Its output, 40 tokens per plan step
+  tokens, so 2 × 1264 = 2528 tokens for any :math:`n`. A replan sends only
+  the current state. Its output, 40 tokens per plan step
   (``PLAN_OUT``), is chosen: no plan-and-execute run was recorded.
 - The values come from ``lecture8/code/token_growth.py``.
 
@@ -1078,8 +1067,7 @@ Output of ``lecture8/code/run_cost.py``, from Run 1's raw API responses:
 .. literalinclude:: outputs/listings/run1_cost.txt
    :language: text
 
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. ``billed``: output plus thinking tokens (none in Run 1).
+``billed``: output plus thinking tokens (none in Run 1).
 ``wall s``: each call's time, measured by the client.
 
 The arithmetic, at the prices of ``gemini_prices.py``:
@@ -1097,7 +1085,7 @@ Output of ``lecture8/code/token_growth.py``:
    :language: text
 
 Each row is computed from :math:`F`, :math:`h` and 16 output tokens per call,
-not run. At 5 steps the model gives 8930 tokens in and 80 out; Run 1
+with no model call. At 5 steps the model gives 8930 tokens in and 80 out; Run 1
 measured 8941 in and 79 out. Where the 11 tokens come from:
 
 1. Run 1's four steps added 271, 253, 257 and 264 tokens: 10 more, 8 less,
@@ -1118,8 +1106,8 @@ Reading the Cost Table, and Keeping the History Short
 
 Keeping the history short:
 
-- Summarize old steps instead of sending each one again. The current state
-  read from ROS is the truth, not the history.
+- Summarize old steps instead of sending each one again: the current state
+  comes from ROS on every call.
 - Memory across runs, such as "tester 2 often malfunctions in this trial",
   should be small, written by code, and checked against the current state.
 
@@ -1139,11 +1127,11 @@ ARIAC's clocks:
   and ``NOMINAL_INSPECTION_TIME`` in ``scoring_weights.yaml``; the ARIAC
   scoring page says these targets can change).
 
-Two kinds of time:
+Simulation time and wall-clock time:
 
 - ARIAC's clocks count simulation time; a model call takes wall-clock time.
-  Gazebo ran at about 0.37 times real time in the course's skills container
-  on the instructor's Lenovo (measured).
+  Measured on one PC: Gazebo ran at about 0.37 times real time in the
+  course's skills container.
 - So the same model latency costs a different amount of simulation time on
   each machine. Each team measures its own model's latency instead of
   assuming it.
@@ -1157,8 +1145,9 @@ Next Class
 **L9: LLM Agents II: VLM Grounding and Agentic Replanning (Wednesday, March
 31)**
 
-- A VLM describes the camera images for the agent, the loop closes around
-  feedback for replanning, and the class compares the PDDL planner and the
+- A VLM describes the camera images for the agent, the agent compares each
+  new observation with the expected state and replans when they differ, and
+  the class compares the PDDL planner and the
   agent on the same trial.
 - Quiz 4 at the start of class covers L7 and L8. GP3 is due, and GP4 is
   posted.

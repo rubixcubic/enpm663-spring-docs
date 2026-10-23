@@ -288,9 +288,9 @@ Multiple Choice (Questions 1 to 10)
 
    **B**.
 
-   A failed TF2 lookup becomes ``PLACE_NOT_FOUND``, not a crash. Under the L9
-   rule, it means the world is not what the plan assumed, so the caller
-   replans.
+   A skill whose TF2 lookup fails returns ``PLACE_NOT_FOUND``. Under the L9
+   rule, the agent observes something other than what it expected, so the
+   caller replans.
 
 
 ----
@@ -341,9 +341,8 @@ True or False (Questions 11 to 16)
 
    **True.**
 
-   Pilz uses no random sampling. That is one reason it fits a factory cell: a
-   straight-line descent into a tester or a tray slot is predictable and
-   repeatable.
+   Pilz uses no random sampling. That is one reason it fits a factory cell:
+   the same request gives the same motion.
 
 
 .. admonition:: Question 14
@@ -378,7 +377,7 @@ True or False (Questions 11 to 16)
 
    MoveIt 2 plans each robot as if it were alone: inspection robot 1's planning
    scene does not contain inspection robot 2. The skills package uses a zone
-   lock for the known conflict, the tester area, and zone locks are coarse.
+   lock for the known conflict, the tester area; v0.2.0 has no other zone.
 
 
 .. admonition:: Question 16
@@ -431,7 +430,6 @@ Short Answer (Questions 17 to 20)
    place. The camera is 1.43 - 0.453 = 0.977 m above the top face, so the ray
    meets it 0.977 × 0.0999 = 0.0976 m out, not 0.0999 m. The program printed
    y = 5.1024 on the top face against 5.1001 on the table: 2.3 mm apart.
-   Every error in the chain lands at the gripper.
 
 
 .. admonition:: Question 19
@@ -472,4 +470,4 @@ Short Answer (Questions 17 to 20)
    the AGV must be) and each failure code it can return, with the message
    that explains it. An agent that reads ``PRECONDITION_FAILED`` with the
    message "AGV not at the inspection station" can move the AGV and try
-   again; one that reads only "failed" cannot.
+   again.

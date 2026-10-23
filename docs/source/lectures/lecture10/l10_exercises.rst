@@ -470,7 +470,8 @@ Exercise 6 is paper only, and is the one closest to GP4.
             5      200          59         40    no path
 
       A path exists in every run, yet 3 of 5 fail. This is what the slide
-      means by "a slow run becomes a failed run".
+      means by "under a time limit, the runs that need more samples can
+      fail".
 
       **4.** With ``STEP = 1.0``:
 
@@ -642,7 +643,7 @@ Exercise 6 is paper only, and is the one closest to GP4.
 
       <hr>
 
-   **Part C. Why no hidden retries**
+   **Part C. Why skills report instead of retrying**
 
    9. Suppose (numbers chosen for this exercise) a skill retried a failed
       grasp 2 times by itself before reporting, and your tree also retries a
@@ -654,8 +655,9 @@ Exercise 6 is paper only, and is the one closest to GP4.
       :color: success
 
       **1.** ``PRECONDITION_FAILED`` (nothing held). The slides' rule does not
-      list this case. The plan assumed a held cell, so the world is not what
-      the plan assumed, the reason the rule gives for replanning.
+      list this case. The plan assumed a held cell, so the agent observes
+      something other than what it expected, the reason the rule gives for
+      replanning.
 
       **2.** ``PRECONDITION_FAILED`` (AGV at the wrong station). The L9 rule:
       replan. An agent that reads the reason can move the AGV and try again.

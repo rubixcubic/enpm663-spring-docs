@@ -39,26 +39,29 @@ things were still missing:
 
 - It read ROS 2 topics only. No topic says what a cell looks like or which
   cell type sits in which tray slot.
-- In its run nothing failed: Gemini filled agv1 slot 1 in five calls. It
+- In its run nothing failed: Gemini made five calls, and robot 2 placed one
+  cell in agv1 slot 1. It
   never had to react to a device that broke during the run.
 
 
-Today Adds Two Things
-~~~~~~~~~~~~~~~~~~~~~
+New in L9
+~~~~~~~~~
 
 1. **Grounding:** a vision-language model (VLM) describes what a camera sees,
-   so the agent's decisions rest on the factory as it is.
+   and the orchestrator checks that description against ROS topics before
+   the agent acts.
 2. **Replanning:** the agent compares each new observation with what the
-   action should have done, and asks for a new plan only when it must.
-   Today's run breaks voltage tester 1 partway through.
+   action should have done, and asks for a new plan when an assumption of
+   the plan is false or the goal changed. In today's run, the trial file
+   makes voltage tester 1 malfunction partway through.
 
 
-Today's Milestones
-~~~~~~~~~~~~~~~~~~
+Today
+~~~~~
 
 Quiz 4 (L7 and L8) opened the class. GP3 (PDDL planner and behavior tree
-executor) is due. GP4 (LLM agent with VLM grounding) is posted and builds on
-today.
+executor) is due. GP4 (LLM agent with VLM grounding) is posted; it uses
+today's VLM check and closed loop.
 
 
 .. _l9-vlms:
@@ -70,15 +73,14 @@ This section covers what a VLM takes and returns, which ones exist, and where
 its images come from in ARIAC 2025.
 
 
-What a VLM Is, and Three Families
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What a VLM Is, and Which Ones Exist
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: vision-language model (VLM)
    :class: note
 
    A **VLM** takes images and text in the same prompt and returns text. It
-   returns positions only if you ask for coordinates in the text, and it can
-   be wrong with full confidence.
+   returns positions only if you ask for coordinates in the text.
 
 Compared with the L8 text call, one input is new: the image. The prompt and
 the checked, structured output work the same way as in L8.
@@ -111,7 +113,7 @@ about an image, such as where a part is.
 Where the Images Come From in ARIAC 2025
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Cameras are yours to place.**
+**Your team places the cameras.**
 
 - Your team configuration file places RGB cameras. Each one publishes
   ``/{camera_name}/image`` (``sensor_msgs/Image``) and
@@ -215,19 +217,19 @@ Steps 3 and 4: A Schema with Enums, and a Way to Say UNKNOWN
    :caption: lecture9/code/vlm_check.py (excerpt)
 
 - ``LI_ION`` and ``NIMH`` (from ``CellTypes.msg``) and ``DENT``, ``BULGE``
-  and ``SCRATCH`` (from ``CellDefect.msg``) are the factory's own names, so
+  and ``SCRATCH`` (from ``CellDefect.msg``) are the names in the ARIAC message files, so
   the agent's world state uses the same names as ARIAC.
 - ``NONE`` and ``UNKNOWN`` are added for this schema: ``CellDefect.msg`` has
-  no value for "no defect". A model that must pick a label will guess, so
-  allow ``UNKNOWN``.
+  no value for "no defect". Without ``UNKNOWN``, the schema makes the model
+  pick a label even when it cannot see one.
 
 
 Ask for Relations, and Validate as in L8
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Relations, not only labels.** "Which slot is empty?" and "Is the cell in
-slot 3 the same type as the others?" are questions the agent acts on. A list
-of labels with no slot numbers is not.
+**Relations between cells and slots.** "Which slot is empty?" and "Is the
+cell in slot 3 the same type as the others?" are questions the agent acts
+on.
 
 **Validation, the same steps as L8:**
 
@@ -238,7 +240,8 @@ of labels with no slot numbers is not.
 
 .. tip::
 
-   The orchestrator writes the result into the world state, not the VLM.
+   After these checks, the orchestrator writes the result into the world
+   state.
 
 
 .. _l9-high-priority:
@@ -275,7 +278,7 @@ Checking the VLM's Record
 -------------------------
 
 This section gives each field of the record a second source. The
-demonstration has two runs: a real camera image and Gemini's answer, then a
+demonstration has two runs: an ARIAC camera image and Gemini's answer, then a
 scripted run with mistakes written in.
 
 
@@ -292,7 +295,7 @@ Which Second Source Checks Which Field
      - **Why it is stronger**
    * - Occupied
      - ``/agvN/tray_status``
-     - ARIAC's own signal: four booleans, no cell type
+     - Published by ARIAC: four booleans, no cell type
        (``AgvTrayStatus.msg``).
    * - Cell type
      - The voltage your team recorded for the cell on a tester
@@ -308,8 +311,8 @@ The two types are so far apart that one tester reading settles the type.
 
 .. important::
 
-   **A disagreement is a flag, not a verdict.** At least one source is wrong.
-   The agent does not act on the field until a third observation settles it.
+   **When two sources disagree, at least one is wrong.** The agent does not
+   act on that field until a third observation agrees with one of them.
 
 
 Demonstration Setup: One Camera Over agv1's Tray
@@ -393,7 +396,7 @@ Output: Gemini's Record, Cross-Checked
    :language: text
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1. ``call``: the VLM call's tokens and
+different answers. ``call``: the VLM call's tokens and
 time. ``record``: the voltage in ``record.json``, rounded to 0.01 V.
 
 1. Gemini's first reply passed ``check()``, so no re-prompt was sent. It
@@ -403,8 +406,7 @@ time. ``record``: the voltage in ``record.json``, rounded to 0.01 V.
    kit goes to ``/submit_kitting_order``, which ARIAC refuses unless an AGV
    is at shipping: ``competition_manager_plugin.cpp``:249 checks first, then
    ``agv_tray_interface_plugin.cpp``:357.
-3. ``decision()`` compares occupancy, type and the record of each slot. The
-   next part shows a check it leaves out.
+3. ``decision()`` compares occupancy, type and the record of each slot.
 
 
 .. _l9-kit-total:
@@ -414,9 +416,6 @@ The Decision Leaves Out the Kit Total
 
 .. literalinclude:: outputs/listings/vlm_live_kit.txt
    :language: text
-
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1.
 
 **The kit total, from** ``record.json``:
 
@@ -435,8 +434,7 @@ different answers. Recording 1 of 1.
 
 .. important::
 
-   The run reached the lecture's goal: four cells, each read at 3.4 to
-   3.8 V. The readings add to about 14.09 V, under ARIAC's 14.25 V minimum,
+   The run's goal held: four cells, each read at 3.4 to 3.8 V. The readings add to about 14.09 V, under ARIAC's 14.25 V minimum,
    so ARIAC would refuse this kit at ``/submit_kitting_order``
    (``agv_tray_interface_plugin.cpp``:437). The VLM "submit" compares only
    occupancy, type and the per-slot record. The kit total is a separate
@@ -471,16 +469,16 @@ Output: Two Disagreements Before the Submit
 .. literalinclude:: outputs/listings/vlm_cross.txt
    :language: text
 
-Scripted model: fixed replies. The tray status and the recorded voltages are
-stand-in values for the NiMH example, chosen for this example.
+The tray status and the recorded voltages are stand-in values for the NiMH
+example.
 
 1. **Slot 3:** the VLM says ``LI_ION``, but the cell read 1.24 V, inside the
    NiMH range of :math:`1.2 \pm 0.2` V (1.0 V to 1.4 V).
 2. **Slot 4:** the VLM says empty, but ``/agv1/tray_status`` says occupied.
-   The topic is ARIAC's own signal, so the VLM is wrong here, and its other
+   ARIAC publishes the topic, so the VLM is wrong here, and its other
    answers from the same image are now in doubt.
-3. The agent does **not submit**. It takes a new image and asks again, and
-   the slot 3 question stays open until a third check settles it.
+3. The agent does **not submit**. It takes a new image and asks again; slot
+   3's type stays open until a third check agrees with one source.
 
 
 What the Demonstration Shows, and What a Live Call Adds
@@ -490,15 +488,13 @@ What the Demonstration Shows, and What a Live Call Adds
 
 - The scripted replies were written to get slot 3's type and slot 4's
   occupancy wrong, at confidences 0.6 and 0.7. The cross-check caught both.
-- Gemini, on the real image, got occupancy and type right on all four slots.
+- Gemini, on the camera image, got occupancy and type right on all four slots.
   Its "damage ``NONE``" has no second source to check it against.
 - Robot 2's gripper hides the right end of slot 4's cell. The model still
   gave slot 4 the same 0.95 as the fully visible slots, so its "no damage"
-  answer covers a part the camera could not see. A confidence is the
-  model's own number, not a check.
+  answer covers a part the camera could not see.
 
-**What the live call cost.** Recorded once, on 2026-10-17, with
-gemini-3.5-flash-lite. A rerun gives different answers. Recording 1 of 1.
+**What the live call cost.**
 
 From its ``call`` line: 1377 input tokens (277 text and 1100 image, in the
 raw response) and 147 output tokens, in 2.02 s. At L8's prices, $0.30 and
@@ -553,10 +549,10 @@ What the Agent Observes, and Where the Expected State Lives
   what to do next.
 
 
-Drift: the World Is Not What the Plan Assumed
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+World Drift in ARIAC
+~~~~~~~~~~~~~~~~~~~~
 
-**Drift** means the factory no longer matches what the plan assumed. Four
+**World drift** means the factory no longer matches what the plan assumed. Four
 ARIAC examples:
 
 1. A place skill reports success, but ``/agvN/tray_status`` shows the target
@@ -583,9 +579,8 @@ Bound the Loop
 
 **Why the bounds matter in ARIAC:**
 
-- A loop that replans forever spends tokens and trial time.
-- The trial time bonus and the high-priority speed bonus both shrink while it
-  runs. ARIAC's target for a high-priority order is 150 s
+- Each replan costs tokens, and the trial time bonus and the high-priority
+  speed bonus both shrink while the loop runs. ARIAC's target for a high-priority order is 150 s
   (``NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION`` in ``scoring_weights.yaml``;
   the scoring page says the targets can change). L12 works the formulas.
 
@@ -596,21 +591,20 @@ Retry, Wait or Replan
 ---------------------
 
 This section covers what to do after a mismatch, applied to the four ARIAC
-2025 challenges. In the demonstration, the model chooses, and code refuses a
-call that breaks a rule.
+2025 challenges.
 
 
 The Rule
 ~~~~~~~~
 
-**Two cases:**
+**Retry or replan:**
 
 - **Retry one action** when the failure looks temporary and every assumption
   of the plan still holds.
 - **Ask for a new plan** when an assumption of the plan is now false, or when
   the goal changed.
 
-**A third case: a device is down.** The plan assumes the device works, but
+**A device is down.** The plan assumes the device works, but
 the device will come back.
 
 - If another device can do the job, replan around it: ARIAC has two voltage
@@ -666,22 +660,21 @@ The Four ARIAC 2025 Challenges
      - Replan (tag 1): the goal changed.
    * - Vacuum tool malfunction
      - The grasp service of VG_2 or VG_4 reports a failure
-     - Retry (tag 4): move away and grasp again. Task 2 only, so the final
-       demo tests it, not GP4.
+     - Retry (tag 4): move away and grasp again. Task 2 only; the final demo
+       tests it.
 
 
 .. _l9-broken-tester:
 
-Detect a Broken Tester From Its Status, Not From Silence
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Detect a Broken Tester From Its Status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. warning::
 
    The ARIAC challenges page says a malfunctioning tester stops publishing. In
    the 2025 source (``voltage_tester_plugin.cpp``), the topic keeps publishing
    every 0.1 s, with voltage ``-1`` and ``operation_status`` 2
-   (``MALFUNCTIONING`` in ``OperationStates.msg``). A check that waits for the
-   topic to go quiet never fires.
+   (``MALFUNCTIONING`` in ``OperationStates.msg``).
 
 **The replan recording shows the same:**
 
@@ -689,7 +682,7 @@ Detect a Broken Tester From Its Status, Not From Silence
    :language: text
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1, from :ref:`l9-demo`.
+different answers. From the replan recording of :ref:`l9-demo`.
 
 - ``obs k`` is what the orchestrator read after the model's call :math:`k`;
   :math:`t` is the simulation time. Tester 1 read −1.00 V,
@@ -704,15 +697,15 @@ The Same Two Levels as L7
 - In GP3, the behavior tree used retry and timeout decorators for one-off
   failures, and asked the planner for a new plan when a cell failed
   inspection.
-- The agent keeps the same two levels. Only the source of the new plan
-  changes: the LLM instead of the PDDL planner.
+- The agent keeps the same two levels, with the LLM in place of the PDDL
+  planner.
 
 **The skills package never retries by itself.**
 
 - A skill returns a result that says what went wrong and what the robot
   holds.
 - Recovery is your team's code, so the ARIAC challenges show up in your logs
-  instead of being hidden. L11 covers recovery in depth.
+  instead of being hidden. L11 covers recovery.
 
 
 .. _l9-demo:
@@ -720,8 +713,8 @@ The Same Two Levels as L7
 Demonstration: the Closed Loop
 ------------------------------
 
-- Gemini (``gemini-3.5-flash-lite``) fills agv1's four slots with Li-Ion
-  cells in ARIAC, through the course skills, with the L8 orchestrator and its
+- Gemini (``gemini-3.5-flash-lite``) chooses the skill calls that fill
+  agv1's four slots with Li-Ion cells in ARIAC, through the course skills, with the L8 orchestrator and its
   guard (``lecture9/code/closed_loop.py``). A **cycle** is four skill calls
   for one cell: pick from the conveyor, place on a tester, pick from the
   tester, place in a slot.
@@ -756,30 +749,30 @@ The Policy in Code
    :lines: 119-125
    :caption: lecture8/code/orchestrator.py (excerpt)
 
-- The first ``check`` is the one ``policy_guard(policy)`` returns, not
-  ``vlm_check.check``. It never fired: the wait run never named tester 2.
-- No code picks retry, wait or replan; the chart stays a concept. The model
-  chooses, and two refused calls in a row end the run (L8's
-  ``MAX_INVALID``).
+- The first ``check`` is the function ``policy_guard(policy)`` returns. It
+  never fired: the wait run never named tester 2.
+- No code in ``closed_loop.py`` picks retry, wait or replan: Gemini chooses,
+  ``guard()`` refuses a call that breaks a rule, and two refusals in a row
+  end the run (L8's ``MAX_INVALID``).
 
 The tool lists differ: the replan run offers no ``wait`` tool, so it must
 replan to finish; the wait run offers ``wait`` and declares the tester
 argument as 1 only.
 
 
-Trace, Part 1: Tester 1 Breaks, Gemini Moves to Tester 2
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Trace, Part 1: Tester 1 Malfunctions, Gemini Switches to Tester 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: outputs/listings/replan_part1.txt
    :language: text
 
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1. ``model``: Gemini's call :math:`k`;
+The replan recording. ``model``: Gemini's call :math:`k`;
 ``obs k``: the observation after it, cut at the slide's width. Every skill
 call succeeded on its first attempt; result lines and obs 0 are left out.
 
-- Cell 1 read 3.54 V (obs 2). Tester 1 broke while robot 2 held cell 1
-  (obs 3). Gemini put cell 2 on tester 2, which read 3.44 V (obs 6).
+- Cell 1 read 3.54 V (obs 2). Tester 1 malfunctioned while robot 2 held
+  cell 1 (obs 3). Gemini then chose tester 2 for cell 2, which read 3.44 V
+  (obs 6).
 
 
 Trace, Part 2: Tester 1 Recovers, and the Guard Refuses a 3.39 V Cell
@@ -788,15 +781,14 @@ Trace, Part 2: Tester 1 Recovers, and the Guard Refuses a 3.39 V Cell
 .. literalinclude:: outputs/listings/replan_part2.txt
    :language: text
 
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1: calls 9 to 17; obs 9, 13, 15 and 16
+Calls 9 to 17; obs 9, 13, 15 and 16
 left out. ``orch``: the orchestrator's refusal.
 
 - Cell 3 read 3.65 V on tester 2 (obs 10). Tester 1 was back by obs 11, but
   Gemini kept using tester 2.
 - Cell 4 read 3.39 V (obs 14), 0.01 V under the 3.4 V minimum. Gemini still
-  asked to place it in slot 4; ``guard()`` refused, and Gemini dropped the
-  cell in recycling.
+  asked to place it in slot 4; ``guard()`` refused, and Gemini's next call
+  had robot 2 drop the cell in recycling.
 
 
 Trace, Part 3: One More Cell Recycled, Then Slot 4
@@ -805,12 +797,11 @@ Trace, Part 3: One More Cell Recycled, Then Slot 4
 .. literalinclude:: outputs/listings/replan_part3.txt
    :language: text
 
-Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1: calls 18 to 26; obs 18, 20, 22 and 24
+Calls 18 to 26; obs 18, 20, 22 and 24
 left out. ``text 'done'``: a reply with no tool call.
 
-- The next cell read 3.36 V on tester 1 (obs 19). Gemini dropped it in
-  recycling itself, with no refused call. The cell after it read 3.46 V
+- The next cell read 3.36 V on tester 1 (obs 19). This time Gemini called
+  ``robot2_drop_in_recycling`` with no refusal first. The cell after it read 3.46 V
   (obs 23) and went to slot 4.
 - The goal, checked in code, held at obs 25 (:math:`t` = 225.8 s), and
   Gemini said ``done`` at call 26. The camera check of
@@ -824,7 +815,7 @@ Replan or Wait: The Wait Recording
    :language: text
 
 Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-different answers. Recording 1 of 1, wait policy, same trial file. Calls 5
+different answers. Wait policy, same trial file. Calls 5
 to 13; obs 6 to 11 left out.
 
 - The goal text said: use tester 1 only; while tester 1 is
@@ -868,15 +859,13 @@ Replan or Wait: The Two Recordings Side by Side
 
 .. important::
 
-   Both recordings finished at about 225 s, and one run each cannot say
-   which policy is faster. Here the fourth cell read 3.39 V, so the guard
+   Both recordings finished at about 225 s; with one run each, the class
+   cannot tell which policy is faster. Here the fourth cell read 3.39 V, so the guard
    refused it. The same cell read 3.41 V in the dry run and in the wait run
    (``SEED`` 1 draws the same cells), and one record moves by about 0.016 V.
-   So chance cost this run the 80 s.
+   So the 80 s lost to recycling come from the noise in one reading.
 
-- Recorded once, on 2026-10-17, with gemini-3.5-flash-lite. A rerun gives
-  different answers. Recording 1 of 1 each; the dry run was scripted, with
-  no challenge.
+- The dry run was scripted, with no challenge.
 - Tokens: the two ``outputs/*_cost.txt`` files. Both recordings with the VLM
   call, at $0.30 and $2.50 per million input and output tokens:
   (240,862 × 0.30 + 1,038 × 2.50) / 1,000,000 = $0.074854.
@@ -891,8 +880,8 @@ This section gives a rule you can defend for choosing between the GP3 planner
 and the GP4 agent.
 
 
-Five Axes for Comparing a Planner and an Agent
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Comparing a Planner and an Agent
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l9/pddl_vs_agent.svg
    :alt: Five horizontal axes, each with a name on the left and words at both ends; the left end is marked better for the cell. Cost per decision: none to tokens or GPU time. Same input, same plan: always to not guaranteed. Why this plan: domain file to model weights. Latency per decision: planner run to network, generation. On these four axes marker 1 (PDDL planner, gray) is at the left end and marker 2 (LLM agent, blue) at the right end. Cases outside the domain: can try them to only modeled actions; here marker 2 is at the left end and marker 1 at the right end.
@@ -913,28 +902,28 @@ The Normal Task 1 Flow: Feed, Inspect, Test, Place, Ship
   LLM call costs tokens (hosted) or GPU time (local).
 - **Determinism:** the same PDDL problem gives the same plan. The same prompt
   can give different plans on different runs.
-- **Auditability:** a PDDL plan follows from a domain file anyone can read. An
-  LLM plan follows from weights nobody can read.
+- **Auditability:** a PDDL plan follows from a domain file your team wrote
+  and can read; an LLM plan comes from model weights.
 - **Latency:** an LLM call adds network and generation time to every
   decision. GP4 measures both systems.
 
 .. important::
 
-   For a fully specified task such as the normal Task 1 flow, PDDL is the
-   better tool.
+   For the normal Task 1 flow, the planner is better on all four points
+   above.
 
 
-Where the Agent Earns Its Place, and Hybrid Designs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Where the Agent Helps, and Hybrid Designs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Three kinds of situation:**
+**Situations for an agent:**
 
 1. **Ambiguity:** the VLM says a cell "may be dented".
 2. **Novelty:** a case the domain has no action for.
 3. **Recovery the domain did not plan for:** the ARIAC challenges, which
    GP3's domain does not model.
 
-**Hybrids are legitimate answers.**
+**Hybrid designs.**
 
 - The LLM chooses the goal (which kit next, which tester) and PDDL plans the
   steps.
@@ -953,15 +942,15 @@ Keep Numeric Work in Code
 1. Four cells: :math:`4 \times 3.6 = 14.4` V.
 2. The kit must be from :math:`14.4 - 0.15 = 14.25` V to
    :math:`14.4 + 0.15 = 14.55` V.
-3. Choosing four cells that fit is arithmetic. LLMs make arithmetic slips,
-   and ARIAC rejects the kit on any slip, so a function does it and the agent
+3. Choosing four cells that fit is arithmetic. A sampled reply can get a
+   sum wrong (L8), and ARIAC rejects a kit outside the window, so a function does it and the agent
    calls it as a tool. The demonstration had no kit tool, so no tool chose
    the cells: the model placed every cell that read 3.4 to 3.8 V, and the
    total came out 14.09 V, under the window (:ref:`l9-kit-total`).
 
 **Class discussion (5 minutes).** For each of the four challenges, would your
-GP3 domain have handled it with no change? Why or why not? The answers become
-GP4's test cases.
+GP3 domain have handled it with no change, and why? Three of them (conveyor,
+voltage tester, high-priority order) are GP4's test cases.
 
 
 .. _l9-gp4:
@@ -990,8 +979,8 @@ Goal and Test Cases
 - A conveyor malfunction, a voltage tester malfunction, and high-priority
   orders. Set them in the trial configuration file (the ARIAC configuration
   page has an example).
-- The vacuum tool malfunction affects only Task 2, so the final demo tests
-  it, not GP4.
+- The vacuum tool malfunction affects only Task 2; the final demo tests
+  it.
 
 
 The Side-by-Side Comparison With GP3
@@ -1020,7 +1009,7 @@ The Side-by-Side Comparison With GP3
   ``CHALLENGES``) and the same team file (``SENSORS``, ``CONVEYOR_SPEED``,
   ``CELL_FEED_RATE``). Change only the planner.
 - Log every decision with its inputs, outputs, time and token count from the
-  first day. One run per system is not a comparison; L12 shows how many runs a
+  first day. Compare several runs per system; L12 shows how many runs a
   claim needs.
 
 
@@ -1039,7 +1028,7 @@ they were caught.
    ``.gitignore``, never in the repository.
 
 **Dependencies:** the course skills package moves the robots, so GP4 needs no
-MoveIt 2 code. L10 opens the package.
+MoveIt 2 code. L10 covers how the package works.
 
 
 .. _l9-next-class:
@@ -1047,9 +1036,9 @@ MoveIt 2 code. L10 opens the package.
 Next Class
 ----------
 
-**L10: Frames, Transforms, and Motion Planning (Wednesday, April 7).** TF2 in
-depth, the camera model (from a pixel to a pose), MoveIt 2, and the inside of
-the course skills package.
+**L10: Frames, Transforms, and Motion Planning (Wednesday, April 7).** TF2,
+the camera model (from a pixel to a pose), MoveIt 2, and how the course
+skills package works.
 
 **Quiz 5 (Wednesday, April 14, start of class)** covers L9 and L10.
 

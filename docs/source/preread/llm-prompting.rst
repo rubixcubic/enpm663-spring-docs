@@ -601,7 +601,7 @@ JSON on both sides. L8 builds on it:
 - :ref:`Prompt structure for a planner <l8-prompt-structure>`: the system
   message and the user message.
 - :ref:`Structured output <l8-structured-output>`: a schema for one AGV move,
-  validation in five steps, semantic checks and a bounded retry.
+  the validation steps, semantic checks and a bounded retry.
 - :ref:`Tool calling and MCP <l8-tool-calling>`: how the model asks to run a
   tool. The :doc:`MCP pre-read <mcp>` comes before it.
 - :ref:`Context, cost and latency <l8-context-cost-latency>`: how the tokens

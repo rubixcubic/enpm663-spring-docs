@@ -199,7 +199,7 @@ predict the output first, write it down, then run the script.
    **Goal**
 
    Use the lecture's ARIAC ontology to accept or reject statements, and to
-   say what follows from a perception result.
+   apply the ontology's rule to a perception result.
 
    .. raw:: html
 
@@ -470,7 +470,7 @@ predict the output first, write it down, then run the script.
              slots.1.cell.voltage: maximum 1.4
              slots.2.cell.voltage: maximum 1.4
 
-      The last record is the drift the lecture warned about: a type stored in
+      The last record is the disagreement the lecture warned about: a type stored in
       one place and voltages in another that do not agree. The schema now
       catches it.
 
@@ -653,9 +653,9 @@ predict the output first, write it down, then run the script.
 
       **Question 4.** Yes. 3.599 V is inside 3.42 V to 3.64 V, so ``c4`` goes
       in slot 4: 10.87 + 3.599 = 14.469 V is 0.081 V below the top edge,
-      more than the 0.04 V kit margin, so GP1's check can be called. With
-      five readings, the same total was inside the 0.09 V margin, and GP1's
-      safe call was to recycle ``c4``.
+      more than the 0.04 V kit margin, so chance alone does not put the true
+      total on the other side. With five readings, the same total was inside
+      the 0.09 V margin, and the tree recycled ``c4``.
 
       **Question 5.** Measured: 0.07 / 0.0224 = 3.13 spreads, and
       ``100 * tail(3.13)`` prints 0.1 (%). With five readings it was 1.57

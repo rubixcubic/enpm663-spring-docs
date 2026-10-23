@@ -36,12 +36,12 @@ self-check quiz. Dates are in the :ref:`course schedule <course-schedule>`.
      - Key Concepts
    * - :doc:`L1 <lecture1/l1_index>`
      - Course Overview and ROS 2 Refresher
-     - Physical AI and agents, the ARIAC 2025 EV battery factory and what
-       its score rewards, QoS, executors, actions, TF2, diagnostic quiz
+     - Physical AI and agents, the ARIAC 2025 EV battery factory and how
+       ARIAC scores a run, QoS, executors, actions, TF2, diagnostic quiz
    * - :doc:`L2 <lecture2/l2_index>`
      - System Architectures for Agentic Robotics
-     - Reactive, behavior-based and three-layer architectures; where an LLM
-       agent and a VLM plug in; the course skills package; end-to-end VLA
+     - Reactive, behavior-based and three-layer architectures; which layer runs
+       an LLM agent and which runs a VLM; the course skills package; end-to-end VLA
        models; multi-robot coordination
    * - :doc:`L3 <lecture3/l3_index>`
      - Knowledge Representation for Agentic Robotics
@@ -58,7 +58,7 @@ self-check quiz. Dates are in the :ref:`course schedule <course-schedule>`.
    * - :doc:`L6 <lecture6/l6_index>`
      - Task-Level Planning with PDDL
      - Domains and problems, Fast Downward through the Unified Planning
-       Framework, plan validity, where PDDL strains (numbers)
+       Framework, plan validity, the limits of PDDL (numbers)
    * - :doc:`L7 <lecture7/l7_index>`
      - Plan Execution Patterns with Behavior Trees
      - Plan-to-BT factory, retry and timeout, replanning triggers,

@@ -56,8 +56,9 @@ Multiple Choice (Questions 1 to 11)
 
    A VLM's output is text. Compared with the L8 text call, only the input is
    new (the image); the prompt and the checked, structured output work the
-   same way, so **D** is wrong. **C** is wrong because a VLM can be wrong
-   with full confidence.
+   same way, so **D** is wrong. **C** is wrong: Gemini gave slot 4 the
+   same 0.95 as the fully visible slots, though its "no damage" answer covered
+   a part the camera could not see.
 
 
 .. admonition:: Question 2
@@ -68,8 +69,8 @@ Multiple Choice (Questions 1 to 11)
 
    A. ``CellTypes.msg`` defines ``UNKNOWN`` as a cell type.
 
-   B. A model that must pick a label will guess; ``UNKNOWN`` lets it say it
-      cannot see the value.
+   B. Without ``UNKNOWN``, the schema makes the model pick a label even when
+      it cannot see one.
 
    C. JSON Schema requires every enum to have a default value.
 
@@ -82,7 +83,7 @@ Multiple Choice (Questions 1 to 11)
 
    The prompt tells the model to use ``UNKNOWN`` when it cannot see a value.
    ``UNKNOWN`` (and ``NONE`` for damage) are added for this schema; the
-   factory's own names are ``LI_ION`` and ``NIMH`` (``CellTypes.msg``) and
+   names in the ARIAC message files are ``LI_ION`` and ``NIMH`` (``CellTypes.msg``) and
    ``DENT``, ``BULGE`` and ``SCRATCH`` (``CellDefect.msg``). A malfunctioning
    tester reports voltage -1, not ``UNKNOWN``.
 
@@ -105,7 +106,7 @@ Multiple Choice (Questions 1 to 11)
 
    **C**.
 
-   ``/agvN/tray_status`` is ARIAC's own signal: four booleans, one per slot,
+   ``/agvN/tray_status`` is published by ARIAC: four booleans, one per slot,
    with no cell type (``AgvTrayStatus.msg``). The recorded voltage (**A**)
    checks the cell type. For damage there is no second source in ARIAC.
 
@@ -147,7 +148,8 @@ Multiple Choice (Questions 1 to 11)
    B. The tester wins, so the agent records NiMH and submits.
 
    C. The verdict is ``DISAGREE: type``. The agent does not act on the field
-      until a third observation settles it, and it does not submit.
+      until a third observation agrees with one source, and it does not
+      submit.
 
    D. The confidence 0.6 is below 0.7, so the field is thrown away and the
       slot counts as agreeing.
@@ -158,10 +160,10 @@ Multiple Choice (Questions 1 to 11)
    **C**.
 
    1.24 V is inside the NiMH range of :math:`1.2 \pm 0.2` V, so the record
-   says NiMH and the VLM says Li-Ion. A disagreement is a flag, not a verdict:
-   at least one source is wrong. The decision line in the output is "do not
+   says NiMH and the VLM says Li-Ion. When two sources disagree, at least one
+   is wrong. The decision line in the output is "do not
    submit; slots 3 and 4 disagree". The code has no confidence threshold
-   (**D**); a confidence is the model's own number, not a check.
+   (**D**).
 
 
 .. admonition:: Question 6
@@ -225,7 +227,8 @@ Multiple Choice (Questions 1 to 11)
    A. The cell went into slot 4, because Gemini chose it
 
    B. ``guard()`` refused the call, because 3.39 V is outside 3.4 to 3.8 V;
-      no robot moved, and Gemini then dropped the cell in recycling
+      no robot moved, and Gemini's next call had robot 2 drop the cell in
+      recycling
 
    C. ARIAC refused the place, because the kit total was outside its window
 
@@ -338,9 +341,10 @@ True or False (Questions 12 to 15)
 
    **False**.
 
-   A confidence is the model's own number, not a check. In the demonstration
-   the two wrong slots had confidences of 0.6 and 0.7, and a VLM can be wrong
-   with full confidence. A field is checked when a second source agrees.
+   In the scripted run the two wrong slots had confidences of 0.6 and 0.7,
+   and Gemini gave slot 4 the same 0.95 as the fully visible slots, though its
+   "no damage" answer covered a part the camera could not see. A field is
+   checked when a second source agrees.
 
 
 .. admonition:: Question 13
@@ -434,8 +438,8 @@ Short Answer (Questions 16 to 19)
 .. admonition:: Question 18
    :class: hint
 
-   The lecture names three kinds of situation where an LLM agent earns its
-   place over the PDDL planner. Name them, with an example of each.
+   The lecture names three kinds of situation where an LLM agent helps more
+   than the PDDL planner. Name them, with an example of each.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -447,7 +451,7 @@ Short Answer (Questions 16 to 19)
 
    For a fully specified task, such as the normal Task 1 flow, PDDL is the
    better tool: no fee per call, the same plan for the same problem, and a
-   domain file anyone can read.
+   domain file your team wrote and can read.
 
 
 .. admonition:: Question 19

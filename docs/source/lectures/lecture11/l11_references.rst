@@ -14,7 +14,7 @@ exercises use but no slide cites.
    :open:
 
    The sources behind "What Your System Must Do" and the run-time
-   arithmetic on "What Is Set".
+   arithmetic on "Rules and the Unseen Trial".
 
    .. grid:: 1 1 2 2
       :gutter: 2

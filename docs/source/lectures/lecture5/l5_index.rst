@@ -6,10 +6,10 @@ Overview
 --------
 
 **Your GP1 tree submits an inspection report for every cell, and every report
-says the cell passed. This lecture answers the next question: how does the
-system find out that a cell is defective, and how sure can it be?**
+says the cell passed. This lecture finds the defective cells in lidar point
+clouds and scores the detector with precision and recall.**
 
-**Perception** turns sensor data into facts the rest of the system can use,
+**Perception** is the code that reads the sensors and reports facts,
 such as "this cell has a dent at :math:`\theta` = 0.3 rad, :math:`z` = 14 mm".
 ARIAC 2025 publishes no pose topics and no TF frames for cells or shells, so a
 team learns where things are, and whether a cell is good, only from the
@@ -19,14 +19,14 @@ The lecture starts with the ARIAC sensors: how a team declares them, what each
 grade costs, the three boxes a lidar must sit in, and how the sensor cost
 bonus is computed against the $9600 budget. It then reads a lidar's
 ``PointCloud2`` message into NumPy and moves its points to the world frame with
-TF2, and computes how far apart lidar points land on a cell. The main part
-builds a **cylinder-fit defect detector** in eight steps (crop, separate cells,
+TF2, and computes how far apart lidar points are on a cell. The main part
+builds a **defect detector that fits a cylinder** (crop, separate cells,
 undo the belt's motion, fit the axis, measure each point's distance from the
 fitted cylinder, threshold, cluster, classify) and runs it on synthetic cells.
 A measurement of ARIAC's own training meshes shows that their defects are 0.84
 to 2.49 mm deep, while the ARIAC documentation says every defect is at least
-2 mm from the surface. The lecture ends with the inspection report and its two
-bonuses, the voltage readings, and how to score a detector with **precision**
+2 mm from the surface. The lecture ends with the inspection report and the
+inspection bonuses, the voltage readings, and how to score a detector with **precision**
 and **recall**, including what each kind of error costs in ARIAC.
 
 .. important::
@@ -39,7 +39,7 @@ and **recall**, including what each kind of error costs in ARIAC.
 .. important::
 
    **Group project.** **GP2 (Cell Inspection)** is posted today and is due in
-   Week 7 (03/10). It uses everything in this lecture: place lidars within the
+   Week 7 (03/10). In it, you place lidars within the
    boxes and the budget, detect defects from the point clouds, report every
    cell, average the voltage readings, and measure precision and recall.
 

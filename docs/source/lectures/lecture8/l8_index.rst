@@ -7,8 +7,8 @@ Overview
 
 This is the first of two lectures on planning with a large language model
 (LLM), and the first class after spring break. GP4 replaces GP3's PDDL
-planner with an **LLM agent**. The lecture answers one question: what must the
-code around the LLM do so that the robots stay safe?
+planner with an **LLM agent**, and the code around the LLM checks every call
+before a robot moves.
 
 It starts with where the LLM goes in the GP3 stack. Only the decision part
 changes. The world model, the plan-to-BT executor, the skills package and the
@@ -19,17 +19,17 @@ check every output before anything moves, and limit the cost.
 
 That program is the **orchestrator**. It runs the **agent loop**: read the
 state, ask the LLM, check and run the tool call it returns, record the
-result, and stop when a stop condition fires. A live demonstration runs an
-orchestrator with Gemini driving the ARIAC inspection robots through the
-course skills, and a scripted model shows the guard refusing a call. The
+result, and stop when a stop condition fires. In a live demonstration,
+Gemini chooses the skill calls for the ARIAC inspection robots and an
+orchestrator checks and runs them; a scripted model shows the guard refusing a call. The
 lecture then compares **plan-and-execute** with **ReAct**
 on ARIAC situations, shows how to write a system message for a planner, and
-keeps the arithmetic (the kit voltage window) in code.
+has the orchestrator compute the kit voltage window.
 
 The second half covers **structured output**: a JSON schema for one AGV
-move, validation in five steps with semantic checks and a bounded retry, and
-what constrained output from a provider does and does not remove, with one
-real model output run through the same check. Next comes **tool calling**
+move, validation with semantic checks and a bounded retry, and what
+constrained output from a provider does and does not remove, with one Gemini
+output run through the same check. Next comes **tool calling**
 and the **Model Context Protocol (MCP)**, with ten tools (7 skills and 3 readings) served
 from an MCP server, listed and called from a client against ARIAC. The last
 section measures how the input grows with each loop step, from the Gemini
@@ -98,7 +98,8 @@ Next Steps
   Agentic Replanning** (Wednesday, March 31):
 
   - A VLM describes the camera images for the agent.
-  - The loop closes around feedback for replanning.
+  - The agent compares each new observation with the expected state and
+    replans when they differ.
   - The class compares the PDDL planner and the agent on the same trial.
   - **Quiz 4** at the start of class covers L7 and L8. GP3 is due, and GP4
     is posted.

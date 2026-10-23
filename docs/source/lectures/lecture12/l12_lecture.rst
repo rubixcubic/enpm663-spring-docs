@@ -27,26 +27,24 @@ From L11
 ~~~~~~~~
 
 - Failures sorted into types, each with a signal that detects it.
-- Three layers: the skill reports success or a failure reason, the behavior
+- Recovery by layer: the skill reports success or a failure reason, the behavior
   tree recovers locally, and the planner or agent recovers globally.
 - A challenge test matrix: each challenge alone and combined, each run more
   than once.
 
-Today's Question
-~~~~~~~~~~~~~~~~
+Today
+~~~~~
 
-How do you know your system works, and how sure can you be? A claim needs a
-metric, a source of truth and enough runs. This lecture builds each of the
-three.
+Metrics at four levels, how many runs a claim needs, and the ARIAC run score.
 
 
 .. _l12-what-good-means:
 
-What Good Means
----------------
+Measuring a System
+------------------
 
-A Claim Is Only as Good as Its Measurement
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Claims and Measurements
+~~~~~~~~~~~~~~~~~~~~~~~
 
 **Measurement science** is the work of making a number trustworthy: saying
 what was measured, against what, and how much the number can move. Every
@@ -76,8 +74,8 @@ measurement in this lecture needs three things:
 
 .. _l12-four-levels:
 
-Four Levels of Metrics, from Narrow to Broad
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Levels of Metrics, from Narrow to Broad
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The figure is the course stack. The planner or LLM agent sends decisions to
 the behavior tree and skills, which act on the ARIAC factory in Gazebo.
@@ -102,25 +100,22 @@ Each tag is one level of metrics:
 2. **Perception level:** does the system see the factory correctly?
 3. **Execution level:** do the actions and the recoveries work?
 4. **End to end:** how much of the order was done, how fast, at what cost,
-   with what penalties? The ARIAC score sits here.
+   with what penalties? The ARIAC score is an end-to-end metric.
 
 
 Why Measure Below the Score
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- The ARIAC score says **how** a run went. The three lower levels say
-  **why**.
 - When the score drops, the lower levels show where: a longer plan, a
   detector that missed defects, or a skill that failed more often.
 - A good score next to poor lower-level metrics can mean that the trial did
-  not test the weak part. Example: a trial with few defective cells hides a
-  detector that misses defects. Chance is the other cause: one good run can
-  come from a weak system.
+  not test the weak part. Example: a trial with few defective cells gives a
+  detector few defects to miss. Chance can also give a weak system one good
+  run.
 
 .. tip::
 
-   Log the metrics of every level on every run. Then you can explain a
-   score, not only report it.
+   Log the metrics of every level on every run.
 
 
 .. _l12-plan-metrics:
@@ -128,8 +123,8 @@ Why Measure Below the Score
 Plan-Level Metrics
 ------------------
 
-Is the plan correct and efficient before it runs? These metrics apply to the
-GP3 planner and to the GP4 agent.
+Validity, length and cost of a plan, and the extra measures for an LLM
+planner. These metrics apply to the GP3 planner and to the GP4 agent.
 
 Validity, Length and Cost
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -153,8 +148,8 @@ one (``PlanValidator``, from L6). For a GP4 agent, run its decisions through
 the same check: turn each decision into the matching PDDL action.
 
 
-A Valid Plan Is Not Always the Best Plan
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Comparing Two Valid Plans
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Take two plans for the same cells:
 
@@ -171,8 +166,8 @@ Comparing them:
 
 .. tip::
 
-   Validity does not separate the two plans. Cost or time does, so report
-   both.
+   Report cost or time next to validity: here only time separates Plan A
+   from Plan B.
 
 
 Extra Measures for an LLM Planner
@@ -197,8 +192,7 @@ call.
   order ID that does not exist.
 
 **How to report them.** Report them per decision, from the decision logs your
-team has kept since L9. A list per decision gives a mean and a spread. A
-single total for the run gives neither.
+team has kept since L9. A list per decision gives a mean and a spread.
 
 
 .. _l12-perception-metrics:
@@ -206,18 +200,18 @@ single total for the run gives neither.
 Perception Metrics
 ------------------
 
-Does the system see the factory correctly? This section measures it with
-precision, recall and position error.
+This section measures perception with precision, recall and position
+error.
 
 .. note::
 
    Every output in this section comes from running ``perception_metrics.py``
    (Python 3.12.3) on two small labeled files, ``cells.csv`` and
-   ``shell_poses.csv``. Every value in the files is chosen for this example.
+   ``shell_poses.csv``.
 
 
-Four Outcomes and Two Ratios
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Outcomes, Precision and Recall
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Count one class at a time, for example defective cells. The detector
 **flags** a cell when it says the cell is defective. Each cell then falls into
@@ -291,7 +285,7 @@ Output:
    :language: text
    :lines: 1-3
 
-The program agrees with the three steps above.
+The output matches the three steps above.
 
 
 Which Error Costs More in ARIAC 2025
@@ -315,9 +309,8 @@ classification bonus.
 
 .. tip::
 
-   The two errors have different prices. Your team can set its detector
-   threshold with those prices in mind. The worked example at the end of the
-   lecture puts a number on each price.
+   Set your detector threshold with both costs in mind. The worked example at
+   the end of the lecture puts a number on each cost.
 
 
 What to Report for Your Detectors
@@ -375,8 +368,8 @@ One bad spawn can make one grasp miss even when the mean is small, so report
 the largest error too.
 
 
-Every Metric Needs Ground Truth
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Ground Truth for the Metrics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Precision, recall and position error all compare the system's answer with the
 truth. In simulation, the truth comes from here:
@@ -387,7 +380,7 @@ truth. In simulation, the truth comes from here:
 - ``ariac_setup/config/defects.yaml`` holds only the shape of each defect
   type, not which cells are defective.
 - **Top shell:** ``log_cell_info`` covers cells only. Read the true shell
-  pose from the simulator during testing, and check how on your setup.
+  pose from the simulator during testing.
 
 .. warning::
 
@@ -399,7 +392,8 @@ truth. In simulation, the truth comes from here:
 Execution and End-to-End Metrics
 --------------------------------
 
-Do the actions and the recoveries work, and how much of the order was done?
+Action success, recovery, challenge handling, and how much of the order was
+done.
 
 What to Count at the Two Top Levels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -432,7 +426,7 @@ What chance alone does to a success rate, and how many runs a claim needs.
 .. note::
 
    The simulation in this section comes from running ``success_spread.py``
-   (Python 3.12.3, numpy 1.26.4).
+   (numpy 1.26.4).
 
 
 Why Two Runs of the Same System Differ
@@ -571,7 +565,7 @@ against the number of runs, not a picture of the factory.
    :width: 90%
    :align: center
 
-1. The true success rate, 0.80, chosen for this example.
+1. The true success rate, 0.80 (``P_TRUE`` in ``success_spread.py``).
 2. The middle 95% of 10000 simulated measurements at that :math:`n`.
 3. One simulated measurement over :math:`n` runs (40 shown for each
    :math:`n`).
@@ -581,11 +575,11 @@ from 0.40 to 1.00 in 95% of experiments. It can also land lower, at 0.20 or 0:
 the chance is :math:`0.2^5 + 5 \times 0.8 \times 0.2^4` = 0.0067, about 1
 experiment in 150. With 100 runs, the middle 95% is 0.72 to 0.87 with this
 seed. The upper end is 0.87 or 0.88, depending on the seed (0.88 with seeds
-1, 2, 3 and 5, measured 2026-10-18).
+1, 2, 3 and 5).
 
 
-Two Equal Systems Still Measure Differently
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Measured Gaps Between Two Equal Systems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The second part of the script takes two systems that **both** succeed 80% of
 the time, runs each one 20 times, and repeats the comparison 10000 times.
@@ -650,9 +644,9 @@ rates chosen for this example:
 .. literalinclude:: outputs/batch_bar.txt
    :language: text
 
-- **Can show:** a skill at 0.80 would pass only 7 batches in 100, so a pass
-  is evidence against a rate that low.
-- **Cannot show:** 0.95 from 0.99, since both usually pass. A 0.95 skill
+- A skill at 0.80 would pass only 7 batches in 100, so a pass is evidence
+  against a rate that low.
+- A batch does not separate 0.95 from 0.99, since both usually pass. A 0.95 skill
   misses the bar in 1 − 0.74 = 0.26 of batches, so one missed batch alone
   does not prove the skill got worse.
 
@@ -664,8 +658,8 @@ ARIAC's Choice: Five Runs, Best Two Averaged
 scores are averaged, and the averages of all trials are summed (ARIAC scoring
 page). That measures how well a system does on its good runs.
 
-**How you should test.** The final demo is a single run on an unseen trial. A
-good run is not guaranteed. So for your own testing, report the mean and the
+**How you should test.** The final demo is a single run on an unseen trial,
+and it may not be one of your good runs. So for your own testing, report the mean and the
 spread over all runs, not the best ones.
 
 
@@ -702,8 +696,8 @@ comparison with GP3 that way.
 3. The run order alternates the two systems.
 
 
-Three Rules for a Fair Comparison
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Rules for a Fair Comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Hold the rest fixed.** The same trial file (seed, defect rate, time
    limit, challenges and their start times), team configuration (sensors and
@@ -713,12 +707,12 @@ Three Rules for a Fair Comparison
 2. **Alternate the runs:** GP3, GP4, GP3, GP4. If the machine slows down over
    the session, both systems share the slowdown.
 3. **Write the plan first**, with the number of runs. If you stop when the
-   result looks good, chance picks the answer.
+   result looks good, the result you report depends on chance.
 
 .. tip::
 
-   The GP4 comparison with GP3 is the first place you use these rules. The
-   final demo test plan is the second.
+   Use these rules for the GP4 comparison with GP3 and for the final demo
+   test plan.
 
 
 .. _l12-scoring:
@@ -738,8 +732,7 @@ Where the Numbers Come From
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The scoring page says the weights may change, and points to
-``ariac_db/config/scoring_weights.yaml``. Read the file, not a copy from
-memory. The copy in ``lecture12/code/scoring_weights.yaml`` is from branch
+``ariac_db/config/scoring_weights.yaml``. The copy in ``lecture12/code/scoring_weights.yaml`` is from branch
 ariac2025, commit 0c3e722:
 
 .. literalinclude:: code/scoring_weights.yaml
@@ -769,16 +762,16 @@ The Run Score and the Base Score
 - :math:`m_c` and :math:`m_d`: modules completed and modules wanted. A trial
   with no modules adds 0 for modules.
 - All the modules together are worth 12000 / 5000 = 2.4 times all the kits
-  together, so Task 2 carries most of the base score in a trial that asks for
-  modules.
+  together, so in a trial that asks for modules, most of the base score
+  comes from Task 2.
 
 
 .. _l12-bonus-gate:
 
-The Bonus Gate, and Where Docs and Code Differ
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+When Bonuses Count, and Where Docs and Code Differ
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. admonition:: The bonus gate
+.. admonition:: Bonuses need every order
    :class: important
 
    Bonuses are paid only if every wanted kit and module, high-priority kits
@@ -799,8 +792,8 @@ when it would be negative.
   zero.
 
 
-Three Bonuses for Speed
-~~~~~~~~~~~~~~~~~~~~~~~
+Bonuses for Speed
+~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -901,9 +894,8 @@ One trial, two runs, every step written out.
 
 .. note::
 
-   The calculator in this section is ``score_calculator.py`` (Python 3.12.3,
-   PyYAML 6.0.1). It reads ``scoring_weights.yaml`` and follows
-   ``scoring.py``.
+   The calculator in this section is ``score_calculator.py``. It reads
+   ``scoring_weights.yaml`` and follows ``scoring.py``.
 
 
 The Trial and the Team Configuration
@@ -918,16 +910,16 @@ The Trial and the Team Configuration
 
 **The sensors.** Two grade B lidars at $1250 each, one grade A break beam at
 $400, one 1080p camera at $800. The prices are from the ARIAC sensors page;
-the choice of sensors is chosen for this example.
+the sensor list is part of the example.
 
 1. 2 × 1250 = $2500.
 2. 2500 + 400 + 800 = $3700, so :math:`\sigma` = $3700.
 
 
-What Happened in the Runs
-~~~~~~~~~~~~~~~~~~~~~~~~~
+The Values of the Two Runs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Measurements (all chosen for this example).**
+**Values for both runs (chosen for this example).**
 
 - Run time :math:`t_e` = 630 s. Average inspection report time
   :math:`\gamma` = 3 s.
@@ -973,14 +965,14 @@ Run 2, Step by Step
 
 .. tip::
 
-   Run 2 ran as fast as Run 1 and classified as well. The gate still sets all
-   five bonuses to 0.
+   Run 2 ran as fast as Run 1 and classified as well. Because one order is
+   missing, ARIAC still sets all five bonuses to 0.
 
 
 The Calculator: Bonuses as in scoring.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The calculator's ``bonuses`` function applies the gate first, then the five
+The calculator's ``bonuses`` function first sets every bonus to 0 if an order is missing, then applies the five
 formulas, with the same clamping as ``scoring.py``:
 
 .. literalinclude:: code/score_calculator.py
@@ -993,7 +985,7 @@ Output:
 .. literalinclude:: outputs/score_runs.txt
    :language: text
 
-The program agrees with the hand steps. The last line checks the over-budget
+The output matches the hand steps. The last line checks the over-budget
 penalty for a $10400 configuration (chosen for this example):
 1000 × (10400 / 9600 − 1) = 83.3.
 
@@ -1019,13 +1011,13 @@ Bar lengths are the calculator's values (``outputs/score_runs.json``).
 Penalties are drawn left of zero.
 
 
-What the Example Shows
-~~~~~~~~~~~~~~~~~~~~~~
+The Cost of Missing One Kit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Missing one kit cost 3201.25 points: 1666.67 from the base and all
    1534.58 of the bonuses (calculator output, before rounding).
-2. So finishing every order matters more than any speed bonus. A slow
-   recovery that finishes the kit beats a fast system that drops one.
+2. So finishing every order matters more than speed: Run 1's three speed
+   bonuses total 300 + 125 + 120 = 545 points.
 3. In Run 1 the sensor cost bonus, 614.6, is the largest bonus. An extra
    $800 camera would lower it by 1000 × 800 / 9600 = 83.3 ARIAC points. In
    this course the cameras are required (:doc:`GP4 </assignments/gp4>` Task
@@ -1051,9 +1043,6 @@ results page shows the same terms.
 **Instructor demonstration.** In class, the table of a recorded run is
 compared term by term with a hand calculation from that run's measurements.
 
-**Try at home.** Recompute Run 1 with your own GP4 run measurements and your
-own sensor list.
-
 
 .. _l12-test-plan:
 
@@ -1062,8 +1051,8 @@ A Test Plan for the Final Demo
 
 What your team measures before the unseen trial.
 
-What a Good Test Plan Has
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Contents of a Test Plan
+~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Several trial configurations your team writes: each challenge alone and
    combined, with Task 1 and Task 2.
@@ -1074,12 +1063,12 @@ What a Good Test Plan Has
 4. For each challenge: detected or not, the time to detection, recovered or
    not.
 
-**What it can and cannot tell you.**
+**What the results show.**
 
 - The demo is one run on an unseen trial, so no test plan can predict it.
-- The plan shows which failures are common and which recoveries hold up.
+- The plan shows which failures are common and which recoveries succeed.
   That is what your final presentation reports.
-- The final demo rubric reads the same records: the ARIAC run results for
+- The final demo rubric grades from the same records: the ARIAC run results for
   Task 1 and Task 2, the run log for challenges, the penalty table for a safe
   run, and your embodied-reasoning comparison table.
 
@@ -1089,8 +1078,7 @@ Next Class
 
 **L13: The Physical AI Frontier (Wednesday, April 28).**
 
-- VLAs, robot foundation models and world models: the learned side of
-  physical AI.
+- VLAs, robot foundation models and world models.
 - Final demo questions are answered at the end of class.
 
 **Before next class:**

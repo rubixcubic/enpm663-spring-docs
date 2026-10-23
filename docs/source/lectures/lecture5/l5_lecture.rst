@@ -23,8 +23,7 @@ Lecture
 
    - **Quiz 2** (on L4) opens the class.
    - **GP1 is due today.**
-   - **GP2 (Cell Inspection) is posted today** and uses everything in this
-     lecture.
+   - **GP2 (Cell Inspection) is posted today.**
 
 
 .. _l5-recap:
@@ -39,8 +38,8 @@ Recap
 - Your GP1 tree submits an inspection report for every cell, and every report
   says the cell passed.
 
-**Today's question.** How does the system find out that a cell is defective,
-and how sure can it be?
+**Today.** Finding defective cells in lidar point clouds, and scoring the
+detector with precision and recall.
 
 
 .. _l5-sensors:
@@ -57,8 +56,8 @@ What Perception Gives the Rest of the System
 .. admonition:: Definition: perception
    :class: note
 
-   **Perception** turns sensor data into facts the system can use: "this cell
-   has a dent at :math:`\theta` = 0.3 rad, :math:`z` = 14 mm" (an angle
+   **Perception** is the code that reads the sensors and reports facts such
+   as "this cell has a dent at :math:`\theta` = 0.3 rad, :math:`z` = 14 mm" (an angle
    around the cell and a height on it, both defined in
    :ref:`l5-defects`).
 
@@ -97,7 +96,7 @@ the example lidar from the ARIAC documentation (``config_files.rst``):
        MIN_ANGLE: -0.5
        MAX_ANGLE: 0.5
 
-**Fields every sensor has.**
+**Common fields.**
 
 - ``NAME``, ``TYPE``: break_beam, distance, camera or lidar.
 - ``POSE``: position ``XYZ`` (m) and orientation ``RPY`` (rad) in the world
@@ -150,8 +149,8 @@ Sensor Grades and Costs
 .. warning::
 
    The code that bills a lidar (``Lidar.grade`` in
-   ``ariac_setup/structures.py``) differs from the Sensors page at one edge:
-   at 10 Hz it grades by samples alone and bills exactly 200 samples as
+   ``ariac_setup/structures.py``) differs from the Sensors page at exactly
+   200 samples: at 10 Hz it grades by samples alone and bills 200 samples as
    grade B. For grade C, use at most 199 samples. At 20 Hz it bills grade A.
    More than 400 samples is refused.
 
@@ -217,7 +216,7 @@ Which Sensor Each Part of the Course Needs
 
 **Why cameras do not inspect the cells here.**
 
-- ARIAC requires lidar for inspection, and an RGB image measures no depth.
+- An RGB image measures no depth.
 - Whether a 2 mm defect shows in a Gazebo camera image has not been
   measured. The final demo tests it: Gemini Robotics ER judges defects from
   camera images and is scored against your GP2 lidar detector on the same
@@ -238,9 +237,8 @@ both.
 - Over the budget: a penalty of 1000 × (cost / 9600 − 1) points instead,
   which is 1000 / 9600 = 0.104 points per dollar over.
 
-:doc:`Exercise 2 <l5_exercises>` works a full trade-off between a grade A
-and a grade C sensor layout, the bonus points each earns, and what the
-cheaper layout gives up.
+:doc:`Exercise 2 <l5_exercises>` compares a grade A and a grade C sensor
+layout by cost, bonus and lidar points on the cell.
 
 
 .. _l5-pointclouds:
@@ -249,8 +247,7 @@ Point Clouds in ROS 2
 ---------------------
 
 This section covers what a lidar publishes, how to read it into NumPy, and how
-to move it into the world frame. Every point here is synthetic: made in NumPy
-by ``synth.py``, not by ARIAC (Python 3.12.3, NumPy 1.26.4, ROS 2 Jazzy).
+to move it into the world frame, with points made in NumPy by ``synth.py``.
 
 What an ARIAC Lidar Publishes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -294,7 +291,7 @@ A, then reads it back into an :math:`N \times 3` NumPy array:
    :lines: 1-6
 
 - 400 points of 3 four-byte floats: 400 × 12 = 4800 bytes. Row 0 was set to
-  NaN by hand; 136 rays hit nothing and are ``inf`` in this synthetic scan.
+  NaN by hand; 136 rays hit nothing and are ``inf`` in this scan.
 - ``skip_nans=True`` dropped the NaN row only. ``np.isfinite`` removes the
   rest.
 
@@ -315,11 +312,10 @@ Demo: Move Every Point to the World Frame at Once
   comes from the quaternion (lines 49 to 55 of the script, shown in full on
   the :doc:`code page <l5_code>`). Appending a 1 to each point lets one
   matrix product apply the rotation and the translation together.
-- The demo's static transform is a stand-in for ARIAC's. The first point lands
-  at :math:`z` = 0.422 m: the belt.
-- Measured by ``timing.py`` (see :doc:`the code page <l5_code>`) on the
-  instructor's PC (Intel Core i9-14900HX), with 400 points, the best of 3
-  runs of 200, repeated 5 times: a loop with one NumPy product per point,
+- The demo's static transform is a stand-in for ARIAC's. The first point is
+  at :math:`z` = 0.422 m: on the belt.
+- Timed with ``timing.py`` (see :doc:`the code page <l5_code>`) on the
+  instructor's PC (Intel Core i9-14900HX), with 400 points, 5 repeats: a loop with one NumPy product per point,
   ``m @ [x, y, z, 1.0]``, took 0.78 to 0.91 ms per scan; the one product
   above took 0.012 to 0.013 ms. A loop in plain Python floats took
   0.096 ms: most of the cost is calling NumPy once per point.
@@ -351,8 +347,8 @@ report. The inspection speed bonus depends on it.
 Lidar Geometry
 --------------
 
-This section covers how many points land on a cell, and how to aim the
-samples you pay for.
+This section covers how many lidar points hit a cell, and where to aim the
+samples.
 
 Spacing Between Points: Angular Step Times Distance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -416,16 +412,16 @@ The distance :math:`D` = 0.1 m is chosen for this example.
 
 .. important::
 
-   Under a fixed sample limit, the angle range is the main design choice. Aim
-   the samples at the cell, not at the room.
+   Under a fixed sample limit, the angle range sets the spacing: 1.6 mm for
+   the narrow scan against 6.4 mm for the docs' lidar.
 
 .. _l5-point-count:
 
-Demo: Counting the Rays That Hit a Synthetic Cell
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo: Counting the Rays That Hit the Cell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``point_count.py`` casts every ray of one scan at a perfect synthetic
-cylinder, with the cell's axis 0.1 m in front of the lidar:
+``point_count.py`` casts every ray of one scan at a perfect cylinder, with
+the cell's axis 0.1 m in front of the lidar:
 
 .. literalinclude:: outputs/point_count.txt
    :language: text
@@ -435,17 +431,17 @@ cylinder, with the cell's axis 0.1 m in front of the lidar:
    of the cell is 100 − 10.5 = 89.5 mm away, not 100 mm, so the cell spans a
    little more than the estimate assumed.
 2. The narrow scan puts 240 of its 400 samples on the cell instead of 20.
-3. A third layout, :math:`H` 10 by :math:`V` 40 (chosen for this example),
-   puts 212 on the cell with a vertical step of 0.021 rad: 2.1 mm at 0.1 m,
+3. A third layout in the script, :math:`H` 10 by :math:`V` 40, puts 212
+   on the cell with a vertical step of 0.021 rad: 2.1 mm at 0.1 m,
    half the narrow scan's 4.2 mm.
 
 .. note::
 
-   Each count comes from casting rays at a perfect synthetic cylinder. None is
-   a measurement in Gazebo.
+   Each count comes from casting rays at a perfect cylinder in
+   ``point_count.py``, without Gazebo.
 
-The Moving Belt Fills In the Horizontal Direction
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Stacking Scans of the Moving Cell
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Between two scans the cell moves** :math:`v / f`, where :math:`v` is the
 belt speed (set in the team configuration, at most 0.1 m/s) and :math:`f` is
@@ -453,8 +449,8 @@ the scan rate.
 
 - 0.1 / 20 = 0.005 m = 5 mm at 20 Hz; 0.1 / 10 = 0.01 m = 10 mm at 10 Hz.
 - Each scan sees the cell from a slightly different angle, so stacking the
-  scans fills in the surface across. Nothing fills in the vertical direction:
-  spend samples there.
+  scans adds points across the surface. The vertical spacing does not change
+  between scans, so put more samples in :math:`V`.
 
 A whole pass at 0.1 m/s and 20 Hz, from the two demo lidars (tag 8 in the box
 figure), counted by ``point_count.py``:
@@ -466,8 +462,8 @@ figure), counted by ``point_count.py``:
 - Each cell spawns turned by a random angle from :math:`-\pi` to :math:`\pi`
   (``cell_feed_plugin.cpp``), so a defect can face any way.
 - One lidar at :math:`D` = 0.1 m sees at most
-  2 × acos(10.5 / 100) = 2.93 rad of the 6.28 rad around the cell: less than
-  half.
+  2 × acos(10.5 / 100) = 2.93 rad, less than half of the 6.28 rad around
+  the cell.
 
 
 .. _l5-defects:
@@ -475,8 +471,8 @@ figure), counted by ``point_count.py``:
 From Points to Defects
 ----------------------
 
-This section builds a cylinder-fit detector in eight steps and runs it on
-synthetic cells with defects of known size.
+This section builds a detector that fits a cylinder and runs it on synthetic
+cells with defects of known size.
 
 Dents, Scratches and Bulges, and Where a Defect Is
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -519,8 +515,8 @@ direction of travel.
   counterclockwise seen from above.
 - :math:`z`: height of the defect's center above the cell's base.
 
-The Detector in Eight Steps
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Detector Pipeline
+~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l5/detect_pipeline.svg
    :alt: A block diagram in two rows. Row 1: a green box for the scans in the
@@ -591,16 +587,16 @@ Steps 4 and 5: Fit the Axis, Then Measure Each Point Against It
   (:math:`a/2`, :math:`b/2`), and the radius is
   :math:`\sqrt{c + x_0^2 + y_0^2}`.
 - The demo fits twice, the second time without the points that look
-  defective, so a defect does not pull the axis toward itself.
+  defective, so the defect's points do not shift the fitted axis.
 
 Steps 6 to 8: Threshold, Cluster, Classify
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 6. **Threshold.** Flag points with :math:`|d|` above a threshold. Set it from
-   the spread of :math:`d` measured on good cells, not by guessing.
+   the spread of :math:`d` measured on good cells.
 7. **Cluster.** Group flagged points that lie close together (the demo:
    within 3 mm, at least 3 points). Set-in and sticking-out points never share
-   a cluster. A lone noisy point is not a defect.
+   a cluster.
 8. **Classify.** Sticking out: bulge. Set in and roughly round: dent. Set in
    and long and narrow: scratch. The demo calls a cluster long when its spread
    in one direction is more than 2.5 times its spread in the other.
@@ -618,8 +614,8 @@ Steps 6 to 8: Threshold, Cluster, Classify
 
 .. _l5-mesh-depths:
 
-Measured: How Deep ARIAC's Training Defects Are
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How Deep ARIAC's Training Defects Are
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``mesh_depths.py`` reads ARIAC's li-ion cell meshes and ``defects.yaml`` from
 the ARIAC 2025 source (branch ``ariac2025``). For each defect it finds the
@@ -635,8 +631,8 @@ lecture taken from ARIAC's own files.
 - "yaml": :math:`\theta` in ``defects.yaml``. "mesh": where the defect sits
   in the mesh (rad). "depth": mm.
 
-What the Mesh Measurement Means for Your Detector
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Depth and Angle in the Meshes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Depth.**
 
@@ -659,13 +655,12 @@ What the Mesh Measurement Means for Your Detector
   ``defects.yaml`` measures :math:`\theta` from the mesh's :math:`x` axis.
   ARIAC adds the spawn rotation to get the true :math:`\theta`.
 - The docs say these shapes are for training and will change for the
-  competition. A detector that measures distance from a fitted cylinder
-  carries over to new shapes better than one tuned to these ten meshes.
+  competition. So do not tune your detector to these ten meshes.
 
 .. _l5-demo-setup:
 
-Demo Setup: What Is Synthetic, and Setting the Threshold
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo Setup and the Threshold
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Made up in NumPy** (``synth.py``):
 
@@ -677,7 +672,7 @@ Demo Setup: What Is Synthetic, and Setting the Threshold
   ``lidar/model.sdf`` sets no noise, so in simulation the spread comes from
   the meshes and from your motion correction.
 - **Defects:** dent and bulge of radius 4 mm, scratch 4 mm wide and 28 mm
-  long, all chosen for this example; depths chosen per run.
+  long, also chosen; depths set per run.
 
 **Step 6 on 20 good cells** (``calibrate.py``):
 
@@ -690,8 +685,8 @@ mm rounds up to 0.9 mm. The four-lidar layout comes later in the lecture.
 
 .. _l5-detect-one:
 
-Demo: One Synthetic Cell with a Dent, a Scratch and a Bulge
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo: One Cell with a Dent, a Scratch and a Bulge
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``detect_one.py`` runs steps 1 to 8 on one synthetic cell and prints what it
 finds next to the truth:
@@ -730,7 +725,7 @@ Data: ``outputs/residuals.csv``. Gray: :math:`|d| \leq` 0.9 mm. Blue:
   flat: across is the angle :math:`\theta`, up is the height :math:`z`.
 - Lidar A fills the left band, lidar B the right band.
 - Near :math:`\theta` = 0 and :math:`\pm\pi`, the front and back of the cell,
-  each lidar sees the surface edge-on, and almost no points land.
+  each lidar sees the surface edge-on and returns almost no points.
 
 
 .. _l5-report:
@@ -738,8 +733,8 @@ Data: ``outputs/residuals.csv``. Gray: :math:`|d| \leq` 0.9 mm. Blue:
 The Inspection Report and the Door
 ----------------------------------
 
-This section covers what a report holds, which cell it lands on, and the two
-bonuses it earns.
+This section covers what a report holds, which cell ARIAC matches it to, and
+the inspection bonuses.
 
 The Report and How ARIAC Matches It to a Cell
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -757,8 +752,8 @@ The Report and How ARIAC Matches It to a Cell
 
 - A report goes to the cell nearest the door, upstream of :math:`x` = 1.0 m
   (plus a 5 mm margin), that has no report yet. Submit after the cell leaves
-  your lidars and before :math:`x` = 1.0 m: a late report lands on the next
-  cell.
+  your lidars and before :math:`x` = 1.0 m: ARIAC gives a late report to the
+  next cell.
 - After a passing report, the door opens at :math:`x` = 1.0 m and closes
   after :math:`x` = 1.25 m. A failing or missing report keeps the door
   closed, and the cell drops into the inspection bin. A good cell there
@@ -766,12 +761,11 @@ The Report and How ARIAC Matches It to a Cell
 
 .. _l5-bonuses:
 
-The Two Bonuses a Report Earns
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Inspection Bonuses
+~~~~~~~~~~~~~~~~~~
 
-Every ARIAC bonus counts only if the team submitted every kit, module and
-high-priority order the trial asked for. Otherwise ARIAC sets each bonus to
-0 (``ariac_db/scoring.py``; ``competition_manager_plugin.cpp`` marks such a
+Both count only under the same condition as the sensor cost bonus; otherwise
+ARIAC sets them to 0 (``ariac_db/scoring.py``; ``competition_manager_plugin.cpp`` marks such a
 run as aborted).
 
 **Inspection speed: 500 × (1 − g / 4 s).**
@@ -809,7 +803,7 @@ tester (Scenario page, Step 1c).
 What a Tester Publishes, and Why One Reading Is Not Enough
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**The facts.**
+**Tester topics, range and noise.**
 
 - Each tester publishes ``VoltageReading`` (``voltage``,
   ``operation_status``) on ``/voltage_tester_1/voltage`` and
@@ -821,20 +815,21 @@ What a Tester Publishes, and Why One Reading Is Not Enough
   wanders by about :math:`\sigma / \sqrt{n}`: 0.05 / √10 = 0.016 V for
   :math:`n` = 10.
 
-**Worked example: a good cell at 3.78 V** (chosen for this example).
+**Worked example: a good cell at 3.78 V.**
 
-1. 3.8 V is 0.02 V above it: 0.02 / 0.05 = 0.4 standard deviations for one
-   reading. One reading lands above 3.8 V with probability 0.34.
+1. 3.8 V is 0.02 V above 3.78 V (a value chosen for this example):
+   0.02 / 0.05 = 0.4 standard deviations for one reading. One reading is above
+   3.8 V with probability 0.34.
 2. For the average of 10: 0.02 / 0.0158 = 1.26 standard deviations
    (0.0158 is 0.05 / √10 before rounding), probability 0.10.
-3. A cell read above 3.8 V is recycled for nothing.
+3. The tree recycles a good cell read above 3.8 V.
 
 The probabilities in steps 1 and 2 are the share of a normal distribution that
 lies more than 0.4 and 1.26 standard deviations above its mean, read from a
 normal table.
 
-Demo: Checking the Probabilities with Synthetic Readings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo: Checking the Probabilities by Simulation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: code/voltage_average.py
    :language: python
@@ -871,9 +866,9 @@ Demo: Skipping Readings That Are Not Valid
    :language: text
    :lines: 5-8
 
-The reading of 3.85 V, alone, would have recycled this good cell. GP2 joins
-both checks in one record per cell: the lidar decides the report, the averaged
-voltage decides tray or recycling.
+Used alone, the reading of 3.85 V would have sent this good cell to recycling.
+GP2 joins both checks in one record per cell: your tree sends the report from
+the lidar result and chooses tray or recycling from the averaged voltage.
 
 
 .. _l5-measuring:
@@ -884,8 +879,8 @@ Measuring a Detector
 This section covers precision, recall, and what each kind of error costs in
 ARIAC.
 
-Four Outcomes, Two Ratios
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Precision and Recall
+~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l5/confusion_matrix.svg
    :alt: A two by two table. Columns: the detector rejects the cell, or passes
@@ -919,8 +914,8 @@ Counts from the worked example below. Orange: an error.
 Worked Example, and What Each Error Costs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Numbers chosen for this example:** 40 cells, 8 of them defective. The
-detector rejects 9, and 7 of those are defective.
+**Chosen for this example:** 40 cells, 8 of them defective; the detector
+rejects 9, and 7 of those are defective; a trial of 3 kits.
 
 1. TP = 7, FP = 9 − 7 = 2, FN = 8 − 7 = 1, TN = 40 − 7 − 2 − 1 = 30.
 2. Precision = 7 / 9 = 0.78. Recall = 7 / 8 = 0.875.
@@ -933,18 +928,17 @@ detector rejects 9, and 7 of those are defective.
   points.
 - **FN:** a defective cell goes through the door. In a kit, it fails the kit
   at submission (Step 1e), and the AGV must go to recycling. With a trial of 3
-  kits (chosen for this example), a kit is worth 5000 / 3 = 1667 base points.
+  kits, a kit is worth 5000 / 3 = 1667 base points.
 
-.. admonition:: Class discussion: which error would you rather make?
-   :class: tip
+.. tip::
 
    A missed defect can cost a 1667-point kit; a false alarm costs 50 points.
    So favor recall when you set the threshold.
 
 .. _l5-pr-demo:
 
-Demo: 200 Synthetic Cells, Two Lidars, Three Thresholds
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo: Three Thresholds on 200 Cells
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``precision_recall.py`` passes 200 synthetic cells by the lidars. Each cell is
 defective with probability 0.25 and then has one defect of a random type,
@@ -957,7 +951,7 @@ the classification bonus.
    :lines: 1-12
 
 Each "missed" line gives the defect's :math:`\theta` (rad) and depth (mm),
-the number of points that landed on it, how many of those have :math:`|d|`
+the number of points on it, how many of those have :math:`|d|`
 above 0.9 mm, and the deepest :math:`d` on it (mm). The script takes about
 4 minutes, so in class this output was recorded beforehand.
 
@@ -966,7 +960,7 @@ above 0.9 mm, and the deepest :math:`d` on it (mm). The script takes about
 2. 0.9 mm, from the good cells: no false alarms, 3 misses. Each sits within
    0.26 rad of :math:`\theta` = 0 or :math:`\pm\pi`, where each lidar sees
    the surface at a grazing angle (the edges of the gap on the residual
-   map). Points land on each (33, 6 and 22), but at most one passes 0.9 mm,
+   map). They have 33, 6 and 22 points, but at most one passes 0.9 mm,
    and a cluster needs 3.
 3. 1.5 mm misses one more. A higher threshold flags fewer points, so it
    cannot catch these.

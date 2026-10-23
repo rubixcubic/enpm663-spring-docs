@@ -15,16 +15,14 @@ AI**, in NVIDIA's words, lets robots and other autonomous systems "perceive,
 understand, reason, and perform or orchestrate complex actions in the physical
 world." An **agent** is a program that runs a loop around a large language
 model (LLM): it observes the world, asks the model what to do, calls a tool,
-checks the result and repeats. In this course the agent decides what a factory
-cell does next, and classical robot skills carry out each decision. The
-course's title term, **agentic physical AI**, means a robot system in which an
+checks the result and repeats. The course's title term, **agentic physical AI**, means a robot system in which an
 AI agent decides what the robots do next, and robot skills carry out each
 decision in the physical world: here, the ARIAC factory, simulated in Gazebo.
 
 The second block introduces the testbed you use all semester: **ARIAC 2025**,
 NIST's simulated EV battery factory. You see its two tasks (inspection and kit
 building, then module construction), its robots, the sensors your team buys
-from a budget, the four challenges and what a run's score rewards. A worked
+from a budget, the four challenges and how ARIAC scores a run. A worked
 example computes the **kit voltage window**: the range a kit's total voltage
 must fall in.
 
@@ -36,10 +34,10 @@ its measured output.
 .. important::
 
    **ARIAC tie-in.** Every step of Task 1 is a ROS 2 topic, service or action.
-   A cell rides the inspection conveyor, your node submits its inspection
-   report before the inspection door, a robot places it in a voltage tester,
-   another robot places it on an AGV tray, and the AGV takes the kit to
-   shipping. The refresher topics are what make those interfaces work.
+   The inspection conveyor carries a cell, your node submits its inspection
+   report before the inspection door, a robot places the cell in a voltage
+   tester, another robot places it on an AGV tray, and the AGV takes the kit
+   to shipping.
 
 .. important::
 
@@ -57,10 +55,10 @@ By the end of this lecture, you will be able to:
 - Explain what agentic physical AI means in this course, and which layer of a
   robot system it puts AI in.
 - Describe the ARIAC 2025 factory: its two tasks, its robots, sensors and
-  challenges, and what a run's score rewards.
+  challenges, and how ARIAC scores a run.
 - Compute a kit voltage window from a cell type's nominal voltage and the kit
   tolerance.
-- Explain, from measured demonstrations, how QoS, executors, actions and TF2
+- Explain, with the four L1 demonstration scripts, how QoS, executors, actions and TF2
   affect a node that works with ARIAC.
 - Identify gaps in your own ROS 2 background with the diagnostic quiz.
 
@@ -84,7 +82,7 @@ Next Steps
   Robotics**:
 
   - Classical robot architectures and the three-layer architecture.
-  - Where an LLM agent and a VLM plug into a robot stack.
+  - Which part of a robot system runs the LLM agent, and which runs the VLM.
   - Teams form, and GP1 is posted.
 
 - **Before next class:**

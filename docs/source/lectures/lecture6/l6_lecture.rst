@@ -20,8 +20,8 @@ Recap
 From L5
 ~~~~~~~
 
-- Lidar point clouds decide each cell's inspection report; the averaged
-  tester voltage decides tray or recycling.
+- Your tree sends each cell's inspection report from the lidar result, and
+  chooses tray or recycling from the averaged tester voltage.
 - GP2 (cell inspection) is due next week, Week 7.
 
 From GP1
@@ -62,8 +62,8 @@ States, Actions, Goals and Plans
    - A **plan** is a sequence of actions that turns the initial state into a
      state where the goal holds.
 
-This model comes from **STRIPS** (Fikes and Nilsson, 1971). PDDL writes it
-in two files:
+This model comes from **STRIPS** (Fikes and Nilsson, 1971). In PDDL, you
+write it in two files:
 
 - a **domain**: types, predicates and actions;
 - a **problem**: objects, initial state and goal.
@@ -99,8 +99,8 @@ The Planning Loop
 
 .. _l6-assumptions:
 
-Three Assumptions, and Where ARIAC Breaks Each One
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Planning Assumptions and ARIAC
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -108,7 +108,7 @@ Three Assumptions, and Where ARIAC Breaks Each One
    :class: compact-table
 
    * - **Assumption**
-     - **Where the ARIAC factory breaks it**
+     - **Why it does not hold in ARIAC**
    * - **Full observation:** the planner knows every fact at the start
      - A cell's defects and voltage are unknown until the lidar scan and the
        tester measure them. A malfunctioning tester gives no valid reading at
@@ -122,8 +122,8 @@ Three Assumptions, and Where ARIAC Breaks Each One
 
 .. important::
 
-   So a classical plan covers a short stretch of work, and your system makes
-   a new plan when the factory disagrees with the model. L7 builds that loop.
+   So your system makes a new plan whenever ARIAC reports a fact that the
+   problem got wrong. L7 builds that loop.
 
 .. _l6-search:
 
@@ -137,7 +137,7 @@ How a Planner Searches
 - A **heuristic** estimates how many actions a state is from the goal, so the
   search tries promising states first.
 
-**Two kinds of search:**
+**Optimal and satisficing search:**
 
 - **Optimal**: A* search with an **admissible** heuristic (one that never
   overestimates) returns a shortest plan, but can be slow.
@@ -154,7 +154,8 @@ A PDDL Domain for Task 1
 ------------------------
 
 This section writes types, predicates and actions for Task 1 Steps 1b to 1e.
-The names are example names for this lecture, not the GP3 specification.
+The names are example names for this lecture; for GP3, use the names in its
+specification.
 
 .. note::
 
@@ -171,11 +172,11 @@ The Domain Header: Requirements, Types and Constants
    :caption: lecture6/code/domain.pddl (lines 3 to 7)
 
 - ``:strips :typing``: plain STRIPS actions, with typed objects.
-- **Types** are the kinds of objects. They play the role of L3's frame
+- **Types** are the kinds of objects. They match L3's frame
   classes: ``cell``, ``robot``, ``tester``, ``agv``, ``slot``, ``station``.
 - **Constants** are objects every problem shares. Every ARIAC tray has four
   slots (``AgvTrayStatus.msg`` has four occupied flags), so ``s1`` to ``s4``
-  live in the domain.
+  are declared in the domain.
 - ARIAC has four AGV stations (``AgvStations.msg``); this domain needs only
   two of them, ``inspection`` and ``shipping``.
 
@@ -248,8 +249,8 @@ The Objects and Their Predicates
 
 .. _l6-objects-actions:
 
-The Objects and the Eight Actions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Objects and the Actions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l6/task1_objects.svg
    :alt: A diagram of the PDDL objects for Task 1 and the eight actions
@@ -378,8 +379,8 @@ Granularity: One Action per Skill Call or ARIAC Call
 
 .. _l6-mistakes:
 
-Two Modeling Mistakes, Made on Purpose
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Modeling Mistakes in the Domain
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``mistakes.py`` removes one piece of ``domain.pddl`` in memory (a
 precondition of ``submit-kit``, then a delete effect of
@@ -463,9 +464,8 @@ Where Each Fact Comes From in ARIAC
 
 .. important::
 
-   The domain file never changes. A Python **problem generator** writes a new
-   problem file from these sources, so the same domain serves every trial,
-   including the unseen trial of the final demo.
+   A Python **problem generator** writes the problem file from these sources
+   for every trial, including the unseen trial of the final demo.
 
 .. _l6-generator:
 
@@ -536,7 +536,7 @@ checks plans; up-fast-downward adds Fast Downward to it.
    python3 -m venv ~/venvs/planning
    ~/venvs/planning/bin/pip install unified-planning up-fast-downward
 
-The versions used for every output in this lecture:
+The versions behind the outputs:
 
 .. literalinclude:: outputs/versions.txt
    :language: text
@@ -544,8 +544,8 @@ The versions used for every output in this lecture:
 
 - The up-fast-downward package ships a built Fast Downward, so there is
   nothing to compile.
-- The UPF installation page lists Python 3.8 to 3.11; every demo here ran on
-  Python 3.12.3 (Ubuntu 24.04).
+- The UPF installation page lists Python 3.8 to 3.11; the demos ran on
+  Python 3.12.3.
 - ``pip install unified-planning[fast-downward]``, the form on the
   up-fast-downward page, installed up-fast-downward 0.5.2 instead. Use the
   two-package command above.
@@ -617,8 +617,8 @@ such as Fast Downward through one interface.
 
 - ``OneshotPlanner(name="fast-downward")`` runs the ``lama-first`` setup;
   ``"fast-downward-opt"`` runs A* with LM-cut.
-- UPF can also build a problem from Python objects instead of text, which
-  removes string-formatting bugs from a generator.
+- UPF can also build a problem from Python objects instead of text, so a
+  generator does not have to format PDDL strings.
 
 The Plan: Status and the First 10 Steps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -680,8 +680,8 @@ The 19 Steps, One Row per Robot
   two robots could work at the same time (steps 5 and 6).
 - inspection_robot_2 fills slots s3, s4 and then s2; agv1 acts only in the
   last three steps.
-- c2 waits on tester2 from step 4 to step 15. The model has no time, so it
-  sees no cost in that.
+- c2 waits on tester2 from step 4 to step 15. The domain has no time, so
+  nothing in the plan counts that wait.
 
 .. _l6-compare:
 
@@ -698,15 +698,14 @@ Satisficing Against Optimal, on a Small and a Large Problem
 2. On both problems, the satisficing plan is as short as the optimal one: 19
    and 38 steps.
 3. On the large problem, the optimal planner took 14.78 s and the satisficing
-   one 0.56 s: 14.78 / 0.56 = 26.4 times longer, for no shorter plan.
-4. Times are wall-clock seconds for one run on the course machine. They
-   vary: in six more runs (2026-10-18, on a PC under other load), the
-   optimal planner took 22.5 to 25.2 times as long as the satisficing one.
+   one 0.56 s: 14.78 / 0.56 = 26.4 times longer, for the same 38 steps.
+4. Times are wall-clock seconds for one run on the course machine. In six
+   more runs on a PC under other load, the optimal planner took 22.5 to 25.2 times as long as the satisficing one.
 
 .. important::
 
-   In a factory, a good plan now usually beats the best plan later: the
-   executor waits while the planner searches.
+   The executor waits while the planner searches, so on these two problems
+   the satisficing planner is the better choice.
 
 
 .. _l6-checking:
@@ -715,7 +714,7 @@ Checking a Plan
 ---------------
 
 This section covers what a valid plan is, a validator rejecting a broken
-plan, and why valid is not the same as working.
+plan, and why a valid plan can still fail in the factory.
 
 What a Validator Checks
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -761,17 +760,17 @@ The Validator Rejects the Edited Plan
 
 .. _l6-valid-not-working:
 
-Valid in the Model Is Not the Same as Working in the Factory
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Why a Valid Plan Can Fail
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- **The model has no time.** It does not know that the conveyor keeps
-  moving, or that a tester needs about a second to give ten readings (L5).
-- **The model has no geometry.** It does not know that inspection_robot_1 and
+- **No time.** No fact in the domain says that the conveyor keeps moving, or
+  that a tester needs about a second to give ten readings (L5).
+- **No geometry.** No fact says that inspection_robot_1 and
   inspection_robot_2 can collide near the testers. The course skills package
   keeps the two robots out of the tester area at the same time.
-- **The model is only as true as its facts.** If tester2 malfunctions,
-  ``(tester-free tester2)`` can be true in the problem and useless in the
-  factory.
+- **Wrong facts.** If tester2 malfunctions, the problem can still say
+  ``(tester-free tester2)``, and the plan sends a cell to a tester that gives
+  no valid reading.
 
 **Plan quality measures:**
 
@@ -784,8 +783,8 @@ Valid in the Model Is Not the Same as Working in the Factory
 
 .. _l6-strains:
 
-Where PDDL Strains
-------------------
+Limits of PDDL
+--------------
 
 This section covers numbers (the kit voltage window) and many objects.
 
@@ -809,8 +808,8 @@ The Kit Rule, and a Kit That Cannot Be Finished
    the kit.
 4. Cells lock to the tray, so the kit is lost: the AGV goes to the recycling
    station (Step 1e), where the tray is cleared.
-5. This tray needs a team with no check. GP1's check, before every place,
-   refuses the third cell: three cells must total 14.25 − 3.8 = 10.45 V to
+5. A team reaches this tray only without GP1's check, which refuses the
+   third cell: three cells must total 14.25 − 3.8 = 10.45 V to
    14.55 − 3.4 = 11.15 V, and 11.25 V is above 11.15 V.
 
 Every Cell Placed Narrows the Window for the Rest
@@ -829,9 +828,9 @@ Every Cell Placed Narrows the Window for the Rest
 
 .. important::
 
-   The choice of a cell must look ahead to the cells still to come, before
-   the cell is placed: GP1's check before every place. That is arithmetic on
-   sums of voltages.
+   Choosing a cell means checking, before the place, that the cells still to
+   come can complete the kit. The check adds voltages, which classical PDDL
+   cannot do (next section).
 
 Classical PDDL Has No Numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -867,8 +866,8 @@ Fast Downward Refuses the Numeric Kit Problem
    whether Fast Downward can solve it.
 2. Fast Downward's translator stops at the ``:requirements`` line:
    ``:numeric-fluents`` is not on its list. No plan comes back.
-3. A numeric planner (ENHSP is one UPF engine) could take this problem, but
-   numeric search is harder, and the course does not use one.
+3. A numeric planner (ENHSP is one UPF engine) could take this problem. The
+   course does not use one.
 
 .. _l6-selection:
 
@@ -888,8 +887,8 @@ before the problem is written. It uses the window arithmetic above.
   ``KIT_LOW`` = 4 × 3.6 − 0.15 = 14.25 V, ``KIT_HIGH`` = 4 × 3.6 + 0.15 =
   14.55 V.
 - ``window`` gives the range for the sum of the cells still to place.
-- ``can_finish`` asks: with the cells left to place, each from 3.4 V to
-  3.8 V, can the total still land in that range?
+- ``can_finish`` returns ``True`` if the cells left to place, each from
+  3.4 V to 3.8 V, can bring the total into that range.
 
 Placing Cells as They Arrive, Without Look-Ahead
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -904,8 +903,8 @@ Placing Cells as They Arrive, Without Look-Ahead
 2. Cells c1 to c6 arrive measured, one at a time (voltages chosen for this
    example).
 3. Without look-ahead, every in-range cell goes on agv1. After c3, the tray
-   holds 3.75 + 3.78 + 3.72 = 11.25 V, and the kit is lost. GP1's check
-   would have refused c3 (11.25 V is above 11.15 V); this run has no check.
+   holds 3.75 + 3.78 + 3.72 = 11.25 V, and the kit is lost. This run has no
+   look-ahead check, which would have refused c3 (11.25 V is above 11.15 V).
 
 Placing Cells as They Arrive, With Look-Ahead
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -921,13 +920,13 @@ Placing Cells as They Arrive, With Look-Ahead
 2. c5 and c6 fill agv1: 3.75 + 3.78 + 3.45 + 3.52 = 14.50 V, inside
    14.25 V to 14.55 V by the averages. The goal lines go to the problem
    generator.
-3. ARIAC checks the true voltages; your team knows only averages of noisy
-   readings. The next section asks how safe 14.50 V is.
+3. ARIAC checks the true voltages, but your team works from averaged
+   readings.
 
 .. _l6-against-chance:
 
-The Look-Ahead Kit Against Chance
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Noise and the Look-Ahead Kit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``kit_margin.py`` measures how far the look-ahead kit sits from ARIAC's
 limits, in standard deviations (sd) of the team's averages, and how often
@@ -960,8 +959,8 @@ ARIAC's check would reject it.
 
 .. important::
 
-   So 14.50 V is in range by the averages, not a safe kit: ARIAC would
-   reject it about 1 time in 7 to 1 time in 11. Keep each cell and the
+   So a kit at 14.50 V by the averages would fail ARIAC's check about 1 time
+   in 7 to 1 time in 11. Keep each cell and the
    total a few sd inside the limits.
 
 .. _l6-many-objects:
@@ -998,10 +997,11 @@ Many Objects: Ground Actions Multiply
 PDDL in GP3
 -----------
 
-This section covers the GP3 pipeline: numbers in Python, order in PDDL.
+This section covers the GP3 pipeline, from the factory state to a behavior
+tree.
 
-The GP3 Pipeline: Numbers in Python, Order in PDDL
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The GP3 Pipeline
+~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l6/gp3_pipeline.svg
    :alt: A block diagram of the GP3 pipeline in two rows. Top row, left to
@@ -1020,8 +1020,8 @@ The GP3 Pipeline: Numbers in Python, Order in PDDL
 3. Planner: Fast Downward, with the fixed domain file.
 4. Plan-to-BT: one subtree a step (L7); the behavior tree calls the skills.
 
-Gray: files and data; white: programs and the factory. Numbers stay in
-ordinary code; PDDL orders the actions.
+Gray: files and data; white: programs and the factory. The voltage
+arithmetic stays in Python; PDDL only orders the actions.
 
 **Class discussion:** which facts about the ARIAC factory can PDDL state, and
 which can it not? Name examples from Task 1 and the four challenges (conveyor
@@ -1038,7 +1038,7 @@ Next Class
 
 - Closed notes, on ELMS-Canvas or paper, covering L5 and L6.
 - From this lecture: PDDL domains and problems, planners, plan validity, and
-  where PDDL strains.
+  the limits of PDDL.
 
 **L7: Plan Execution Patterns with Behavior Trees**
 

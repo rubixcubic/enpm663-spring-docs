@@ -57,7 +57,8 @@ Multiple Choice (Questions 1 to 8)
 
    The course built an agent (GP3 planner, then GP4 LLM agent) that decides
    what happens next and calls classical skills. "Perform", where a learned
-   model produces the actions, is the VLA side the lecture surveys.
+   model produces the actions, is the kind a VLA does, which the lecture
+   surveys.
 
 
 .. admonition:: Question 2
@@ -132,8 +133,7 @@ Multiple Choice (Questions 1 to 8)
    nothing plays the behavior tree's role of checking each step and stopping
    cleanly on failure. Not every two-system design is like this: the Gemini
    API robotics page lists "progress understanding and success detection"
-   and "agentic orchestration of robots" for Gemini Robotics ER 2 (read
-   2026-10-18), so there the ER model can judge whether a step succeeded,
+   and "agentic orchestration of robots" for Gemini Robotics ER 2, so there the ER model can judge whether a step succeeded,
    with a learned model's judgment rather than a coded check.
 
 
@@ -299,7 +299,8 @@ True or False (Questions 9 to 14)
 
    No step of a VLA returns failure. You find the failure from the outcome,
    for example a dropped cell or a collision penalty in the ARIAC score. In
-   your stack, a failure has a named place: the skill returns failure.
+   your stack, each failure comes from a named part: the skill returns
+   failure.
 
 
 .. admonition:: Question 13
@@ -315,7 +316,7 @@ True or False (Questions 9 to 14)
 
    The ground truth and the lidar labels are chosen for the example, and the
    ER labels come from a scripted stand-in, not a model. The table shows how
-   to score; it says nothing about how a real model or a real detector does.
+   to score; it does not measure Gemini Robotics ER or your lidar detector.
 
 
 .. admonition:: Question 14
@@ -396,7 +397,7 @@ Short Answer (Questions 15 to 18)
    :class: hint
 
    Give two reasons the course keeps classical skills instead of a learned
-   policy, and one situation where the lecture says the learned side fits.
+   policy, and one situation where the lecture says a learned policy fits.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -404,6 +405,6 @@ Short Answer (Questions 15 to 18)
    The course grades engineering judgment on unseen trials, and the grader
    must see why the system did what it did: your stack leaves readable
    traces, a learned policy only outcomes. A learned policy would also add
-   GPU needs and demonstration data. The learned side fits when a task has no
+   GPU needs and demonstration data. A learned policy fits when a task has no
    skill, when demonstrations exist, or when outcomes over many runs are
    enough evidence.

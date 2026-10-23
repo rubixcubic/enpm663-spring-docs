@@ -6,10 +6,28 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.20: GP4 Due Friday, April 23 (2026-10-22)
+.. dropdown:: v0.4.21: Wording Revised; Quizzes Are 20 Minutes (2026-10-23)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **Every lecture page** follows its revised slides: shorter sentences, each
+     caveat stated once, and some slide titles renamed (for example L6's
+     "Where PDDL Strains" is now "Limits of PDDL").
+   - **Corrections:** L8's step limit is 15, as in ``orchestrator.py``; L9
+     names the three challenges GP4 tests.
+   - **Quizzes:** every quiz, the Week 1 diagnostic included, is 20 minutes.
+     The diagnostic also covers Git and GitHub.
+   - **GP3:** the reflection asks what PDDL modeled well and what was hard to
+     model.
+   - **Glossary:** "Bonus gate" is now **Aborted run (ARIAC)**.
+   - **Syllabus:** the course description, prerequisites and email line are
+     shorter; the facts are unchanged.
+
+
+.. dropdown:: v0.4.20: GP4 Due Friday, April 23 (2026-10-22)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **GP4** is now due Friday, April 23, 2027, at 11:59 pm (it was due
      Wednesday, April 21). The syllabus, the schedule, the GP4 page and the L9

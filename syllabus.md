@@ -16,14 +16,11 @@
 
 ## Course Description
 
-This course teaches how to build robot systems in which AI agents decide what a
-factory cell does next and classical robotics carries it out. Physical AI means
-AI systems that perceive, reason and act in the physical world. An agent is a
-program that runs a loop around a large language model (LLM): it observes the
-state of the world, asks the model what to do, calls a tool (here, a robot
-skill), checks the result, and repeats. The course's title term, agentic
-physical AI, means a robot system in which an AI agent decides what the robots
-do next, and robot skills carry out each decision in the physical world.
+This course teaches how to build agentic physical AI: robot systems in which AI
+agents decide what a factory cell does next and robot skills carry out each
+decision. An agent is a program that runs a loop around a large language model
+(LLM): it observes the state of the world, asks the model what to do, calls a
+tool (here, a robot skill), checks the result, and repeats.
 
 The course is built on the Agile Robotics for Industrial Automation Competition
 (ARIAC) 2025 (https://pages.nist.gov/ARIAC_docs/en/latest/), a NIST simulation
@@ -33,14 +30,13 @@ perception, PDDL planning) and then add AI: LLM agents
 that plan with tool calls and structured output, vision-language models (VLMs)
 that describe what the cameras see, and replanning when the factory does not
 behave as planned. Motion planning and grasping stay classical (MoveIt 2). The
-course closes with the physical AI frontier: vision-language-action (VLA)
-models, robot foundation models and world models.
+course closes with vision-language-action (VLA) models, robot foundation
+models and world models.
 
 Students entering this course are expected to have working knowledge of ROS 2
-(publishers and subscribers, services, actions, parameters, launch files). Week 1
-provides a refresher on the ROS 2 topics most directly used in the course
-(QoS, executors, actions, TF2). A significant amount of Python
-programming is required.
+(publishers and subscribers, services, actions, parameters, launch files) and
+Python. Week 1 provides a refresher on the ROS 2 topics most directly used in
+the course (QoS, executors, actions, TF2).
 
 All project work is team-based. See the
 [Team Formation](#team-formation) and [Peer-Review Contribution](#peer-review-contribution-15-of-grade)
@@ -87,7 +83,7 @@ After successfully completing this course you will be able to:
 - **Editor:** Visual Studio Code: https://code.visualstudio.com/
 - **ARIAC 2025:** https://pages.nist.gov/ARIAC_docs/en/latest/ (Docker or native
   install; the final demo runs from a Dockerfile)
-- **AI access (from GP4 on):** Google Gemini by default. While it develops, your team uses its own
+- **AI access (from GP4 on):** Google Gemini by default. For development, your team uses its own
   free-tier Gemini API key. The course Gemini key runs only the graded GP4 and final demo
   evaluations. A team may run a local open-weight model instead, as the GP4 and final
   demo pages allow.
@@ -108,15 +104,15 @@ with:
   resolving a merge conflict, and opening and reviewing a pull request. The course does
   not teach them.
 
-A diagnostic quiz in Week 1 helps students and the instructor calibrate on ROS 2
-background. The quiz is ungraded.
+A diagnostic quiz in Week 1 tests these prerequisites: ROS 2, and Git and GitHub.
+Students and the instructor see each score. The quiz is ungraded.
 
 ---
 
 ## Course Structure
 
-- The class meets once a week for a lecture. Lectures are exposition with instructor
-  demonstrations; there are no in-class exercises. Before each class, review the previous lectures. Early in the course, expect roughly
+- The class meets once a week for a lecture with instructor demonstrations. There
+  are no in-class exercises. Before each class, review the previous lectures. Early in the course, expect roughly
   4 hours per week on group project work. As the course progresses, projects may
   require 6 to 8 hours per week per student.
 - Quizzes are given in class (unless you are registered in the online section).
@@ -168,8 +164,8 @@ background. The quiz is ungraded.
   guidelines are provided for each project. See the [Course Outline](#course-outline)
   for the schedule.
 - **Quizzes.** Quizzes are
-  given at the beginning of class, either on Canvas or on paper, and typically
-  last 10 to 20 minutes. All quizzes are closed-notes.
+  given at the beginning of class, either on Canvas or on paper, and
+  last 20 minutes. All quizzes are closed-notes.
 - **Peer-Review Contribution.** After each group project and after the final demo,
   every student rates the contribution of their teammates. See
   [Peer-Review Contribution](#peer-review-contribution-15-of-grade).
@@ -231,8 +227,8 @@ selection step. Spans spring break.
 
 **Deliverable:** PDDL files, planner integration (Fast Downward or Unified
 Planning Framework), the executor, a demo on 2 to 3 trials (one of which triggers
-a replan), and a short reflection on what PDDL captured well and where it
-strained.
+a replan), and a short reflection on what PDDL modeled well in Task 1 and what was
+hard to model.
 
 ### GP4: LLM Agent with VLM Grounding
 
@@ -386,7 +382,7 @@ accordance with the provisions of this code.
 Course assistance websites (such as CourseHero) and AI-generated content are not
 permitted as sources unless the instructor explicitly grants permission. Specifically:
 
-- Using AI tools (including LLM APIs) is required in GP4 and the final demo. The expectation is that the team understands, designs, and debugs the code
+- Using AI tools (including LLM APIs) is required in GP4 and the final demo. The team must design and debug the code
   that calls these tools. Submitting AI-generated code that the team cannot explain is
   an academic integrity violation.
 - Teams may use AI tools to clarify concepts or look up syntax for any group project,
@@ -454,10 +450,10 @@ should be self-identified, not presumed or imposed.
 
 ## Communication with Instructor
 
-- **Email.** Please email zeidk@umd.edu for personal, academic, or intellectual
-  concerns. Please do not email about questions that are easily answered by the
-  syllabus or ELMS (e.g., due dates, point values). Responses are typically sent
-  within 24 hours during weekdays.
+- **Email.** Please email zeidk@umd.edu for personal or academic concerns.
+  Please do not email about questions that are easily answered by the
+  syllabus or ELMS (e.g., due dates, point values). The instructor answers
+  within 24 hours on weekdays.
 - **ELMS.** Important announcements (including project changes and due-date changes)
   are posted on ELMS. Enable email and announcement notifications to avoid missing
   messages.

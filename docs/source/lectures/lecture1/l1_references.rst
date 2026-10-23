@@ -136,7 +136,7 @@ lecture. Every link was checked on 2026-10-12.
          During a malfunction the tester keeps publishing, with a voltage of
          −1 and the status ``MALFUNCTIONING``.
 
-      .. grid-item-card:: What a run's score rewards
+      .. grid-item-card:: How ARIAC scores a run
          :link: https://pages.nist.gov/ARIAC_docs/en/latest/pages/scoring.html
          :class-card: sd-border-secondary
 

@@ -6,8 +6,8 @@ Lecture
 
    These notes follow the L7 slides shown in class, in the same order and
    with the same sections, so you can read them at home. Every program output
-   below comes from running ``lecture7/code/run_all.sh`` on 2026-10-12, with
-   Python 3.12.3, ``py_trees`` 2.6.0 and BehaviorTree.CPP 4.10.0. The demos use
+   below comes from ``lecture7/code/run_all.sh``, with Python 3.12.3 and
+   ``py_trees`` 2.6.0. The demos use
    **mock skills**: small Python stand-ins for the course skills package and
    for ARIAC, with no ROS communication and no simulator. The scripts and how
    to run them are on the :doc:`code page <l7_code>`.
@@ -25,15 +25,9 @@ From L6
   name with its arguments filled in by real objects, such as
   ``(pick-from-tester inspection_robot_2 c3 tester1)``.
 - A classical planner assumes three things: it sees the whole world, every
-  action works, and only the robots change the world. The ARIAC factory
-  breaks all three. So a plan is used for a short time, and made again when
+  action works, and only the robots change the world. In ARIAC none of the
+  three holds. So a plan is used for a short time, and made again when
   the factory no longer matches it.
-
-Today's Question
-~~~~~~~~~~~~~~~~
-
-How does a behavior tree run a plan that it did not write, and what does it
-do when the plan stops matching the factory?
 
 Today
 ~~~~~
@@ -72,19 +66,18 @@ Who Decides the Order of the Steps
 This is the three-layer architecture from L2:
 
 - **Deliberative** layer (the planner): decides what to do.
-- **Executive** layer (the tree): runs each step and watches for trouble.
+- **Executive** layer (the tree): runs each step and checks its result.
 - **Reactive** layer (the skills and controllers): moves the robots.
 
 The Contract Between the Planner and the Executor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **executor** is the code that runs a plan: it builds the tree and ticks
-it. The planner and the executor agree on three things:
+it. The planner and the executor agree on two things:
 
 1. The plan is a list of ground actions: each one is an action name and its
    arguments.
 2. The executor knows how to run every action name that the domain defines.
-3. Nothing else passes between them.
 
 The same contract holds in GP4. The LLM agent of L8 writes the same action
 names and arguments, and the same executor runs them. The action names are
@@ -94,8 +87,7 @@ designed once, in the L6 domain: ``pick-from-conveyor``, ``place-on-tester``,
 
 .. important::
 
-   Write the GP3 executor so it does not care where a plan came from. In L8 a
-   different program writes the plans, and the executor stays the same.
+   Write the GP3 executor so it runs any plan built from these action names.
 
 
 .. _l7-factory:
@@ -108,9 +100,8 @@ guard, act, verify pattern for one plan step.
 
 .. note::
 
-   Every output in this lecture comes from running
-   ``lecture7/code/run_all.sh`` on 2026-10-12 (Python 3.12.3, ``py_trees``
-   2.6.0, BehaviorTree.CPP 4.10.0). The demos use mock skills: no ROS
+   Every output in this lecture comes from ``lecture7/code/run_all.sh``
+   (Python 3.12.3, ``py_trees`` 2.6.0). The demos use mock skills: no ROS
    communication and no simulator. The code is in the Week 7 module, and on
    the :doc:`code page <l7_code>`.
 
@@ -130,7 +121,7 @@ A Registry Turns Each Action into a Subtree
    :width: 100%
    :align: center
 
-1. A plan of three ground actions (chosen for this example).
+1. A plan of three ground actions.
 2. The **registry**: a dictionary from each action name to a builder
    function.
 3. The tree: a Sequence with memory holding one subtree per action. Each
@@ -169,8 +160,8 @@ The Factory Function
    :caption: lecture7/code/executor.py (excerpt)
 
 - The root is a Sequence with memory that holds the subtrees in plan order.
-- An action name with no builder raises an error when the tree is built,
-  before any robot moves.
+- An action name with no builder raises an error when the factory builds
+  the tree (Demo 1).
 
 .. _l7-memory:
 
@@ -266,8 +257,8 @@ The Four Leaves for place-in-slot
 Why have both a guard and a verify? The blackboard is the executor's own view
 of the factory. The guard catches a step whose facts are no longer true
 before the robot moves. The verify catches a step whose effect did not
-happen. A failing guard or verify is the signal that the
-:ref:`replanning triggers <l7-replanning>` act on.
+happen. When a guard or verify fails, the executor stops the plan and asks
+for a new one (:ref:`Demo 5 <l7-demo5>`).
 
 .. _l7-place-in-slot-builder:
 
@@ -333,10 +324,10 @@ tick number.
 
 1. On each tick, the root ticks only the running step. An act leaf returns
    RUNNING while its robot moves, so each tick returns at once and the
-   executor stays responsive (the L1 executor lesson).
+   executor stays responsive (L1: a slow callback delays every other one).
 2. A step that finishes hands over to the next step in the same tick, so
    steps 1 to 4 end on ticks 2 to 5. The move takes three ticks (5, 6, 7).
-3. One goal per step: 5 steps, 5 goals.
+3. Each step sends one goal, so 5 goals.
 
 Demo 1: An Unknown Action Name Fails at Build Time
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,10 +341,9 @@ as ``move-avg`` in step 5.
 
 - The registry has no builder for ``move-avg``, so the factory stops before
   it returns a tree.
-- No goal was sent: the error appears before any robot moves, not after four
-  cells are on the tray.
-- An LLM agent in GP4 can also return a name the domain does not define. The
-  same check catches it.
+- The build fails before step 1 runs, so no goal is sent.
+- In GP4, an LLM agent can also return a name the domain does not define; the
+  factory fails the build the same way.
 
 
 .. _l7-retry-timeout:
@@ -362,8 +352,8 @@ Retry and Timeout
 -----------------
 
 A **decorator** is a node with one child that changes the child's result.
-This section covers two decorators: Retry tolerates a failed attempt, and
-Timeout turns a stalled attempt into a failure. It gives the ARIAC case for
+This section covers two decorators: Retry runs a failed child again, and
+Timeout fails a child that runs too long. It gives the ARIAC case for
 each, and the order in which to nest them.
 
 .. _l7-retry:
@@ -399,8 +389,8 @@ times, then succeeds. ``demo_retry.py 2`` makes it fail twice.
 
 1. ``RETRIES["pick-from-tester"] = 3``. The plan is two steps: pick ``c3``
    from ``tester1``, place it in ``s3``.
-2. The subtree fails on ticks 2 and 4; Retry stays RUNNING, so the plan does
-   not see these failures.
+2. The subtree fails on ticks 2 and 4; Retry returns RUNNING, so the root
+   gets no FAILURE from step 1.
 3. 4 goals: 3 pick attempts and 1 place.
 
 Demo 2: Retry Runs Out After Three Failures
@@ -415,8 +405,7 @@ fails with it. The place step never starts.
 
 .. important::
 
-   Retries are always bounded. After the last failure, the failure goes up the
-   tree, where it becomes a replanning trigger or a stop.
+   When the plan fails, the executor asks for a new plan or stops the robots.
 
 ARIAC Case for Retry: The Vacuum Tool Malfunction (Task 2)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -454,7 +443,7 @@ The constructor is ``py_trees.decorators.Timeout(name, child, duration)``.
 .. important::
 
    A leaf that waits for a message never fails on its own: it stays RUNNING.
-   Timeout turns this silence into a FAILURE that the tree can act on.
+   A Timeout around it returns FAILURE once the limit passes.
 
 ARIAC Case for Timeout: The Voltage Tester Malfunction (Task 1)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -479,8 +468,8 @@ differently.
 **What the reading leaf must do.**
 
 - Check ``operation_status`` on every message and skip a voltage of −1.
-- A leaf that watches only for silence never fires: in the code, messages
-  keep arriving.
+- A leaf that fails only when messages stop never fails here: in the code,
+  messages keep arriving.
 - Put a Timeout around the leaf that waits for valid readings. It fails the
   step in both cases: a silent tester, and one that reports
   ``MALFUNCTIONING``.
@@ -516,13 +505,12 @@ Demo 3: A Working, a Silent and a Malfunctioning Tester
 1. Normal: 10 readings × 0.1 s = 1.0 s, then the leaf succeeds.
 2. Silent: no message at all. Timeout fails the step at its 2.0 s limit.
 3. Malfunction: 2.0 s / 0.1 s = 20 messages, all with −1 and
-   ``MALFUNCTIONING``, all skipped. Timeout fails the step at 2.0 s. A
-   message arrived every 0.1 s, so a silence watch would never have fired.
+   ``MALFUNCTIONING``, all skipped. Timeout fails the step at 2.0 s.
 
 .. _l7-nesting:
 
-Demo 4: The Nesting Order Changes the Meaning
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo 4: Retry Outside or Inside Timeout
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can put Retry outside Timeout, or Timeout outside Retry.
 ``demo_nesting.py`` tries both, on an act that never finishes.
@@ -546,8 +534,8 @@ the black line is when the step failed. The act never finishes. The limit of
 0.2 s, ``num_failures=3`` and the tick period of 0.02 s are all chosen for
 this demo. The bar positions come from run 1 of ``outputs/nesting_hang.txt``.
 
-Demo 4: The Measured Times, Five Runs of Each
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demo 4: Five Runs of Each Order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: outputs/nesting_hang.txt
    :language: text
@@ -571,11 +559,11 @@ Demo 4: The Measured Times, Five Runs of Each
 Choosing the Order and Setting the Limit
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**The order.** The 10 s limit and three attempts below are chosen for this
-example.
+**The order.**
 
 - ``Retry(Timeout(act))``: each attempt has its own limit. With a 10 s limit
-  and three attempts, the step can take up to 3 × 10 = 30 s.
+  and three attempts (both chosen for this example), the step can take up to
+  3 × 10 = 30 s.
 - ``Timeout(Retry(act))``: the three attempts share one 10 s limit.
 
 **The limit.**
@@ -587,9 +575,8 @@ example.
 
 .. warning::
 
-   A guessed limit either fires on normal runs or waits too long on real
-   failures. In ARIAC, time limits are simulation time, while your tree's
-   clock is wall time: measure in the same setup you will run.
+   In ARIAC, time limits are simulation time, while your tree's clock is
+   wall time: measure in the same setup you will run.
 
    The clock part is checked: ``py_trees`` 2.6.0's Timeout reads
    ``time.monotonic()``, the computer's clock, not ROS simulation time. What
@@ -607,8 +594,8 @@ Classifying Failures
 
 Retry, wait, replan or stop: which response fits which failure?
 
-Four Responses to a Failure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Responses to a Failure
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -621,8 +608,8 @@ Four Responses to a Failure
      - The failure is short-lived and the plan is still right: a grasp that
        failed once.
    * - Wait
-     - The world stops for a while and comes back. The plan is still right
-       once it does.
+     - A machine stops for a while, then works again. The plan is still
+       right once it does.
    * - Replan
      - The plan's facts are no longer true, so the remaining steps are wrong.
    * - Stop
@@ -683,8 +670,7 @@ Task 1 Events That Call for a New Plan
    event is a refused place, and the plan needs another cell.
 4. A voltage tester malfunctions. The new plan uses only the other tester.
 5. A high-priority order arrives on ``/high_priority_orders``. The current
-   plan stops at a safe point, and a Ni-MH kit is planned (GP4 and L11 cover
-   this in depth).
+   plan stops at a safe point, and a Ni-MH kit is planned (L11 and GP4).
 
 
 .. _l7-replanning:
@@ -692,11 +678,10 @@ Task 1 Events That Call for a New Plan
 The Replanning Loop
 -------------------
 
-This section gives five steps from a failed step to a new tree, and a traced
-run of one replan.
+This section goes from a failed step to a new tree, and traces one replan.
 
-Five Steps Around the Running Tree
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Loop Around the Running Tree
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /_static/images/l7/replanning_loop.svg
    :alt: A loop of six boxes. Top row, left to right: run the tree (red), tag
@@ -711,7 +696,7 @@ Five Steps Around the Running Tree
 
 The red box is where the tree runs and the robots move. A **replanning
 trigger** is an event that tells the executor the plan no longer fits the
-factory. Tags 1 to 5 are the five steps:
+factory. Tags 1 to 5 are the steps of the loop, in order:
 
 1. A monitor detects a trigger: a guard or verify that fails, or a branch
    that watches the blackboard next to the plan.
@@ -734,16 +719,17 @@ point.
 **By cancelling the running action.**
 
 - A course skill accepts a cancel: the robot stops, retreats up and out of any
-  shared zone with what it holds, and the skill returns ``CANCELED`` (skills
-  package design).
+  shared zone with what it holds, and the skill returns ``CANCELED``
+  (:doc:`Course Skills Package page </ariac/skills>`).
 - ARIAC's ``/agvN/move`` action rejects cancel requests
   (``agv_motion_plugin.cpp``). An AGV that is moving finishes its move; the
   executor waits for the result before it replans.
 
 .. important::
 
-   After a stop, the blackboard must say what the robot holds and where each
-   cell is. The next plan starts from those facts.
+   The problem generator writes the next problem from the blackboard, so
+   after a stop the blackboard must say what the robot holds and where each
+   cell is.
 
 .. _l7-demo5:
 
@@ -847,14 +833,14 @@ Demo 5: Plan 2 Finishes the Kit
 BehaviorTree.CPP
 ----------------
 
-This section shows how to read an industry behavior tree: an XML file and C++
-nodes, next to the same tree in ``py_trees``.
+This section shows an XML tree and C++ nodes, next to the same tree in
+``py_trees``.
 
 What It Is
 ~~~~~~~~~~
 
-- **BehaviorTree.CPP** is a C++ behavior tree library used in industry. Nav2
-  builds its navigation trees with it: the Jazzy package
+- **BehaviorTree.CPP** is a C++ behavior tree library. Nav2 builds its
+  navigation trees with it: the Jazzy package
   ``ros-jazzy-nav2-behavior-tree`` depends on ``ros-jazzy-behaviortree-cpp``.
 - A tree is written in XML and loaded at run time.
 - A node is a C++ class, registered with a factory under a name. The XML uses
@@ -896,7 +882,7 @@ A C++ Action Node
   it, here from the blackboard entry ``{tester}``.
 - A ``SyncActionNode``'s ``tick()`` returns SUCCESS or FAILURE. If it
   returns RUNNING, the tick throws ``BT::LogicError`` with the message
-  "SyncActionNode MUST never return RUNNING" (measured with 4.10.0). A node
+  "SyncActionNode MUST never return RUNNING". A node
   that returns RUNNING while a goal runs derives from
   ``StatefulActionNode``. This mock fails a set number of times.
 
@@ -974,9 +960,8 @@ Mapping BehaviorTree.CPP to py_trees
 
 .. important::
 
-   The XML file is itself a plan format: a plan-to-BT factory could write XML
-   instead of building Python objects. In both libraries the tree's shape is
-   data, built at run time.
+   A plan-to-BT factory could write this XML instead of building Python
+   objects.
 
 
 .. _l7-debugging:
@@ -984,7 +969,7 @@ Mapping BehaviorTree.CPP to py_trees
 Debugging a Running Tree
 ------------------------
 
-This section covers tools that show a running tree, and four common bugs with
+This section covers tools that show a running tree, and common bugs with
 their symptoms.
 
 Print the Tree, Watch Snapshots, Log Every Change
@@ -1007,8 +992,8 @@ and each node's status at one moment, sent as a ROS message.
   nodes.
 
 **Log.** Log every status change with the plan step number and the action
-name, as the traces in this lecture do. The log shows why a step failed after
-the run ends.
+name, as the traces in this lecture do. After the run ends, you read in the
+log why a step failed.
 
 Demo 1 Again: The Root Without Memory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1064,8 +1049,7 @@ Common Bugs and Their Symptoms
 
 .. important::
 
-   Each symptom shows in a tick trace. Write the logger before the first test
-   in the simulator.
+   Write the tick-trace logger before the first test in the simulator.
 
 
 .. _l7-gp3:
@@ -1082,8 +1066,8 @@ on March 31.
   retry and timeout decorators around each skill." The rubric checks for
   both.
 - Your team gives a demo on two or three trials, "one of which triggers a
-  replan", and writes a short reflection on what PDDL captured well and
-  where it strained.
+  replan", and writes a short reflection on what PDDL modeled well in Task 1
+  and what was hard to model.
 - GP3 uses the two inspection robots through the course skills package. It
   does not model the four challenges in PDDL. GP4 tests an LLM agent on three
   of them (conveyor, voltage tester, high-priority order); the final demo
@@ -1101,8 +1085,8 @@ Next Class
 **Spring break (March 14 to 21): no class on March 17.**
 
 **L8: LLM Agents I: Agent Loops, Tool Use, and Structured Output** (Wednesday,
-March 24): an LLM agent replaces the planner and calls the same executor. The
-executor you write for GP3 carries over unchanged.
+March 24): an LLM agent replaces the planner and calls the executor you
+write for GP3.
 
 **Before next class:**
 

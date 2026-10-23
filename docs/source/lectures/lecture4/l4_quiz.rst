@@ -312,8 +312,8 @@ Multiple Choice (Questions 1 to 12)
 
    **B**.
 
-   Once the AGV leaves, it finishes its move. Interrupt the tree before you
-   send the AGV, not while it drives. The course skills accept a cancel.
+   Once the AGV leaves, it finishes its move. Any interrupt must come before
+   the tree sends the AGV. The course skills accept a cancel.
 
 
 .. admonition:: Question 12
@@ -336,8 +336,8 @@ Multiple Choice (Questions 1 to 12)
 
    **C**.
 
-   Each behavior registers its keys with ``Access.READ`` or ``Access.WRITE``,
-   and the blackboard refuses any other use. ``voltage_in_range`` registered
+   Each behavior registers its keys with ``Access.READ`` or ``Access.WRITE``.
+   Any other access raises an error. ``voltage_in_range`` registered
    the key for reading only.
 
 
@@ -458,6 +458,6 @@ Short Answer (Questions 16 to 18)
 
    The timeout can fail after 1.3 + 2.0 = 3.3 s. ``Timeout`` fails only once
    *more* than 2.0 s have passed, and the 2.0 s mark falls on a tick (the
-   tree ticks every 0.1 s). Timer jitter decides whether the tick near the
-   mark sees a little more than 2.0 s or a little less, so the failure lands
+   tree ticks every 0.1 s). With timer jitter, the tick near the mark sees a
+   little more than 2.0 s or a little less, so the failure lands
    on that tick or the next.

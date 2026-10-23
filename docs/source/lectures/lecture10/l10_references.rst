@@ -325,7 +325,7 @@ links point to the ``ariac2025`` branch of the ARIAC repository.
          **MoveIt: OMPL Planner**
 
          "A feasible path is smoothened and shortened in a post-processing
-         stage": the setting on the "Five Runs" slide.
+         stage": the setting on the "Path Length by Random Seed" slide.
 
       .. grid-item-card:: Pilz planner
          :link: https://moveit.picknik.ai/main/doc/how_to_guides/pilz_industrial_motion_planner/pilz_industrial_motion_planner.html

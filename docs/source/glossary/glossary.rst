@@ -1279,14 +1279,15 @@ L12: Evaluation and Measurement Science for Agentic Systems
 
 .. glossary::
 
+   Aborted run (ARIAC)
+      A run in which not every wanted kit and module, high-priority kits
+      included, was submitted and accepted. ARIAC marks the run aborted and
+      sets all five bonuses to 0. :doc:`L12 </lectures/lecture12/l12_index>`
+
    Base score
       ARIAC's score for completed work: W1 kc/kd + W2 mc/md, the weighted
       share of the wanted kits (kd) and modules (md) that were completed (kc,
       mc). :doc:`L12 </lectures/lecture12/l12_index>`
-
-   Bonus gate
-      The ARIAC rule that pays bonuses only if every wanted kit and module was
-      submitted and accepted. :doc:`L12 </lectures/lecture12/l12_index>`
 
    Controlled comparison
       A test of two systems that differ in one variable only, with everything

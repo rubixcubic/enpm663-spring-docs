@@ -23,26 +23,26 @@ The second is **replanning**. After every call, the agent compares the new
 observation with what the action should have done. On a mismatch there are three
 moves: **retry** the action, **wait** for a device to come back, or ask for a
 **new plan**. A decision chart sorts ARIAC 2025's four challenges among the three.
-No code picks the move: the model chooses, and ``guard()`` refuses a call that
+No code picks the move: Gemini chooses, and ``guard()`` refuses a call that
 breaks a rule.
 
-Two demonstrations show both ideas. In the first, Gemini reads a real
-camera image of agv1's tray in ARIAC, and its record is cross-checked slot by
+Two demonstrations show both ideas. In the first, Gemini reads an ARIAC
+camera image of agv1's tray, and its record is cross-checked slot by
 slot; a scripted stand-in VLM with mistakes written in then shows the checker
-catching them. In the second, Gemini fills agv1's tray in ARIAC through the
-course skills while voltage tester 1 malfunctions, once with a replan policy
+catching them. In the second, Gemini chooses the skill calls that fill agv1's tray in
+ARIAC while voltage tester 1 malfunctions, once with a replan policy
 and once with a wait policy. The Gemini runs were recorded once; a rerun gives
 different answers.
 
 The lecture ends with a limit: for a fully specified task, such as the normal
 Task 1 flow, the PDDL planner from GP3 is the better tool. It costs nothing per
 call, gives the same plan for the same input, and plans from a domain file
-anyone can read. The LLM agent earns its place on ambiguity, on cases the
+your team wrote and can read. The LLM agent helps on ambiguity, on cases the
 domain has no action for, and on recovery the domain did not plan for.
 
 .. important::
 
-   **ARIAC tie-in.** The cameras the VLM reads are yours to place, and each
+   **ARIAC tie-in.** Your team places the cameras the VLM reads, and each
    one costs money from the sensor budget. Lidar still finds the defects
    (GP2). The agent observes the conveyor and voltage tester status topics,
    the AGV tray status and the high-priority order topic, and it reacts to
@@ -57,7 +57,7 @@ domain has no action for, and on recovery the domain did not plan for.
    Friday, April 23, at 11:59 pm. GP4 replaces the GP3 planner with an LLM agent, adds a
    VLM, and tests the agent on a conveyor malfunction, a voltage tester
    malfunction and high-priority orders. The vacuum tool malfunction happens
-   only in Task 2, so the final demo tests it, not GP4.
+   only in Task 2; the final demo tests it.
 
 .. admonition:: This week
    :class: warning
@@ -105,9 +105,9 @@ Next Steps
 - In the next lecture we cover **L10: Frames, Transforms, and Motion
   Planning** (Wednesday, April 7):
 
-  - TF2 in depth.
+  - TF2.
   - The camera model: from a pixel to a pose.
-  - MoveIt 2, and the inside of the course skills package.
+  - MoveIt 2, and how the course skills package works.
 
 - **Quiz 5** (Wednesday, April 14, start of class) covers L9 and L10.
 

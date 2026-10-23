@@ -96,7 +96,7 @@ order of the slides, grouped by topic. Every link was checked on 2026-10-12.
          up); and the eight levels of Table 1 (page 55).
 
 
-.. dropdown:: One Kit, Three Views
+.. dropdown:: Three Views of a Kit
    :class-container: sd-border-secondary
    :open:
 

@@ -15,7 +15,7 @@ Quiz
 
 This quiz covers Lecture 6: classical planning and its assumptions, the PDDL
 domain and problem for Task 1, running Fast Downward through the Unified
-Planning Framework, checking a plan, and where PDDL strains. Every question
+Planning Framework, checking a plan, and the limits of PDDL. Every question
 can be answered from the slides shown in class.
 
 .. note::
@@ -371,7 +371,7 @@ Short Answer (Questions 15 to 19)
    :class: hint
 
    Name the three assumptions of classical planning, and for each one give
-   a way the ARIAC factory breaks it.
+   a way it does not hold in the ARIAC factory.
 
 .. dropdown:: Answer
    :class-container: sd-border-success
@@ -384,8 +384,8 @@ Short Answer (Questions 15 to 19)
    3. **A static world**: new cells keep arriving, the conveyor can stop,
       and a high-priority order can arrive at any time.
 
-   So a plan covers a short stretch of work, and the system plans again
-   when the factory disagrees with the model.
+   So the system makes a new plan whenever ARIAC reports a fact that the
+   problem got wrong.
 
 
 .. admonition:: Question 16
@@ -422,13 +422,13 @@ Short Answer (Questions 15 to 19)
 
    Any two of:
 
-   - **The model has no time**: it does not know that the conveyor keeps
+   - **No time**: no fact in the domain says that the conveyor keeps
      moving, or that a tester needs about a second to give ten readings.
-   - **The model has no geometry**: it does not know that the two
-     inspection robots can collide near the testers.
-   - **The model is only as true as its facts**: if tester2 malfunctions,
-     ``(tester-free tester2)`` can be true in the problem and useless in
-     the factory.
+   - **No geometry**: no fact says that the two inspection robots can
+     collide near the testers.
+   - **Wrong facts**: if tester2 malfunctions, the problem can still say
+     ``(tester-free tester2)``, and the plan sends a cell to a tester that
+     gives no valid reading.
 
    A validator checks the plan against the model, not the model against the
    factory.
@@ -448,7 +448,7 @@ Short Answer (Questions 15 to 19)
    rest. Classical PDDL has only true-or-false facts, and Fast Downward does
    not plan with numeric fluents. So the selection step does the arithmetic
    (with look-ahead) and hands the planner its result as ``in-slot`` goals.
-   Numbers stay in ordinary code; PDDL orders the actions.
+   The voltage arithmetic stays in Python; PDDL only orders the actions.
 
 
 .. admonition:: Question 19

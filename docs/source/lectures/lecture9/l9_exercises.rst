@@ -109,8 +109,8 @@ replan recording.
       both ranges says something is wrong with the cell or the reading, so
       it should be a flag of its own. Exercise 4 adds checks of this kind.
 
-      **4.** LLMs make arithmetic slips, and ARIAC rejects the kit on any
-      slip. A function gets the sum right every time, and the agent calls it
+      **4.** A sampled reply can get a sum wrong (L8), and ARIAC rejects a
+      kit outside the window. A function gets the sum right every time, and the agent calls it
       as a tool.
 
 
@@ -335,8 +335,8 @@ replan recording.
       cost more. The replan run lost 80.0 s to two cells under 3.4 V, one of
       them by 0.01 V, which chance alone moves. The wait run held a tested
       cell for 74.4 s, because the goal text did not say it could go to the
-      tray. One run of each cannot say which policy is faster, as the
-      lecture says.
+      tray. With one run of each, you cannot tell which policy is faster, as
+      the lecture says.
 
 
 .. dropdown:: Exercise 4. Add a New Mismatch to the VLM Checker

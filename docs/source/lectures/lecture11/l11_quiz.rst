@@ -323,7 +323,7 @@ Multiple Choice (Questions 1 to 11)
    For the vacuum tool malfunction (Example A), the shell and the tool are
    where they were, and the failure clears once the pads lose contact, so
    the tree retries a sequence that starts by moving the gripper away. The
-   conveyor malfunction is local too: the plan stays and waits. The voltage tester malfunction is
+   conveyor malfunction is local too: keep the plan and wait. The voltage tester malfunction is
    global (the plan assumed two testers), and the high-priority order is
    global (the goal changed).
 
@@ -362,8 +362,7 @@ True or False (Questions 12 to 16)
 
    The vacuum tool malfunction happens only in Task 2. GP4 tests the
    conveyor malfunction, the voltage tester malfunction and high-priority
-   orders; the final demo is the first place your system meets the vacuum
-   tool malfunction.
+   orders, and not the vacuum tool malfunction.
 
 
 .. admonition:: Question 14
@@ -394,7 +393,7 @@ True or False (Questions 12 to 16)
 
    **False**.
 
-   Both calls name a real tool with arguments that fit its schema. Slot 1
+   Both calls name a tool that exists, with arguments that fit its schema. Slot 1
    already holds a cell, and tester 1 is ``MALFUNCTIONING``: facts about the
    factory now, which change during a run. No schema can know them. Only the
    guard, which reads the observation and the record, refuses E and F.
@@ -459,8 +458,8 @@ Short Answer (Questions 17 to 20)
    recording, Gemini waited 5, 10, 20 and 30 s while robot 2 held a tested
    cell that could already go to slot 1: :math:`112.6 - 38.2 = 74.4` s. Both finished
    at about 225 s, because by chance two cells in the replan run went to
-   recycling (80.0 s), so one recording each cannot say which policy is
-   faster. Each was recorded once, on 2026-10-17, with gemini-3.5-flash-lite.
+   recycling (80.0 s), so one recording of each policy is too few to tell
+   which is faster. Each was recorded once, on 2026-10-17, with gemini-3.5-flash-lite.
 
 
 .. admonition:: Question 19
@@ -489,8 +488,8 @@ Short Answer (Questions 17 to 20)
 .. admonition:: Question 20
    :class: hint
 
-   Why is a good cell in the inspection bin a cost you can count, and what
-   does it say about a defect detector?
+   What does a good cell in the inspection bin cost, and what does that say
+   about a defect detector?
 
 .. dropdown:: Answer
    :class-container: sd-border-success

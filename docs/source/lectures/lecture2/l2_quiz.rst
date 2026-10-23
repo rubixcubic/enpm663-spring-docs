@@ -15,8 +15,8 @@ Quiz
 
 This quiz covers Lecture 2: the classical robot architectures, the
 three-layer architecture and what passes between its layers, the toy factory
-run, the tester malfunction traced layer by layer, Nav2 and MoveIt, where AI
-plugs in, ARIAC 2025 as a three-layer system, VLA models, multi-robot
+run, the tester malfunction traced layer by layer, Nav2 and MoveIt, AI in
+the three layers, ARIAC 2025 as a three-layer system, VLA models, multi-robot
 coordination and GP1. Every question can be answered from the slides shown in
 class.
 
@@ -188,7 +188,7 @@ Multiple Choice (Questions 1 to 12)
 
    **C**.
 
-   The tester (reactive layer) reports from 20 s but decides nothing. The
+   The tester (reactive layer) reports from 20 s. The
    executive sees the status after averaging 10 readings at tester 1,
    36 − 20 = 16 s after the start. The gap comes from the toy, which reads a
    tester only when it uses it. 75.3 s (**D**) is the first status check after
@@ -214,10 +214,9 @@ Multiple Choice (Questions 1 to 12)
    **B**.
 
    The error is handled where it is seen, and only the status moves up. The
-   −1 V readings stay in the executive (**A**): the planner never learns what
-   a −1 V reading is. The grasp failures (**C**) come later, at 79.3 s and
-   83.3 s, and the planner never hears of them because the third attempt
-   succeeds.
+   −1 V readings stay in the executive (**A**). The grasp failures (**C**)
+   come later, at 79.3 s and 83.3 s, and no report of them goes to the
+   planner because the third attempt succeeds.
 
 
 .. admonition:: Question 8
@@ -241,7 +240,7 @@ Multiple Choice (Questions 1 to 12)
 
    The planner server is an action server that the behavior tree calls, like
    the controller and behavior servers. Its name says "planner", but its
-   role is a skill. Match layers by role, not by name. **B** is the executive
+   role is a skill. **B** is the executive
    and **C** is the deliberative layer.
 
 
@@ -295,7 +294,7 @@ Multiple Choice (Questions 1 to 12)
    Helix has a slow 7B-parameter VLM at 7 to 9 Hz (**A**) and a fast
    80M-parameter policy at 200 Hz (**B**). The policy acts on the slow
    model's output directly, so nothing between them checks each step. In the
-   course stack, the behavior tree is that check.
+   course stack, the behavior tree checks every result.
 
 
 .. admonition:: Question 11
@@ -380,7 +379,7 @@ True or False (Questions 13 to 17)
 
    The challenge page says the tester stops publishing, but the code keeps
    publishing −1 V with the status ``MALFUNCTIONING``. Check the
-   ``operation_status`` field of each message, not only the voltage.
+   ``operation_status`` field of each message too.
 
 
 .. admonition:: Question 15
@@ -396,7 +395,7 @@ True or False (Questions 13 to 17)
    **True.**
 
    Cells 2 and 5 were in range but did not fit, so the planner sent them to
-   AGV 2 and tested six cells, not four. One cell takes about 14 s (cell 1 is
+   AGV 2 and tested six cells. One cell takes about 14 s (cell 1 is
    logged at 8.0 s and cell 2 at 22.0 s), so the two extra cells are about
    2 × 14 = 28 s of the 107 − 74 = 33 s. React only shipped the first four
    in-range cells, faster, and its kit was rejected at 14.60 V.
@@ -450,8 +449,8 @@ Short Answer (Questions 18 to 20)
 .. dropdown:: Answer
    :class-container: sd-border-success
 
-   **Sample answer.** The behavior tree checks each skill result and stops
-   cleanly on failure, whatever planner sits above it. In GP3 it runs a PDDL
+   **Sample answer.** Your behavior tree checks each skill result and stops
+   cleanly on failure (GP1, Task 6), whatever planner sits above it. In GP3 it runs a PDDL
    plan and in GP4 the agent's decisions. Because the executive is the same,
    GP4 can compare the agent with the planner on identical trials (validity,
    plan length, cost and latency), which measures what the LLM adds.

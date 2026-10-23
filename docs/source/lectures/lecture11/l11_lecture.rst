@@ -42,11 +42,11 @@ From L9 and L10
   the skills package, and the seven failure results a skill can return.
 
 
-Today's Question
-~~~~~~~~~~~~~~~~
+Today
+~~~~~
 
-**What does the system do when something goes wrong, and which layer
-handles it?**
+How each type of failure is detected, and whether the tree handles it (retry,
+wait) or the planner or agent does (replan).
 
 
 .. _l11-final-demo:
@@ -77,8 +77,7 @@ What Your System Must Do
 
 .. note::
 
-   **Task 2 brings the vacuum tool malfunction.** GP4 does not test it, so
-   the final demo is the first place your system meets it.
+   **Task 2 brings the vacuum tool malfunction**, which GP4 does not test.
 
 
 How the Demo Is Run and Graded
@@ -101,25 +100,25 @@ How the Demo Is Run and Graded
 - Peer review follows the demo.
 
 
-What Is Set
-~~~~~~~~~~~
+Rules
+~~~~~
 
-**Set: the code freeze is Friday, April 30, 2027, at 11:59 pm.** The ARIAC
+**The code freeze is Friday, April 30, 2027, at 11:59 pm.** The ARIAC
 docs' example trial has a time limit of 900 s of simulation time. Gazebo ran
 at about 0.37 times real time on the development PC, so one run takes about
 :math:`900 / 0.37 = 2432` s, or 41 minutes, of wall-clock time. For 12 teams:
 :math:`12 \times 41 = 492` minutes, about 8 hours, before the Week 15 class.
 
-**Set: the grading rubric.** 75 points for the run and 25 for the class
+**The grading rubric.** 75 points for the run and 25 for the class
 session, scaled to 20% of the course grade. The final demo page lists each
 criterion and how its points are computed.
 
-**Set: the model.** Gemini Robotics ER is the course example. Your team may
+**The model.** Gemini Robotics ER is the course example. Your team may
 use another vision-language model if it is a Google model that runs on the
 course key, or a model that runs locally, and if it reports the same
 comparison. The instructor runs every image with one course API key.
 
-**Set: who pays.** The course key runs the graded runs only (GP4 and the
+**Model costs.** The course key runs the graded runs only (GP4 and the
 final demo). While you develop, your team uses its own free-tier Gemini key.
 
 
@@ -127,8 +126,7 @@ What the Unseen Trial Means
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - You cannot tune your system for a known order of challenges. Detection and
-  recovery must work for any order. That is this lecture; L12 shows how to
-  measure whether it works.
+  recovery must work for any order.
 - Read the specification as a team and bring your questions to L13.
 
 
@@ -137,12 +135,12 @@ What the Unseen Trial Means
 A Failure Taxonomy
 ------------------
 
-This section names four types of failure, the signal that detects each one,
-and where its recovery starts.
+This section names the failure types, the signal that detects each one, and
+where its recovery starts.
 
 
-Four Failure Types and the Signal for Each
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Failure Types and Their Signals
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: the four failure types
    :class: note
@@ -198,8 +196,7 @@ Each Type in ARIAC 2025
 
 .. important::
 
-   **The type decides where recovery lives.** Action failures are handled
-   close to the action, in the tree. Plan failures and world drift go back
+   Action failures are handled close to the action, in the tree. Plan failures and world drift go back
    to the planner or agent. Sensor failures need a check before the value is
    used.
 
@@ -212,8 +209,8 @@ Each Type in ARIAC 2025
      or takes a new goal.
 
 
-Action Failures: The Seven Skill Results from L10, and the Response to Each
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Responses to the Skill Results (L10)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Every course skill ends with a result code (``SkillResult.msg``, skills
 README of v0.2.0). L10 named the seven failure results: grasp failed,
@@ -235,8 +232,8 @@ busy and canceled. Each one calls for a different response.
        wrong station. After a conveyor stop during a catch: wait for
        ``OPERATIONAL``, then catch the next cell (README).
    * - ``PLACE_NOT_FOUND``
-     - Replan (L10): a TF2 lookup failed, so the world is not what the plan
-       assumed.
+     - Replan (L10): a TF2 lookup failed, so a frame the plan needs could
+       not be found.
    * - ``PLANNING_FAILED``
      - Replan: the skill already tried Pilz, then OMPL (README,
        ``attempts``). Choose another tester, slot or AGV.
@@ -250,8 +247,8 @@ busy and canceled. Each one calls for a different response.
      - None: your own code sent the cancel (a guard or a Timeout), and that
        code decides what runs next.
 
-The first three responses are L10's. The other four are a starting rule
-chosen for this course.
+The first three responses are L10's. The other four are this course's
+starting rule.
 
 
 .. _l11-bt-recovery:
@@ -296,8 +293,7 @@ Each behavior in a tree returns one of three statuses when it is **ticked**
        condition fails
      - Stop work when a tester or the conveyor malfunctions
 
-The signatures were read from the installed ``py_trees`` 2.6.0. A
-**decorator** is a node with one child that changes what its child's status
+A **decorator** is a node with one child that changes what its child's status
 means. A **guard** is a decorator that checks a condition before it ticks its
 child; ``EternalGuard`` is the ``py_trees`` guard.
 
@@ -305,7 +301,7 @@ child; ``EternalGuard`` is the ``py_trees`` guard.
 What Retry Does on Each Tick, and How to Add a Wait
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-From the ``py_trees`` 2.6.0 source, Retry does one of three things after its
+From the ``py_trees`` source, Retry does one of three things after its
 child is ticked:
 
 1. The child fails, and Retry has seen fewer than ``num_failures`` failures:
@@ -354,9 +350,9 @@ The Tree in Code
    :pyobject: build
    :caption: lecture11/code/recovery_tree.py (excerpt)
 
-- Each skill is a stub (no ROS, no simulator) that follows a script chosen
-  for this example: fail, or run for some ticks and succeed. The tester 2
-  place takes 2 ticks.
+- Each skill is a stub (no ROS, no simulator) that follows a script: fail,
+  or run for some ticks and succeed. The tester 2 place takes 2 ticks. The
+  scripts and ``num_failures=3`` are chosen for this example.
 - ``robot`` stands for robot 1's action server. The stubs follow two rules
   of the course skills (README of v0.2.0, "One goal per arm" and "Cancel
   stops the arm and retreats"): robot 1 runs one goal at a time across all
@@ -365,9 +361,9 @@ The Tree in Code
   until then.
 - ``LoggedRetry`` and ``LoggedGuard`` are Retry and EternalGuard with a print
   added, so the trace shows what they do.
-- ``num_failures=3`` is chosen for this example. This Retry fires on any
-  failure. A real one should fire only on a result worth retrying, such as
-  ``GRASP_FAILED`` (the results table above).
+- This Retry fires on any failure. In your tree, a Retry should fire only on
+  a result worth retrying, such as ``GRASP_FAILED`` (the results table
+  above).
 
 The script also prints a Run A, with one injected failure and one retry. Its
 output is on the :doc:`code page <l11_code>`.
@@ -392,16 +388,16 @@ Run C: The Guard Stops a Running Branch
    :language: text
    :lines: 31-44
 
-1. The place on tester 1 needs 3 ticks (chosen). Before tick 2, tester 1's
+1. In the script, the place on tester 1 needs 3 ticks. Before tick 2, tester 1's
    status changes to ``MALFUNCTIONING``. On tick 2 the guard checks its
    condition first, finds it false, and stops the place, which cancels its
    action goal.
-2. Skills README (v0.2.0): robot 1 runs one goal at a time, and a cancel
-   lifts the arm clear and parks it before ``CANCELED`` comes back. So the
-   tester 2 place waits for that result (1 tick here, chosen) before it sends
-   its goal. A goal sent at once would be rejected.
-3. Tester 1 being down is global recovery: the plan's two testers are now
-   one. The new plan, tester 2, is written into this tree in advance; in GP4
+2. Skills README: robot 1 runs one goal at a time, and a cancel lifts the
+   arm clear and parks it before ``CANCELED`` comes back. So the tester 2
+   place waits for that result (1 tick in the script) before it sends its
+   goal. A goal sent at once would be rejected.
+3. With tester 1 down, recovery is global: only tester 2 works now. The new
+   plan, tester 2, is written into this tree in advance; in GP4
    the agent chooses it.
 
 
@@ -432,12 +428,11 @@ off. Ticks 1 to 3 are the same as in Run B: tester 2 starts on tick 3. Ticks
    child, so it stays with tester 2.
 
 
-Timeout Turns a Hang into a Failure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Timeout Stops a Skill That Hangs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A skill that **hangs** never returns ``SUCCESS`` or ``FAILURE``: it stays
-``RUNNING``. Nothing in a tree reacts to that until something turns it into
-a failure.
+``RUNNING``. Nothing in a tree reacts to that until a Timeout fails it.
 
 .. literalinclude:: code/timeout_demo.py
    :language: python
@@ -471,8 +466,8 @@ tools.
    replies. A real model's answers vary.
 
 
-The Three Checks of L8's Orchestrator, in Its Order
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Checks in L8's Orchestrator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Tool:** is the name one of the ten tools the orchestrator declared?
    L8's ten are the seven skills of the two inspection robots and three
@@ -489,8 +484,8 @@ cell's voltage).
 
 .. warning::
 
-   **The guard is only as good as the observation and the record.** A record
-   that is out of date passes calls that will fail.
+   **The guard reads the observation and the record:** a record that is out
+   of date passes calls that will fail.
 
 
 The Checks in Code
@@ -508,11 +503,11 @@ The Checks in Code
   and its arguments, so there is no JSON parse step. L8's ``validator.py``
   adds one for a reply that is plain text.
 - No L8 tool takes a cell ID. ARIAC publishes no cell positions (L3), so the
-  record keeps track of cells, not the model.
+  orchestrator's record keeps track of cells.
 
 
-One Accepted Call and Five Refusals
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Demonstration: Checking Replies A to F
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``lecture11/code/llm_output_checker.py`` checks six separate replies, each
 in the same state, and runs none of them. The state comes from L8's
@@ -524,17 +519,18 @@ voltages and a tester 1 malfunction chosen for this example.
    :lines: 1-14
 
 
-Reading the Six Results
-~~~~~~~~~~~~~~~~~~~~~~~
+Reading Results A to F
+~~~~~~~~~~~~~~~~~~~~~~
 
 1. **B:** ``robot1_place_in_slot`` is not a tool: robot 2 places cells in
    slots. Check 1 stops it before any schema is read.
-2. **C and D:** real tools with wrong arguments. C asks for slot 5, and the
+2. **C and D:** tools that exist, with wrong arguments. C asks for slot 5, and the
    schema allows 1 to 4. D adds a cell ID; the schema allows no other
    arguments, so an invented cell never reaches a robot. Gemini's own
    parameter schema has no ``additionalProperties``, so ``check_call()``
    enforces it (L8).
-3. **E and F:** well formed, and wrong for the factory now. Slot 1 already
+3. **E and F:** a valid tool and valid arguments, but the state forbids
+   them. Slot 1 already
    holds a cell, and tester 1 is ``MALFUNCTIONING``. No schema can stop
    these, because a slot's contents and a tester's status change during a
    run. Only the guard, which reads the state, catches them.
@@ -570,8 +566,8 @@ A VLM error is well formed, so a schema check passes it. Compare the VLM
 with a **second source**: another way to learn the same fact.
 
 
-Four Second Sources in ARIAC
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Second Sources in ARIAC
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1
@@ -598,7 +594,7 @@ Four Second Sources in ARIAC
 What to Do on Disagreement, and When to Pay for a Cross-Check
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**On disagreement**, take the cautious action whose cost you know.
+**On disagreement**, pause and look again before the kit ships.
 
 - A wrong kit sent to shipping is rejected, and the AGV must go to the
   recycling station. The cells and the time are lost (ARIAC scenario page).
@@ -609,8 +605,8 @@ What to Do on Disagreement, and When to Pay for a Cross-Check
 - L9 measured one VLM call with one camera image: 1377 input and 147 output
   tokens, 2.02 s, $0.000781 (gemini-3.5-flash-lite, L9's VLM check, recorded
   once).
-- Cross-check the decisions that are expensive to get wrong, such as
-  shipping a kit or discarding a cell, not every frame.
+- Cross-check only the decisions that are expensive to get wrong, such as
+  shipping a kit or discarding a cell.
 
 
 .. _l11-equipment:
@@ -622,8 +618,8 @@ This section works through the voltage tester case: what the ARIAC docs say,
 what the ARIAC code does, and a watcher that handles both.
 
 
-The Docs and the Code Disagree
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Voltage Tester: The Docs and the Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **The ARIAC challenges page:**
 
@@ -645,8 +641,8 @@ The Docs and the Code Disagree
    code.** Handle both behaviors.
 
 
-Four Rules for a Robust Watcher
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Rules for a Tester Watcher
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Definition: watcher
    :class: note
@@ -659,18 +655,18 @@ Four Rules for a Robust Watcher
 2. **Value:** keep impossible values out of the average. No cell reads a
    negative voltage.
 3. **Time limit:** if no reading arrives within the limit, treat the tester
-   as down. Check this from a timer, because silence never calls the message
-   callback.
+   as down. Check this from a timer, because the message callback runs only
+   when a message arrives.
 4. **Cached state:** keep the last good reading with its time, and stop
    trusting it once the limit passes.
 
 .. important::
 
-   **The value rule needs care.** With no cell on it, the tester publishes
-   noise around 0 V with status ``OPERATIONAL``
-   (``voltage_tester_plugin.cpp``, line 144), so about half of those
-   readings are negative. A low reading means an empty tester, not a broken
-   one. **Check the status first**, then the value.
+   With no cell on it, the tester publishes noise around 0 V with status
+   ``OPERATIONAL`` (``voltage_tester_plugin.cpp``, line 144), so about half of
+   those readings are negative. A negative reading with status
+   ``OPERATIONAL`` means an empty tester: leave it out of the average, and
+   keep the tester up. **Check the status first**, then the value.
 
 
 The Watcher in Code
@@ -692,13 +688,13 @@ The Watcher Catches Both Behaviors
 
 The readings are synthetic; there is no simulator.
 
-- 10 readings per second; a Li-Ion cell at 3.60 V (chosen for this example)
-  with noise of standard deviation 0.05 V (the tester's ``model.sdf``).
+- 10 readings per second; a Li-Ion cell at 3.60 V with noise of standard
+  deviation 0.05 V (the tester's ``model.sdf``).
 - Tester 1 fails from 180 s to 225 s: ``START_TIME`` 180 and ``DURATION`` 45
   in the ARIAC docs' example trial file.
-- Watcher limits, chosen for this example: down when the last reading is
-  more than 0.5 s old; below 0.5 V means no cell; the average uses the last 5
-  valid readings. In Run 2 the last reading came at 179.9 s, so the watcher
+- Chosen for this example: the 3.60 V cell and the watcher limits (down when
+  the last reading is more than 0.5 s old; below 0.5 V means no cell; the
+  average uses the last 5 valid readings). In Run 2 the last reading came at 179.9 s, so the watcher
   went DOWN at 180.5 s, on the sixth missed reading.
 
 Run 1 sends what the ARIAC code sends. Run 2 sends nothing during the
@@ -729,7 +725,7 @@ Worked Example: Averaging In the -1
    cell to recycling.
 4. With the -1 rejected: :math:`10.81 / 3 = 3.60` V, inside the limits.
 
-**The program agrees:**
+**The program's output:**
 
 .. literalinclude:: outputs/tester_watcher.txt
    :language: text
@@ -770,8 +766,8 @@ tester malfunction and high-priority orders; the final demo adds the vacuum
 tool malfunction.
 
 
-Conveyor Malfunction: The Docs and the Code Disagree
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Conveyor Malfunction: The Docs and the Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - The inspection conveyor stops for ``DURATION`` seconds (trial file).
 - The ARIAC challenges page says the cell feed pauses too, so no new cells
@@ -808,7 +804,7 @@ Conveyor and Voltage Tester Malfunctions: Signal and Recovery
      - Replan (L9): send cells to the working tester; replan for both
        testers when the status returns to ``OPERATIONAL``
    * - Local or global
-     - Local: the plan stays and waits, because no other conveyor can do the
+     - Local: keep the plan and wait, because no other conveyor can do the
        job
      - Global: the plan assumed two testers, and tester 2 can do the job
 
@@ -869,8 +865,8 @@ Defective Cells, in Every Trial
 
 .. important::
 
-   **A detector that flags too many cells has a cost you can count:** 50
-   points for each good cell it rejects. L12 uses this to compare detectors.
+   **A detector that flags too many cells loses 50 points** for each good
+   cell it rejects. L12 uses this to compare detectors.
 
 
 .. _l11-local-global:
@@ -878,15 +874,15 @@ Defective Cells, in Every Trial
 Local or Global Recovery
 ------------------------
 
-The order of recovery comes from L3: the second idea the course took from
-4D/RCS, the NIST reference model architecture described in NISTIR 6910. This
+The order of recovery comes from 4D/RCS (L3), the NIST reference model
+architecture described in NISTIR 6910. This
 section then gives L9's rule (retry, wait or replan), where the LLM fits, and
 three worked examples from ARIAC. Local and global recovery are defined in
 :ref:`l11-taxonomy`.
 
 
-Errors Are Handled Where They Are Seen; Status Moves Up
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Recovery Layers
+~~~~~~~~~~~~~~~~~~~
 
 .. figure:: /_static/images/l11/escalation_ladder.svg
    :alt: Three stacked boxes with arrows between them. Bottom, tag 1, gray: Skill, success, or a failure result. Middle, tag 2, blue: Behavior tree, retry, wait, timeout, other branch. Top, tag 3, red: Planner or LLM agent, new plan or new goal. Arrows on the left point up, labeled status and failure result move up. Arrows on the right point down, labeled commands move down. On the far right, a blue bracket labeled local spans the skill and the tree, and a red bracket labeled global spans the planner or agent.
@@ -942,7 +938,7 @@ model calls and 122,861 input tokens.
 - Call the LLM only when no handler covers the case. The common cases then
   cost no tokens. Your team defends the choice in its GP4 reflection.
 
-**Both are agentic.** L1's definition: the agent "picks the next step from
+**L1's definition of agentic:** the agent "picks the next step from
 what it observes, not from a fixed script". In both designs, what runs next
 depends on what was observed.
 
@@ -956,8 +952,8 @@ Example A: The Vacuum Grasp Fails on the Third Grasp
 2. The tool is still attached.
 
 **Decision.** Both assumptions hold, and the failure clears once the pads
-lose contact, so it is temporary. So: **local**. The tree's Retry runs the
-grasp sequence again, starting with a move away from the shell. No LLM call.
+lose contact, so it is temporary. Recovery is **local**: the tree's Retry
+runs the grasp sequence again, starting with a move away from the shell. No LLM call.
 
 
 Example B: Tester 1 Goes Down for 70 s During a Kit
@@ -982,10 +978,10 @@ Example B: Tester 1 Goes Down for 70 s During a Kit
    tested cell that could already go to slot 1: :math:`112.6 - 38.2 = 74.4`
    s. The goal text did not say so (L9).
 4. Both finished at about 225 s, because by chance two cells in the replan
-   run read under 3.4 V and went to recycling (80.0 s). One recording each
-   cannot say which policy is faster.
+   run read under 3.4 V and went to recycling (80.0 s). One recording of each
+   policy is too few to tell which is faster.
 
-**Decision.** So: **global**. Replan to use tester 2 only, and replan again
+**Decision.** Recovery is **global**: replan to use tester 2 only, and replan again
 when tester 1 returns.
 
 
@@ -998,8 +994,7 @@ example).
 **Decision.**
 
 - The goal changed, so the response is **global**.
-- This is where the LLM agent is useful. It chooses which AGV takes the NiMH
-  kit, whether to finish the Li-Ion kit first, and when to switch the feed
+- The LLM agent chooses which AGV takes the NiMH kit, whether to finish the Li-Ion kit first, and when to switch the feed
   back.
 - Each of its tool calls still passes ``check_call()`` (tool, schema,
   guard) before any robot moves.
@@ -1018,15 +1013,15 @@ written, and if not, what is missing: in the tree, or in the PDDL domain.
 .. dropdown:: What GP3 handles and what it does not
    :class-container: sd-border-success
 
-   1. **Example A:** the tree handles it, not the planner, and only if the
-      tree has a retry around the grasp.
+   1. **Example A:** the tree handles it alone, if it has a retry around the
+      grasp.
    2. **Example B:** needs a predicate for tester status that the GP3 domain
       was not asked to model.
    3. **Example C:** needs actions and goals for a new order that the GP3
       domain was not asked to model.
 
-   This is why GP4 adds an agent: B and C are the cases a fixed domain did
-   not plan for.
+   GP4 adds an agent for cases like B and C, which the GP3 domain does not
+   model.
 
 
 Next Class
@@ -1039,7 +1034,7 @@ Next Class
 - Log each one with its time, and for a refused LLM call, the check that
   refused it and the error message.
 - The GP4 reflection and the final demo presentation both ask how failures
-  were caught. The log is your evidence.
+  were caught: answer from the log.
 
 **Before L12:**
 
@@ -1054,5 +1049,5 @@ Next Class
 
 **L12: Evaluation and Measurement Science for Agentic Systems.** How to
 measure an agentic system with the ARIAC scoring formula, recovery included:
-recovery rate, challenge handling, and how the ARIAC score rewards or
-penalizes each choice.
+recovery rate, challenge handling, and the points each choice gains or loses
+in the ARIAC score.
