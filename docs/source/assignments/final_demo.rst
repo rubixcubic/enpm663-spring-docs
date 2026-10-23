@@ -18,7 +18,7 @@ Final Demo: Full ARIAC Trial, Unseen
       * - **Team Size**
         - 3 students
       * - **Submission**
-        - Canvas + GitHub repository link + code-freeze tag
+        - Canvas + GitHub repository link + code-freeze tag ``final-demo``
       * - **Code freeze**
         - Friday, April 30, 2027, at 11:59 pm
 
@@ -30,7 +30,7 @@ Final Demo: Full ARIAC Trial, Unseen
    code (the course skills package, with its assembly robot and gantry
    welder skills) is released with the project, on the day the final demo
    specification is posted in Week 12. The code freeze is Friday, April 30, 2027, at 11:59 pm.
-   The tag name is set in that specification. The grading rubric is at the
+   The code-freeze tag is named ``final-demo``. The grading rubric is at the
    end of this page.
 
 
@@ -130,7 +130,7 @@ The run rules
 
 .. important::
 
-   1. By the code-freeze deadline, your team pushes its code-freeze tag and
+   1. By the code-freeze deadline, your team pushes its code-freeze tag ``final-demo`` and
       submits the team configuration file.
    2. Before class, the instructor builds your Docker image from that tag,
       on the same machine as every other team, and runs it on the unseen
@@ -138,7 +138,7 @@ The run rules
       cheat (the App's cheats start a run at a later stage).
    3. The instructor builds every image on Saturday, May 1. If your image
       does not build, the instructor emails your team, and you have 24 hours
-      to push a fix tag that changes only build files (the Dockerfile and
+      to push a fix tag, ``final-demo-fix``, that changes only build files (the Dockerfile and
       dependency lists), not code. Your team then loses the 10 points of
       "Builds and runs from the Dockerfile"; the rest is graded normally. If
       the fixed image still does not build, the run criteria (75 points)
@@ -210,7 +210,7 @@ Provided Resources
      - Now including the assembly robot and gantry welder skills.
    * - Final demo specification
      - Posted in Week 12: the run rules, the trial parameters that may vary
-       and their ranges (not their values), the code-freeze tag name, and
+       and their ranges (not their values), and
        the grading procedure.
    * - An embodied-reasoning model
      - Gemini Robotics ER is the course example; another VLM is allowed if
@@ -301,7 +301,7 @@ Tasks
      in the image. For the evaluation run, the instructor passes one course
      key as an environment variable; your README names the variable your
      model's SDK reads (``GEMINI_API_KEY`` for Gemini).
-   - Before the code freeze, build the image from your tag and test it on a
+   - Before the code freeze, build the image from your ``final-demo`` tag and test it on a
      practice trial in the ARIAC App, with a new database and no cheat.
 
 .. dropdown:: Task 6: Prepare the presentation
@@ -330,7 +330,7 @@ Deliverables
 
 1. The integrated codebase, running from a Dockerfile, in your team's
    repository. Submit the link on Canvas before the demo.
-2. The code-freeze tag and the team configuration file, by the code-freeze
+2. The code-freeze tag ``final-demo`` and the team configuration file, by the code-freeze
    deadline. The instructor runs the image on the unseen trial before class.
 3. A presentation (5 to 6 minutes): architecture, design decisions, failure
    modes met and how they were handled.
@@ -344,7 +344,7 @@ Submission Checklist
 .. admonition:: Before the code freeze, check every item
    :class: tip
 
-   - [ ] The image builds from the tag with the README commands, on a
+   - [ ] The image builds from the ``final-demo`` tag with the README commands, on a
          machine other than the developer's.
    - [ ] The image ran a practice trial in the ARIAC App, with a new
          database and no cheat.

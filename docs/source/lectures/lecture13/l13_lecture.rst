@@ -16,7 +16,7 @@ Lecture
 
    - **There is no quiz this week.** The five quizzes ended in Week 12.
    - **The final demo code freeze is Friday, April 30, at 11:59 pm**, two
-     days after this class: push your code-freeze tag and submit your team
+     days after this class: push your code-freeze tag ``final-demo`` and submit your team
      configuration file (see :ref:`l13-final-demo`).
    - **The final demo is next week**, Week 15 (Wednesday, May 5). The last
      part of class is for your questions about it.
@@ -1266,7 +1266,7 @@ May 5). The full rules are in the final demo specification posted in Week 12.
 The Procedure
 ~~~~~~~~~~~~~
 
-1. **Code freeze:** your team pushes the git tag named in the specification
+1. **Code freeze:** your team pushes the git tag ``final-demo``
    before the deadline. The demo runs that commit.
 2. **The unseen trial:** no team ever receives it. Before class, the
    instructor runs every team's Docker image on it, one after another on one
@@ -1291,14 +1291,15 @@ From the :doc:`final demo page </assignments/final_demo>`:
    * - **When**
      - **What**
    * - Fri, Apr 30, 11:59 pm
-     - Code freeze: push your code-freeze tag and submit your team
+     - Code freeze: push your code-freeze tag ``final-demo`` and submit your team
        configuration file.
    * - Sat, May 1
      - The instructor builds every team's image. If yours does not build,
        the instructor emails your team, and you have 24 hours to push a fix
-       tag that changes only build files (the Dockerfile and dependency
-       lists). That fix costs the 10 points of "Builds and runs from the
-       Dockerfile". If the fixed image still does not build, the run
+       tag, ``final-demo-fix``, that changes only build files (the Dockerfile
+       and dependency lists). That fix costs the 10 points of "Builds and
+       runs from the Dockerfile". If the fixed image still does not build,
+       the run
        criteria (75 points) score 0.
    * - Tue, May 4, 11:59 pm
      - RO01 teams: upload your talk as a 5 to 6 minute video to ELMS-Canvas.

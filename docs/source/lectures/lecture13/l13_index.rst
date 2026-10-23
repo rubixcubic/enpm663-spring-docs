@@ -56,7 +56,7 @@ questions about the Week 15 final demo.
 
    **Group project.** The final demo is in Week 15 (Wednesday, May 5). By the
    code freeze, Friday, April 30, at 11:59 pm, your team pushes its
-   code-freeze tag and submits its team configuration file. The instructor builds
+   code-freeze tag ``final-demo`` and submits its team configuration file. The instructor builds
    every team's Docker image from its tag and runs it on the same unseen
    trial, on one machine, and records each run. Class time is for
    presentations with the recorded runs, 5 to 6 minutes per team. The full

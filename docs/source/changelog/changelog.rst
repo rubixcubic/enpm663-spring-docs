@@ -6,10 +6,19 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.21: Wording Revised; Quizzes Are 20 Minutes (2026-10-23)
+.. dropdown:: v0.4.22: The Code-Freeze Tag Is final-demo (2026-10-23)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **Final demo:** the code-freeze tag is named ``final-demo``, and a team
+     whose image does not build on May 1 pushes ``final-demo-fix``. The final
+     demo page, the L13 pages and the syllabus say so.
+
+
+.. dropdown:: v0.4.21: Wording Revised; Quizzes Are 20 Minutes (2026-10-23)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **Every lecture page** follows its revised slides: shorter sentences, each
      caveat stated once, and some slide titles renamed (for example L6's

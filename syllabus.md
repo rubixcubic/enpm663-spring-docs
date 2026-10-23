@@ -127,7 +127,7 @@ Students and the instructor see each score. The quiz is ungraded.
   replaces its grade.
 - The final demo is graded on an ARIAC trial your team has not seen. The code
   freeze is Friday, April 30, 2027, at 11:59 pm. Before the Week 15 class, the instructor runs
-  every team's Docker image, built from its code-freeze tag, on that trial on one machine, so every team gets the same
+  every team's Docker image, built from its code-freeze tag `final-demo`, on that trial on one machine, so every team gets the same
   hardware. In class, each team presents its approach, design decisions and
   results, with its recorded run.
 - All projects use a peer-review system. Each team member rates the contributions
