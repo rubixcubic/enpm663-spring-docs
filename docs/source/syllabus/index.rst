@@ -494,6 +494,10 @@ GP1. Your team decides what the robots do; the skills package carries it
 out. L10 shows how the skills are built. Your team moves the AGVs with
 ARIAC's own AGV move action.
 
+Write your behavior trees, the code that runs the planner and your LLM agent
+in Python. You may write your team's other nodes in C++, for example a
+perception node, if your Dockerfile builds them.
+
 In ARIAC 2025, a cell on the inspection conveyor reaches the inspection
 robot only if your team has submitted a passing inspection report for it.
 A failing or missing report keeps the inspection door closed, and the cell

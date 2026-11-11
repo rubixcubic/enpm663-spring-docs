@@ -6,10 +6,31 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.23: New L6 Planner Timings (2026-10-23)
+.. dropdown:: v0.4.24: Lecture Pages Follow the Revised Slides; C++ Rule (2026-11-11)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **Lecture pages** follow the slides' new rules: four renamed headings
+     (L2 "Only the Three Layers Finish the Kit" and "In class: Assign Each
+     Task 1 Step to a Layer", L4 "Reasons to Use Behavior Trees", L13 "In
+     class: What to Replace with a VLA"), "In class:" for every discussion
+     heading, and terms defined where they first appear (NIST, URDF, the
+     letters of 4D/RCS, py_trees_ros, VG2 and VG4, SEED, the flow matching
+     action expert and others).
+   - **L12:** you check your own run's score table against a hand calculation
+     in GP4 and the final demo, and you read the top shell's true pose from
+     Gazebo's ``/world/ariac/dynamic_pose/info`` topic.
+   - **Projects:** write your behavior trees, the code that runs the planner
+     and your LLM agent in Python; other nodes may be C++ if your Dockerfile
+     builds them. GP2 gives the size of each ARIAC bonus. The final demo asks
+     for at least 5 trial seeds.
+   - **Syllabus:** the C++ rule; the PDF is rebuilt.
+
+
+.. dropdown:: v0.4.23: New L6 Planner Timings (2026-10-23)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **L6:** ``fd_summary.txt`` comes from a new run of the Fast Downward
      example. The plans and the expanded-state counts are unchanged; the

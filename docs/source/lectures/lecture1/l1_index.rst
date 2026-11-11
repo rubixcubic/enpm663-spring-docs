@@ -20,7 +20,8 @@ AI agent decides what the robots do next, and robot skills carry out each
 decision in the physical world: here, the ARIAC factory, simulated in Gazebo.
 
 The second block introduces the testbed you use all semester: **ARIAC 2025**,
-NIST's simulated EV battery factory. You see its two tasks (inspection and kit
+the simulated EV battery factory of NIST (the National Institute of Standards
+and Technology). You see its two tasks (inspection and kit
 building, then module construction), its robots, the sensors your team buys
 from a budget, the four challenges and how ARIAC scores a run. A worked
 example computes the **kit voltage window**: the range a kit's total voltage

@@ -622,8 +622,8 @@ Responses to a Failure
    need the executor around the tree: it waits, asks for a new plan, or
    stops.
 
-Class Discussion: The Four ARIAC 2025 Challenges
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: The Four ARIAC 2025 Challenges
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table::
    :header-rows: 1

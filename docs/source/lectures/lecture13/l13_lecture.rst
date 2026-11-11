@@ -301,8 +301,8 @@ Two Models, or Two Parts of One Model
 **Two parts of one model.**
 
 - SmolVLA: a pretrained VLM encodes the images, state and instruction; an
-  **action expert** (a flow matching transformer) turns those features into
-  actions.
+  **action expert**, a transformer trained with flow matching, predicts a chunk
+  of the next actions from those features.
 - GR00T: a vision-language model with a diffusion transformer head.
 
 
@@ -613,8 +613,8 @@ On new tasks, a learned policy has the advantage: your stack can only do what
 its skills cover.
 
 
-Class Discussion: Which Part Would You Replace with a VLA?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: What to Replace with a VLA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Prompt
    :class: hint
@@ -748,8 +748,8 @@ Lab and Industry Examples Compared
   robot.
 
 
-Class Discussion: A High-Priority Order
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: A High-Priority Order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. admonition:: Question 1
    :class: hint

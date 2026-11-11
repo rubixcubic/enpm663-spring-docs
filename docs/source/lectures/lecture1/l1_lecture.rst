@@ -143,7 +143,8 @@ How the Course Runs
 
 Each project extends the previous one: after GP1, your team builds on its own
 earlier submission. GP1 comes with a starter tree. Weeks 2 and 3 go to setup,
-and the tree work follows L4.
+and the tree work follows L4. GP3's row names PDDL (Planning Domain
+Definition Language), the planning language L6 covers.
 
 **How the final demo is graded.** Your team tags its code before the code
 freeze, and the instructor runs every team's Docker image on the same unseen
@@ -304,7 +305,7 @@ The factory uses two **cell** types, defined in ``CellTypes.msg``:
 The **nominal voltage** is the voltage a cell of that type is meant to have.
 The factory makes two products:
 
-- a **kit**: four cells on an AGV tray (Task 1);
+- a **kit**: four cells on an AGV (Automated Guided Vehicle) tray (Task 1);
 - a **module**: four cells inside a bottom and a top shell, joined by six
   welds, four on top and two on the bottom (Task 2).
 

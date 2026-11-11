@@ -862,7 +862,8 @@ Replan or Wait: The Two Recordings Side by Side
    Both recordings finished at about 225 s; with one run each, the class
    cannot tell which policy is faster. Here the fourth cell read 3.39 V, so the guard
    refused it. The same cell read 3.41 V in the dry run and in the wait run
-   (``SEED`` 1 draws the same cells), and one record moves by about 0.016 V.
+   (``SEED`` is the trial file's field that starts its random draw, so
+   ``SEED`` 1 draws the same cells), and one record moves by about 0.016 V.
    So the 80 s lost to recycling come from the noise in one reading.
 
 - The dry run was scripted, with no challenge.

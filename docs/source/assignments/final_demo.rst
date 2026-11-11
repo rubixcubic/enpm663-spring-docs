@@ -275,7 +275,7 @@ Tasks
 
    **Requirements:**
 
-   - Test on varied trial seeds and challenge mixes, within the ranges the
+   - Test on at least 5 trial seeds and varied challenge mixes, within the ranges the
      specification gives.
    - Compute the ARIAC run score of each test run (L12).
 

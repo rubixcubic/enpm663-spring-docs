@@ -78,7 +78,7 @@ By the end of this lecture, you will be able to:
 - Explain what robot foundation models and world models are used for:
   generalizing across tasks, generating training data, and testing policies
   in simulation.
-- Compare a learned policy and a skills library for an ARIAC 2025 task on
+- Compare a learned policy and a skills package for an ARIAC 2025 task on
   data needs, compute, auditability and failure modes.
 - Describe how to call a hosted embodied-reasoning model on a camera image of
   a cell and how to score its defect calls against your GP2 lidar detector on

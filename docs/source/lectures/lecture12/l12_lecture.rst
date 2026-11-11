@@ -379,8 +379,9 @@ truth. In simulation, the truth comes from here:
   Gazebo log (``cheat_tools_plugin.cpp``).
 - ``ariac_setup/config/defects.yaml`` holds only the shape of each defect
   type, not which cells are defective.
-- **Top shell:** ``log_cell_info`` covers cells only. Read the true shell
-  pose from the simulator during testing.
+- **Top shell:** ``log_cell_info`` covers cells only. During testing,
+  subscribe to Gazebo's ``/world/ariac/dynamic_pose/info`` topic
+  (``gz.msgs.Pose_V``) and pick the shell's pose by its model name.
 
 .. warning::
 
@@ -980,6 +981,12 @@ formulas, with the same clamping as ``scoring.py``:
    :pyobject: bonuses
    :caption: score_calculator.py (excerpt)
 
+The code divides by the three fixed values of the bonus table: ``GAMMA_D``
+is the 4 s that :math:`\gamma` is divided by (``NOMINAL_INSPECTION_TIME``),
+``TAU_D`` the 150 s for :math:`\tau`
+(``NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION``), and ``BUDGET`` the 9600 for
+:math:`\sigma` (``SENSOR_BUDGET``), all three from the weights file.
+
 Output:
 
 .. literalinclude:: outputs/score_runs.txt
@@ -1040,8 +1047,8 @@ and whether all orders were completed (``get_run_score_table`` in
 ``scoring.py``). Bonus and penalty tables list each term, and the ARIAC app's
 results page shows the same terms.
 
-**Instructor demonstration.** In class, the table of a recorded run is
-compared term by term with a hand calculation from that run's measurements.
+**Your check.** In GP4 and the final demo, compare your own run's table,
+term by term, with a hand calculation from that run's measurements.
 
 
 .. _l12-test-plan:

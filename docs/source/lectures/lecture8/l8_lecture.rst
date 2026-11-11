@@ -490,8 +490,8 @@ What 4 s means at top speed:
    a cell after the door. The agent decides at a slower level: which cells go
    in which kit, when to switch the feed, how to respond to a challenge.
 
-Class Discussion: Agent or Classical Code
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: Agent or Classical Code
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Discussion question:** which ARIAC decisions should the agent make, and
 which must stay classical because of time or safety?
@@ -653,6 +653,7 @@ Demonstration: Steps 1 to 3 in One Function
    :pyobject: check
    :caption: lecture8/code/validator.py (excerpt)
 
+``Draft202012Validator`` is the ``jsonschema`` class for the 2020-12 draft.
 ``PATHS`` holds the seven AGV paths ARIAC accepts (``agv_motion_plugin.cpp``).
 The factory is the stub of ``stub_agv.py``, chosen for this example.
 

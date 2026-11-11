@@ -167,7 +167,8 @@ points in one scan.
    grade A.
 
 The GP1 break beam counts toward the same $9600 budget. Spending less than
-the budget earns a sensor cost bonus.
+the budget earns a sensor cost bonus, worth up to 1000 points (L12 gives
+ARIAC's formula).
 
 
 Tasks
@@ -242,7 +243,8 @@ Tasks
    - **z:** the defect's height above the cell base.
 
    Classifying defects is optional in ARIAC, but reports whose type, theta
-   and z are all correct earn the inspection classification bonus.
+   and z are all correct earn the inspection classification bonus, worth up to
+   500 points (L12).
 
 .. dropdown:: Task 5: Submit the report in time
    :icon: gear
@@ -255,7 +257,7 @@ Tasks
    - Submit the report through the ARIAC service before the cell reaches
      the inspection door.
    - ARIAC rewards a short average inspection time (target 4 s) with the
-     inspection speed bonus.
+     inspection speed bonus, worth up to 500 points (L12).
 
 .. dropdown:: Task 6: Measure precision and recall
    :icon: gear

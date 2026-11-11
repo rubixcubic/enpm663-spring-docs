@@ -1000,8 +1000,8 @@ example).
   guard) before any robot moves.
 
 
-Class Discussion: Which Examples GP3 Handles with No Change
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: Which Examples GP3 Handles with No Change
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This continues L9's discussion (would your GP3 domain handle each challenge
 with no change?), now with the three worked examples. Your GP3 system is a

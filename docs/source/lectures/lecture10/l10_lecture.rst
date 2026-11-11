@@ -150,7 +150,10 @@ The Robots and Their Jobs
 
 Source: the ARIAC scenario page and the robot description files
 (``ariac_description/urdf``). GP1 to GP4 use the two inspection robots. The
-final demo adds the assembly robots and the welder.
+final demo adds the assembly robots and the welder. VG2 and VG4 are the two
+vacuum tools ``assembly_robot_2`` attaches with its tool changer: the
+``pick_top_shell`` skill uses VG2, and the ``flip_module`` skill uses VG4
+(skills package README).
 
 
 .. _l10-tf2:

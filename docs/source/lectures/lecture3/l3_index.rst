@@ -22,7 +22,8 @@ cells, kits, modules, AGVs and high-priority orders. An **ontology** adds the
 classes, the relations between them and the instances that exist now, so
 software can check that a statement makes sense.
 
-Next come two ideas from NIST's **4D/RCS** reference model, used inside L2's
+Next come two ideas from NIST's **4D/RCS** reference model (RCS: Real-time
+Control System; 4-D: three dimensions plus time), used inside L2's
 three layers: each layer keeps only the detail it decides with, and an error
 is handled where it is seen, with status passed up. Then one kit state is
 written three ways (PDDL facts, a JSON record checked by a JSON schema, and

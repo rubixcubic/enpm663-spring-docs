@@ -350,8 +350,8 @@ Architecture 3: The Planner Chooses the Cells for the Kit
 
 .. _l2-toy-result:
 
-The Result: Only the Three Layers Finish the Kit
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Only the Three Layers Finish the Kit
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Running the script with no options runs all three architectures on seed 1:
 
@@ -666,8 +666,8 @@ Why the Executive Stays Classical
   planner on identical trials: validity, plan length, cost and latency.
 
 
-Discussion: Assign Each Task 1 Step to a Layer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In class: Assign Each Task 1 Step to a Layer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In class we fill in this table together on the board.
 
@@ -921,8 +921,9 @@ The Shared Tester Area, to Scale
   (500 mm) and UR5e data sheet (850 mm), read on 2026-10-18. ARIAC builds
   both arms from those models' kinematics in the ``ur_description`` package.
 - **Shaded:** the area both arms reach. It holds both testers.
-- Positions come from ``ariac.world`` and the robot URDFs. The tester and bin
-  outlines are schematic.
+- Positions come from ``ariac.world`` and the robots' URDF files (Unified Robot
+  Description Format: the ROS file format for a robot's geometry). The tester
+  and bin outlines are schematic.
 
 
 Central or Per-Robot Decision Makers
@@ -965,7 +966,9 @@ on the :doc:`GP1 page </assignments/gp1>`.
 What GP1 Asks For
 ~~~~~~~~~~~~~~~~~
 
-A ``py_trees_ros`` behavior tree that builds one kit:
+GP1's tree is built with ``py_trees_ros``: the Python behavior tree library,
+``py_trees``, and its ROS 2 integration. A ``py_trees_ros`` behavior tree
+that builds one kit:
 
 1. Feed cells onto the inspection conveyor.
 2. Submit an inspection report for every cell.

@@ -94,8 +94,9 @@ One GP1 Step, Two Ways
 
 - **Tag 1: the FSM.** Dashed red arrows are failure transitions: a skill or
   the tester fails, so the step stops.
-- **Tag 2: the BT**, indented the way ``py_trees`` prints a tree. Orange boxes
-  are sequences, the cyan octagon is a selector, gray ellipses are leaves.
+- **Tag 2: the BT**, indented the way ``py_trees`` (the course's Python
+  behavior tree library) prints a tree. Orange boxes are sequences, the cyan
+  octagon is a selector, gray ellipses are leaves.
 
 Counting Transitions and Nodes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,8 +122,8 @@ The 8 nodes of the BT are the ones in tag 2 of the figure: ``move_cell``,
 ``place_if_good``, ``voltage_in_range``, ``place_in_slot`` and
 ``recycle_cell``.
 
-Why Use Behavior Trees
-~~~~~~~~~~~~~~~~~~~~~~
+Reasons to Use Behavior Trees
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - A BT subtree that does one job (move a cell from tester to tray) can be
   reused, wrapped in a retry, or put under a fallback, without touching the

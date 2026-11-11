@@ -98,6 +98,11 @@ move action.
 - In GP4, your LLM agent calls the same skills as tools.
 - L10 opens the package and shows how each skill becomes a trajectory.
 
+Write your behavior trees, the code that runs the planner and your LLM agent
+in Python. You may write your team's other nodes in C++, for example a
+perception node, if your Dockerfile builds them. The skills are ROS 2
+actions, so a C++ node can call them through an ``rclcpp`` action client.
+
 
 Learning Objectives
 -------------------

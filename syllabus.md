@@ -180,6 +180,10 @@ decide what the robots do; the skills package carries it out. ARIAC 2025 itself
 provides joint trajectory and gripper actions, but no pick or place skills. Teams
 move the AGVs with ARIAC's own AGV move action.
 
+Write your behavior trees, the code that runs the planner and your LLM agent in
+Python. You may write your team's other nodes in C++, for example a perception
+node, if your Dockerfile builds them.
+
 In ARIAC 2025, a cell on the inspection conveyor reaches the inspection robot only
 if your team has submitted a passing inspection report for it. A failing or
 missing report keeps the inspection door closed, and the cell drops into the
