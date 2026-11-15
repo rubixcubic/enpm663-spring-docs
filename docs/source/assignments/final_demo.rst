@@ -26,10 +26,10 @@ Final Demo: Full ARIAC Trial, Unseen
 .. admonition:: Specification draft
    :class: note
 
-   This page is the specification draft for the final demo. The provided
-   code (the course skills package, with its assembly robot and gantry
-   welder skills) is released with the project, on the day the final demo
-   specification is posted in Week 12. The code freeze is Friday, April 30, 2027, at 11:59 pm.
+   This page is the specification draft for the final demo. The final
+   demo uses the course skills package you have had since GP1 (version
+   1.0.0, or the latest fix tag): it already has the assembly robot and
+   gantry welder skills. The final demo specification is posted in Week 12. The code freeze is Friday, April 30, 2027, at 11:59 pm.
    The code-freeze tag is named ``final-demo``. The grading rubric is at the
    end of this page.
 
@@ -207,7 +207,8 @@ Provided Resources
    * - Your team's GP1 to GP4 packages
      - The system you integrate.
    * - Course skills package
-     - Now including the assembly robot and gantry welder skills.
+     - The same package as in GP1 to GP4. The final demo is the first
+       project that uses its assembly robot and gantry welder skills.
    * - Final demo specification
      - Posted in Week 12: the run rules, the trial parameters that may vary
        and their ranges (not their values), and

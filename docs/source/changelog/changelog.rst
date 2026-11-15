@@ -6,10 +6,25 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.24: Lecture Pages Follow the Revised Slides; C++ Rule (2026-11-11)
+.. dropdown:: v0.4.25: Skills Page for All Five Robots (2026-11-15)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **Course Skills Package:** the page now describes version 0.3.1 and all
+     18 actions: the Task 1 skills for the inspection robots and the Task 2
+     skills for the two assembly robots and the gantry welder, with the new
+     result codes ``WELD_FAILED`` and ``TOOL_CHANGE_FAILED`` and what your
+     team must know about each group. Version 1.0.0, with GP1, holds both
+     groups.
+   - **Final demo:** the course skills package is the one you have had since
+     GP1; the final demo is the first project that uses its assembly robot
+     and gantry welder skills.
+
+
+.. dropdown:: v0.4.24: Lecture Pages Follow the Revised Slides; C++ Rule (2026-11-11)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **Lecture pages** follow the slides' new rules: four renamed headings
      (L2 "Only the Three Layers Finish the Kit" and "In class: Assign Each
