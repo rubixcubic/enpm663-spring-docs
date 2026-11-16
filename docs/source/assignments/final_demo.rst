@@ -234,7 +234,26 @@ Tasks
      and place the top shell, make the four top welds, flip the module,
      make the two bottom welds and submit the module.
    - Place the sensor that Task 2 needs to find the top shell, and keep the
-     total sensor cost within the $9600 budget.
+     total sensor cost within the $9600 budget. ARIAC accepts a camera only
+     with ``UPDATE_RATE: 30``.
+   - ``/insert_bottom_shell`` puts the bottom shell on conveyor section 1
+     at (4.6, 5.0). Sections 1 and 2 carry it to section 3; with section 3
+     stopped, it stops at the skills package's wait point, world
+     (4.2, 5.55), in the instructor's runs. On section 3 the module stays
+     at x = 4.2 and moves only in y, so the module skills and the welds need
+     your sensor to measure its y each time the section stops. A module
+     run to the end of section 3 stops in ARIAC's submission area
+     (y 6.75 to 6.88), where ``/submit_module_order`` looks for it.
+   - ``/insert_top_shell`` puts the top shell on the assembly table at a
+     random spot within about 0.05 m in x and 0.1 m in y of (3.85, 5.2),
+     at any yaw. Find its position to within about 1 mm. In the
+     instructor's runs, a top shell whose estimated position was 1.9 mm off
+     was still picked, placed and welded, but it sat 1.5 mm off the bottom
+     shell, and the flip's vacuum grip then failed ("Suction cups must be
+     in contact with the shell"). A camera above the table also sees the
+     shell's side wall that faces it, so the center of the shell's shape in
+     the image sits up to about 2 mm closer to the camera than the shell's
+     center, near the edge of the spawn area.
 
 .. dropdown:: Task 2: Recover from every challenge
    :icon: gear

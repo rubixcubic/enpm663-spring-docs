@@ -26,8 +26,8 @@ GP1: Behavior Tree for One Kit
 
    This page is the specification draft for GP1. The provided code (the
    course skills package and the GP1 starter package) is released with the
-   project, on the day GP1 is posted. Details that depend on that code are
-   marked on this page and are filled in when it is released.
+   project, on the day GP1 is posted. The names, values and timings on this
+   page come from that code, run on the GP1 trial.
 
 
 .. admonition:: AI tools
@@ -126,14 +126,22 @@ Provided Resources
        bin. Its documentation page lists each action's goal, result and
        failure codes. Released with GP1.
    * - GP1 starter package
-     - A ROS 2 package with a launch file for the trial, and a starter
-       ``py_trees_ros`` tree: one sequence for one cell. You extend it
-       after L4. Released with GP1.
-   * - ARIAC 2025 example team configuration
-     - A working team configuration file to start from.
+     - A ROS 2 package (``enpm663_gp1_starter``) with a launch file for the
+       trial (``trial.launch.py``), leaf classes for a service call, a skill
+       goal, an AGV move, the break beam and the voltage tester, and a
+       starter ``py_trees_ros`` tree: one sequence that moves one cell to
+       agv1 slot 1, feeding only that cell. You extend it after L4.
+       Released with GP1.
+   * - Team configuration
+     - ``config/team_config.yaml`` in the starter package: the conveyor
+       speed, the cell feed rate and the break beam the conveyor pickup
+       skill needs.
    * - GP1 trial configuration
-     - A trial with no defective cells (``DEFECT_RATE`` 0.0), one kit and
-       no challenges. You develop on it, and the grader runs it.
+     - ``config/gp1_trial.yaml`` in the starter package: a trial with no
+       defective cells (``DEFECT_RATE`` 0.0), one kit and no challenges. You
+       develop on it, and the grader runs it. If you write your own trials
+       (for example with other seeds), ARIAC requires the ``ID`` to be
+       exactly 8 capital letters or digits, such as ``GP1SEED2``.
    * - ARIAC 2025 documentation
      - The Scenario (Task 1), ROS API, Configuration Files and Scoring
        pages: https://pages.nist.gov/ARIAC_docs/en/latest/
@@ -161,20 +169,26 @@ Tasks
 
    **Requirements:**
 
-   - Write the team configuration file: the conveyor speed and the cell
-     feed rate inside the limits on the ARIAC Configuration Files page,
-     and a break beam on the inspection conveyor.
+   - Use the starter package's team configuration file, or your own with
+     the conveyor speed and the cell feed rate inside the limits on the
+     ARIAC Configuration Files page, and a break beam on the inspection
+     conveyor.
    - The conveyor pickup skill uses the time this break beam fires to catch
      the moving cell, so the beam is not optional.
-   - Start the competition, and set the cell feed to Li-Ion with the cell
-     feed control service.
+   - Start the competition (``/start_competition``), and set the cell feed
+     to Li-Ion with the cell feed control service
+     (``/inspection_conveyor/cell_feed/control``).
 
    .. note::
 
-      **Added when the skills package is released:** where to place the
-      break beam, and which grade the pickup skill needs. The ARIAC Sensors
-      page gives the two grades: grade A (30 Hz, $400) and grade B (10 Hz,
-      $200).
+      **The break beam.** The starter package's team configuration places
+      it at ``XYZ: [0.6, 0.95, 0.44]``, ``RPY: [0.0, 0.0, pi/2]``, with
+      ``UPDATE_RATE: 10``. Keep that position: the pickup skill refuses a
+      beam message older than ``max_trigger_age`` in its ``skills.yaml``,
+      and that limit assumes a beam at x = 0.6 m. A break beam's
+      ``UPDATE_RATE`` must be 10 (grade B, $200) or 30 (grade A, $400);
+      ARIAC rejects any other value. Grade B is enough: every catch in the
+      instructor's GP1 runs used it.
 
    **Done when:** the competition reaches the STARTED state, and cells move
    on the inspection conveyor.
@@ -183,18 +197,29 @@ Tasks
    :icon: gear
    :class-container: sd-border-primary
 
-   **Goal:** every cell reaches the robots.
+   **Goal:** every cell fed reaches the robots, and the robots take every
+   cell that passes the door.
 
    **Requirements:**
 
    - Submit a passing inspection report for every cell before it reaches
-     the inspection door.
+     the inspection door (``/inspection_conveyor/inspection/submit``).
    - ARIAC applies each report to the cell nearest the door that has no
      report yet. So submit one report per cell, in order, and do not skip a
      cell.
+   - ARIAC refuses a report while no cell is on the conveyor ("There are no
+     cells currently on the conveyor"). Submit the report after the cell
+     reaches the break beam: the door opens at x = 1.0 m, 0.4 m past the
+     beam, which is 4 s at 0.1 m/s.
+   - Feed only the cells your robots can take. A cell with no report drops
+     into the inspection bin, and a cell that passes the door but is never
+     caught falls into the conveyor bin. ARIAC deducts points for both. The
+     cell feed control service also stops the feed: send cell type
+     ``NONE``.
 
    **Done when:** the number of reports in your run log equals the number
-   of cells fed, and no good cell lands in the inspection bin.
+   of cells fed, and ARIAC's penalty table shows no cell in the inspection
+   bin and no cell in the conveyor bin.
 
 .. dropdown:: Task 3: Read each cell's voltage
    :icon: gear
@@ -206,9 +231,14 @@ Tasks
 
    - Have inspection robot 1 pick each cell off the moving conveyor and
      place it in a free voltage tester.
-   - Average the tester's readings over a short window. The tester adds
-     noise to each reading, so one reading is not enough.
+   - Average several of the tester's readings. The tester adds noise to
+     each reading, so one reading is not enough. The tester
+     publishes on ``/voltage_tester_N/voltage`` about 10 times per second,
+     and reads about 0 V while it holds no cell.
    - Store the averaged voltage on the blackboard.
+   - State in the README how many readings you average, and how far the
+     average can still be from the cell's true voltage. Measure the noise
+     from your own logs.
 
    **Done when:** the log shows, for each cell, the readings used and their
    average.
@@ -225,6 +255,9 @@ Tasks
    - Before placing a cell inside that range, check that the four-cell
      total can still land in 14.25 V to 14.55 V (see
      `The voltage limits`_). If it cannot, recycle the cell.
+   - ARIAC checks the cells' true voltages, and your tree only knows the
+     averages. Leave a margin for the error of your averages, in both
+     limits, and explain in the write-up how you chose it.
    - Keep the running kit total and the slots used on the blackboard.
 
    **Done when:** the log shows a decision (place or recycle) with its
@@ -238,11 +271,17 @@ Tasks
 
    **Requirements:**
 
-   - Call the check kit quality service.
+   - Call the check kit quality service (``/agvN/check_kit_quality``)
+     while the AGV is still at the inspection station: ARIAC checks a kit
+     only there, and answers "AGV must be at inspection to check kit
+     quality" anywhere else.
    - Move the AGV to the shipping station with ARIAC's AGV move action,
-     and submit the kit.
+     and submit the kit (``/submit_kitting_order``).
    - If the kit is not accepted, send the AGV to the recycling station and
-     recycle the tray.
+     recycle the cells (``/agvN/recycle_cells``).
+   - End the competition (``/end_competition``). ARIAC scores the run only
+     after the competition ends, and prints the score tables in its log when
+     you stop ARIAC.
 
    **Done when:** the ARIAC run results show 1 of 1 kit submitted and
    accepted.
@@ -338,6 +377,8 @@ Submission Checklist
    - [ ] A fresh clone builds, and the README's launch command starts the
          tree.
    - [ ] The run log has one inspection report per cell fed.
+   - [ ] ARIAC's penalty table shows no cell in the inspection bin and no
+         cell in the conveyor bin.
    - [ ] Every recycled cell was outside 3.4 V to 3.8 V, or would have
          pushed the kit total outside 14.25 V to 14.55 V.
    - [ ] The log shows the check kit quality call before the AGV moved.
@@ -375,8 +416,8 @@ Grading Rubric (Draft)
    * - Inspection report for every cell
      - 15
      - The grader compares the number of cells fed with the number of
-       reports in the run log, and reads the ARIAC run results: no good
-       cell in the inspection bin.
+       reports in the run log, and reads the ARIAC penalty table: no good
+       cell in the inspection bin and no cell in the conveyor bin.
    * - Voltage reading and cell decisions
      - 15
      - The grader reads the leaf that averages the tester readings, and
@@ -413,6 +454,15 @@ Common Mistakes
    - **Skipping a report.** Without a report, the door stays closed and the
      cell drops into the inspection bin. ARIAC counts a good cell in the
      inspection bin as a penalty.
+   - **Leaving the feed on.** The feeder releases a cell every
+     1 / ``CELL_FEED_RATE`` seconds, faster than the robots handle one.
+     Cells your robots cannot take end in a bin, and ARIAC deducts points.
+   - **Reporting before the cell is on the belt.** ARIAC refuses the
+     report, so the next cell arrives with no report and drops into the
+     inspection bin.
+   - **Trusting an average as exact.** A kit whose averaged total sits at
+     the edge of 14.25 V to 14.55 V can fail ARIAC's check on the true
+     voltages.
    - **Checking the kit total after the fourth cell.** Cells lock to the
      tray once placed. Check before each placement.
    - **Deciding on one voltage reading.** The tester adds noise to each
@@ -443,3 +493,12 @@ Tips for Success
 
    **Agree on the blackboard keys before you split the work.** The keys are
    the interface between teammates' leaves.
+
+.. tip::
+
+   **Budget your test runs.** On the GP1 trial, one cell takes about 30 s
+   of simulation time from the break beam to the tray (the catch about 9 s,
+   the tester place about 10 s, the tester pick about 8 s, the slot place
+   about 3.5 s). Some cells are recycled: in the instructor's runs a kit
+   took 5 to 9 cells and 3 to 6 minutes of simulation time. Start with the
+   starter tree, which moves one cell.

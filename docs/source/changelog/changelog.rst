@@ -6,10 +6,42 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.25: Skills Page for All Five Robots (2026-11-15)
+.. dropdown:: v0.4.26: Project Pages Checked Against Working Solutions (2026-11-16)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **GP1:** the starter package's files and leaves are named; where the
+     break beam goes and why grade B is enough; ARIAC refuses a report while
+     no cell is on the belt; feed only the cells your robots can take, or
+     ARIAC deducts points; leave a margin for the error of your averaged
+     voltages; check the kit while the AGV is at the inspection station;
+     end the competition so ARIAC scores the run; the rubric and checklist
+     count cells in both bins; how long one cell and one kit take.
+   - **GP2:** the lidar's range and the 4.5 s a cell spends under the
+     lidars; fixed objects in the scans; Gazebo's lidar gives stray points
+     up to about 1 mm off, so measure good cells first; ARIAC's tolerances
+     for a correct classification; the deadline the conveyor pickup skill
+     sets, derived step by step; how to compare with ARIAC's ground truth;
+     a missed defect makes ARIAC reject the kit, so recycle and rebuild;
+     the lidar grade rows match what ARIAC bills.
+   - **GP3:** model the recovery of a rejected kit and which robot has which
+     skill; the selection step chooses among the cells waiting on the
+     testers; planner versions and planning time; read the skill result
+     after a failure; a forced failure counts as the replanning
+     demonstration.
+   - **GP4:** stop feeding during a conveyor malfunction (ARIAC kept
+     feeding); the conveyor pickup skill cannot catch a cell that stopped
+     on the belt; what a malfunctioning tester publishes; build the
+     high-priority kit on another AGV and submit it with its id.
+   - **Final demo:** where the bottom shell starts and stops, where the
+     module is submitted, where the top shell spawns, and why its position
+     must be found to about 1 mm; cameras run only at 30 Hz.
+
+
+.. dropdown:: v0.4.25: Skills Page for All Five Robots (2026-11-15)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **Course Skills Package:** the page now describes version 0.3.1 and all
      18 actions: the Task 1 skills for the inspection robots and the Task 2

@@ -27,6 +27,7 @@ GP3: PDDL Planner and BT Executor
    This page is the specification draft for GP3. The provided code (the
    course skills package, as in GP1 and GP2) and the GP3 trial
    configurations are released with the project, on the day GP3 is posted.
+   The values and timings on this page come from the instructor's runs.
 
 
 .. admonition:: AI tools
@@ -97,7 +98,8 @@ Provided Resources
      - The tree, the perception node and the per-cell records.
    * - A planner
      - Fast Downward, run directly or through the Unified Planning
-       Framework. Your team chooses.
+       Framework (``unified-planning`` 1.3.0 with ``up-fast-downward``
+       1.0.0, the versions the L6 code uses). Your team chooses.
    * - Course skills package and ARIAC 2025 Task 1 interfaces
      - As in GP1 and GP2.
    * - GP3 trial configurations
@@ -124,7 +126,14 @@ Tasks
      have a voltage in range.
    - **Actions:** for both inspection robots, the AGV moves and the kit
      submission. Each action's preconditions and effects match what the
-     robot or the ARIAC service does.
+     robot or the ARIAC service does, including which robot can do it:
+     only inspection robot 1 has the tester place skill, and only
+     inspection robot 2 has the tester pick skill.
+   - Model the recovery of a rejected kit too: a defect your GP2 detector
+     misses reaches the tray, ARIAC's kit check refuses the kit, and the
+     cells must be recycled at the recycling station
+     (``/agvN/recycle_cells``) before a new kit can start. Without that
+     action, the planner can only make the same failing plan again.
 
 .. dropdown:: Task 2: Generate the problem from the trial state
    :icon: gear
@@ -149,6 +158,11 @@ Tasks
    - From the averaged voltages, choose cells so that the four-cell total
      is within 4 × nominal ± 0.15 V. For Li-Ion (3.6 V nominal) that is
      4 × 3.6 = 14.4 V, so 14.25 V to 14.55 V.
+   - Cells arrive one at a time, and a placed cell locks to the tray, so
+     the step never sees four cells at once. Its candidates are the tested
+     cells that wait on the two voltage testers: it can place one, recycle
+     one, or leave one on its tester for a later choice, as long as a
+     tester stays free for the next cell.
    - Give the choice to the problem as facts.
    - Test the selection step on its own, with voltages you choose.
 
@@ -160,7 +174,10 @@ Tasks
 
    **Requirements:**
 
-   - Run the planner from Python.
+   - Run the planner from Python. A plan for one step of Task 1 takes
+     about 0.1 s (the instructor's runs), so a plan made after a cell's
+     inspection still fits before the conveyor pickup deadline (GP2,
+     Task 5).
    - Check the plan before you run it. For example, apply each action's
      effects to the state in order, and confirm the goal holds at the end.
    - Log each plan and the result of its check.
@@ -188,7 +205,9 @@ Tasks
 
    - Trigger a new plan on: a queued cell fails inspection, a voltage outside
      the cell range, or a skill that still fails after its retries.
-   - On a trigger: stop the plan, update the state, and plan again.
+   - On a trigger: stop the plan, update the state, and plan again. After
+     a failed skill, read what the robot holds from the skill's result: a
+     robot may still hold the cell it failed to place.
    - Log the trigger and the new plan.
 
 .. dropdown:: Task 7: Run two or three trials
@@ -199,7 +218,10 @@ Tasks
 
    **Requirements:**
 
-   - Run two or three trials, one of which triggers a replan.
+   - Run two or three trials, one of which triggers a replan. If no trial
+     triggers one on its own (it depends on your design and on the trial),
+     force a skill failure with a test leaf, as in GP1 Task 6, and say so
+     in the README.
    - Keep each trial configuration, a screen recording or log of each run,
      and the ARIAC run results.
 
@@ -307,8 +329,10 @@ Grading Rubric (Draft)
        retry and timeout around each skill.
    * - Replanning
      - 15
-     - The grader runs a trial with defective cells: the log shows the
-       trigger, the new plan, and the kit submitted and accepted afterwards.
+     - The grader runs a trial with defective cells, and reads the
+       demonstration logs: a log shows a trigger (any of those in Task 6,
+       or a forced failure), the new plan, and the kit submitted and
+       accepted afterwards.
    * - Demonstration on two or three trials
      - 10
      - The grader reads the submitted trial configurations, logs and ARIAC

@@ -26,7 +26,8 @@ GP2: Cell Inspection
 
    This page is the specification draft for GP2. The provided code (the
    course skills package, as in GP1) and the GP2 trial configurations are
-   released with the project, on the day GP2 is posted.
+   released with the project, on the day GP2 is posted. The values and
+   timings on this page come from the instructor's runs in Gazebo.
 
 
 .. admonition:: AI tools
@@ -123,9 +124,12 @@ Provided Resources
        possible defects.
    * - Ground truth for each cell
      - Launch ARIAC with ``log_cell_info:=true``: it prints each cell's
-       defects to the Gazebo log. Use it offline, to measure precision and
-       recall, never at run time. (ARIAC's
-       ``ariac_setup/config/defects.yaml`` holds only the defect shapes.)
+       rotation and defects to the Gazebo log. Compare your theta with the
+       "Absolute theta" line, the defect's angle plus the cell's rotation,
+       after you wrap it to −π to π (ARIAC does not wrap it). Use it
+       offline, to measure precision and recall, never at run time.
+       (ARIAC's ``ariac_setup/config/defects.yaml`` holds only the defect
+       shapes.)
 
 .. _gp2-sensor-costs:
 
@@ -151,11 +155,11 @@ points in one scan.
      - $1500
    * - B
      - 10 Hz
-     - more than 200, at most 400
+     - 200 to 400 (see the warning)
      - $1250
    * - C
      - 10 Hz
-     - at most 200
+     - at most 199 (see the warning)
      - $1000
 
 .. warning::
@@ -185,6 +189,13 @@ Tasks
 
    - Choose the number, grade and pose of your lidars. Every lidar must
      sit inside bounding box A, B or C (ARIAC Sensors page).
+   - An ARIAC lidar measures from 0.04 m to 0.2 m
+     (``ariac_gz/models/sensors/lidar/model.sdf``), and the
+     team configuration cannot change that range: place each lidar within
+     0.2 m of the cell.
+   - A cell spawns at x = 0.55 m and reaches the inspection door at
+     x = 1.0 m: at 0.1 m/s, your lidars have about 4.5 s to see it, and your
+     report must be in before the door.
    - Compute the total sensor cost, including the GP1 break beam, from the
      table in :ref:`gp2-sensor-costs`. Show the sum.
    - Justify each grade in the write-up: what a cheaper grade would give up
@@ -199,7 +210,12 @@ Tasks
    **Requirements:**
 
    - Write a ROS 2 node that subscribes to the lidar scans and keeps the
-     points that fall on the cell.
+     points that fall on the cell. Fixed objects near the belt show up in
+     the scans too (the GP1 break beam's housing, at y = 0.95 m, is one), so
+     keep only points close to the cell's axis.
+   - Start the node, and check that it receives scans from every lidar,
+     before your tree starts the competition. A node that misses the first
+     cell leaves that cell without a report.
    - Transform those points into a frame centered on the cell's axis.
    - Combine several scans as the cell moves. One scan has at most 400
      points (grade A or B), so one scan is not enough to cover a cell.
@@ -220,6 +236,17 @@ Tasks
    - Group those points into regions, and tell a dent (round) from a
      scratch (long and narrow).
    - Keep every threshold a ROS 2 parameter, not a value in the code.
+   - Measure your residuals on defect-free cells first (a trial with
+     ``DEFECT_RATE: 0.0``), and set your thresholds from them.
+
+   .. note::
+
+      **Gazebo's lidar is not exact.** On defect-free cells, a few isolated
+      points land up to about 1 mm off the fitted cylinder (the instructor's
+      runs, four grade A lidars). A threshold on single points below 1 mm
+      then marks every cell as defective. A defect covers several
+      millimeters of the surface, so a check that uses a point's
+      neighbors, and not the point alone, can go below 1 mm.
 
    .. note::
 
@@ -244,7 +271,10 @@ Tasks
 
    Classifying defects is optional in ARIAC, but reports whose type, theta
    and z are all correct earn the inspection classification bonus, worth up to
-   500 points (L12).
+   500 points (L12). ARIAC counts a report's classification as correct when
+   it lists as many defects as the cell has, each with the right type, z
+   within 5 mm and theta within 0.26 rad (about 15°)
+   (``physical_inspection_plugin.cpp``).
 
 .. dropdown:: Task 5: Submit the report in time
    :icon: gear
@@ -256,8 +286,18 @@ Tasks
 
    - Submit the report through the ARIAC service before the cell reaches
      the inspection door.
-   - ARIAC rewards a short average inspection time (target 4 s) with the
-     inspection speed bonus, worth up to 500 points (L12).
+   - ARIAC measures the inspection time from the moment the cell spawns,
+     and rewards a short average (target 4 s) with the inspection speed
+     bonus, worth up to 500 points (L12).
+   - The conveyor pickup skill sets a tighter deadline than the door. With
+     the GP1 break beam at x = 0.6 m, a cell reaches the skill's catch point
+     (x = 1.40 m) 8 s after the beam, and the skill refuses a goal that
+     leaves it less than 3.925 s to get there (``side_lead_time`` in the
+     skills package's ``skills.yaml``). So the goal must go out within about
+     8 − 3.925 = 4.1 s of the beam. Your tree sends it only after the
+     report, so the inspection must end with time to spare: in the
+     instructor's runs, the verdict came 2.1 s after the beam and the goal
+     about 2.3 s after it.
 
 .. dropdown:: Task 6: Measure precision and recall
    :icon: gear
@@ -298,6 +338,10 @@ Tasks
      averaged voltage.
    - The tree does not wait for cells that dropped into the inspection bin.
    - The tree still builds and submits the kit on a trial with defects.
+   - A defect your detector misses lets a defective cell reach the tray, and
+     ARIAC's kit check then rejects the kit (for example with the message
+     "Cell in slot 2 is defective"). Recycle the cells, bring the AGV back to the inspection
+     station, and build a new kit.
 
 
 Deliverables

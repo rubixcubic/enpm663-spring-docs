@@ -206,11 +206,14 @@ Tasks
    - Pause inspection, and resume when the conveyor reports that it works
      again.
 
-   .. note::
-
-      The ARIAC documentation says the cell feed also pauses during a
-      conveyor malfunction. The ARIAC code stops only the belt. Check what
-      your trial does, and handle both.
+   - Stop feeding while the conveyor malfunctions. The ARIAC
+     documentation says the cell feed also pauses, but in the instructor's
+     runs the cell feed kept running: with the feed on, two cells spawned onto the stopped
+     belt during a 20 s malfunction.
+   - A cell that is on the belt when it stops cannot be caught by the
+     conveyor pickup skill: the skill ends ``PRECONDITION_FAILED`` and the
+     cell rides on after the restart (see the skills package's "Behaviors"
+     section). Plan for losing that cell.
 
 .. dropdown:: Task 5: Handle a voltage tester malfunction
    :icon: gear
@@ -222,10 +225,11 @@ Tasks
 
    - Detect that a tester is malfunctioning, use the other tester, and
      return to both when it reports ``OPERATIONAL`` again.
-   - Check for two behaviors. The ARIAC Challenges page says the tester
-     stops providing data. The ARIAC code (``voltage_tester_plugin.cpp``)
-     keeps publishing, with ``operation_status`` set to ``MALFUNCTIONING``
-     (value 2) and a voltage of -1.
+   - The ARIAC Challenges page says the tester stops providing data. In the
+     instructor's runs it kept publishing, as the ARIAC code
+     (``voltage_tester_plugin.cpp``) does, with ``operation_status`` set to
+     ``MALFUNCTIONING`` (value 2) and a voltage of -1, then returned to
+     ``OPERATIONAL`` with normal readings. Never average a -1 reading.
 
 .. dropdown:: Task 6: Handle a high-priority order
    :icon: gear
@@ -238,8 +242,15 @@ Tasks
    - Detect the order on ``/high_priority_orders``.
    - Switch the cell feed to NiMH, and build a NiMH kit: 4 × 1.2 V = 4.8 V,
      ± 0.15 V, so the total must land from 4.65 V to 4.95 V.
-   - Ship the kit, submit it with the order id, and switch the feed back to
-     Li-Ion.
+   - Ship the kit, submit it with the order id
+     (``/submit_high_priority_order``), and switch the feed back to Li-Ion.
+   - Build the NiMH kit on another AGV. ARIAC submits whichever AGV is at
+     the shipping station, so a Li-Ion kit in progress can stay on agv1
+     while agv2 carries the high-priority kit. Bring that AGV back from the
+     shipping station before agv1 ships.
+   - ARIAC rewards a fast high-priority kit with a speed bonus; its target
+     is 150 s (L9). In the instructor's run, a NiMH kit built one cell at a
+     time earned no speed bonus.
 
 .. dropdown:: Task 7: Compare the agent with GP3
    :icon: gear
