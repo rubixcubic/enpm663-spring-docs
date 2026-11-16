@@ -141,7 +141,10 @@ Provided Resources
        defective cells (``DEFECT_RATE`` 0.0), one kit and no challenges. You
        develop on it, and the grader runs it. If you write your own trials
        (for example with other seeds), ARIAC requires the ``ID`` to be
-       exactly 8 capital letters or digits, such as ``GP1SEED2``.
+       exactly 8 capital letters or digits, such as ``GP1SEED2``. Give each
+       trial file its own ``ID``: ARIAC records every trial in its database
+       and refuses a known ``ID`` whose file has changed ("Existing trial in
+       the database has different configuration").
    * - ARIAC 2025 documentation
      - The Scenario (Task 1), ROS API, Configuration Files and Scoring
        pages: https://pages.nist.gov/ARIAC_docs/en/latest/

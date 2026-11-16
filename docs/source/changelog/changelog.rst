@@ -6,10 +6,18 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.26: Project Pages Checked Against Working Solutions (2026-11-16)
+.. dropdown:: v0.4.27: GP1 Trial IDs Must Not Repeat (2026-11-16)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **GP1:** give each trial file its own ``ID``. ARIAC keeps every trial in
+     its database and refuses a known ``ID`` whose file has changed.
+
+
+.. dropdown:: v0.4.26: Project Pages Checked Against Working Solutions (2026-11-16)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **GP1:** the starter package's files and leaves are named; where the
      break beam goes and why grade B is enough; ARIAC refuses a report while
