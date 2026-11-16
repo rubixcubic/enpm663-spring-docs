@@ -6,10 +6,20 @@ All notable changes to the ENPM663 Spring 2027 course documentation are
 recorded here.
 
 
-.. dropdown:: v0.4.27: GP1 Trial IDs Must Not Repeat (2026-11-16)
+.. dropdown:: v0.4.28: L4 Starter Tree Matches the GP1 Starter (2026-11-16)
    :icon: tag
    :class-container: sd-border-success
    :open:
+
+   - **L4:** the starter tree figure shows the GP1 starter's order:
+     ``wait_for_beam``, ``stop_feed``, ``submit_report``, then the skill
+     and voltage leaves; a new line says why the feed stops and the report
+     waits for the beam.
+
+
+.. dropdown:: v0.4.27: GP1 Trial IDs Must Not Repeat (2026-11-16)
+   :icon: tag
+   :class-container: sd-border-success
 
    - **GP1:** give each trial file its own ``ID``. ARIAC keeps every trial in
      its database and refuses a known ``ID`` whose file has changed.

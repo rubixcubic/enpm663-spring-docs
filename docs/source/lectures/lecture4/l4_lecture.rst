@@ -863,11 +863,11 @@ The Starter Tree: One Sequence for One Cell
 
 .. image:: /_static/images/l4/gp1_starter_tree.svg
    :alt: A sequence named one_cell, an orange box on the left, with lines
-         to seven gray ellipses stacked from top to bottom: submit_report,
-         wait_for_beam, pick_from_conveyor, place_on_tester, read_voltage,
-         pick_from_tester and place_in_slot. A column of numbered tags on
-         the right gives each leaf a number, top to bottom: 1, 2, 3, 3, 2,
-         3, 3.
+         to eight gray ellipses stacked from top to bottom: wait_for_beam,
+         stop_feed, submit_report, pick_from_conveyor, place_on_tester,
+         read_voltage, pick_from_tester and place_in_slot. A column of
+         numbered tags on the right gives each leaf a number, top to bottom:
+         2, 1, 1, 3, 3, 2, 3, 3.
    :width: 55%
    :align: center
 
@@ -877,6 +877,9 @@ The Starter Tree: One Sequence for One Cell
   (``pick_from_conveyor``, ``place_on_tester``); inspection robot 2 runs the
   two at the bottom (``pick_from_tester``, ``place_in_slot``).
 - The names follow the Task 1 steps in L1.
+- The feed stops and the report goes out only after the beam sees a cell:
+  ARIAC refuses a report while no cell is on the belt, and each extra cell
+  from a feed left on ends in a bin, where ARIAC deducts points.
 - After four cells, the tree checks the kit, moves the AGV to shipping with
   ``/agvN/move`` and submits the kit.
 
